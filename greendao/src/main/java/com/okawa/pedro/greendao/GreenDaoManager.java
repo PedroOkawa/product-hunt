@@ -23,12 +23,14 @@ public class GreenDaoManager {
 
     private static void createTables(Schema schema) {
 
-        Entity Session = schema.addEntity(ENTITY_SESSION);
+        Entity session = schema.addEntity(ENTITY_SESSION);
 
-        Session.addIdProperty().primaryKey().unique().autoincrement();
-        Session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
-        Session.addStringProperty(FIELD_SESSION_TOKEN_TYPE);
-        Session.addLongProperty(FILED_SESSION_EXPIRES_IN);
+        session.addIdProperty().primaryKey().unique();
+        session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
+        session.addStringProperty(FIELD_SESSION_TOKEN_TYPE);
+        session.addLongProperty(FILED_SESSION_EXPIRES_IN);
+
+        session.setHasKeepSections(true);
 
     }
 

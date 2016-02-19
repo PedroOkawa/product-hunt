@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.ui.main;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
@@ -52,6 +53,6 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onError(String error) {
-
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }

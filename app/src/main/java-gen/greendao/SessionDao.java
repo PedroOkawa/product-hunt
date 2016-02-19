@@ -24,8 +24,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Token = new Property(1, String.class, "token", false, "TOKEN");
-        public final static Property ExpiresIn = new Property(2, Long.class, "expiresIn", false, "EXPIRES_IN");
+        public final static Property AccessToken = new Property(1, String.class, "accessToken", false, "ACCESS_TOKEN");
+        public final static Property TokenType = new Property(2, String.class, "tokenType", false, "TOKEN_TYPE");
+        public final static Property ExpiresIn = new Property(3, Long.class, "expiresIn", false, "EXPIRES_IN");
     };
 
 
@@ -41,9 +42,10 @@ public class SessionDao extends AbstractDao<Session, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'SESSION' (" + //
-                "'_id' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ," + // 0: id
-                "'TOKEN' TEXT," + // 1: token
-                "'EXPIRES_IN' INTEGER);"); // 2: expiresIn
+                "'_id' INTEGER PRIMARY KEY UNIQUE ," + // 0: id
+                "'ACCESS_TOKEN' TEXT," + // 1: accessToken
+                "'TOKEN_TYPE' TEXT," + // 2: tokenType
+                "'EXPIRES_IN' INTEGER);"); // 3: expiresIn
     }
 
     /** Drops the underlying database table. */
@@ -62,14 +64,19 @@ public class SessionDao extends AbstractDao<Session, Long> {
             stmt.bindLong(1, id);
         }
  
-        String token = entity.getToken();
-        if (token != null) {
-            stmt.bindString(2, token);
+        String accessToken = entity.getAccessToken();
+        if (accessToken != null) {
+            stmt.bindString(2, accessToken);
+        }
+ 
+        String tokenType = entity.getTokenType();
+        if (tokenType != null) {
+            stmt.bindString(3, tokenType);
         }
  
         Long expiresIn = entity.getExpiresIn();
         if (expiresIn != null) {
-            stmt.bindLong(3, expiresIn);
+            stmt.bindLong(4, expiresIn);
         }
     }
 
@@ -84,8 +91,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
     public Session readEntity(Cursor cursor, int offset) {
         Session entity = new Session( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // token
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2) // expiresIn
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // accessToken
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // tokenType
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3) // expiresIn
         );
         return entity;
     }
@@ -94,8 +102,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
     @Override
     public void readEntity(Cursor cursor, Session entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setToken(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setExpiresIn(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setAccessToken(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setTokenType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setExpiresIn(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
      }
     
     /** @inheritdoc */

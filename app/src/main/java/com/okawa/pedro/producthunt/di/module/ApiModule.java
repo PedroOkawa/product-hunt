@@ -1,7 +1,9 @@
 package com.okawa.pedro.producthunt.di.module;
 
+import com.okawa.pedro.producthunt.ProductHuntApp;
+import com.okawa.pedro.producthunt.database.SessionRepository;
 import com.okawa.pedro.producthunt.network.ApiInterface;
-import com.okawa.pedro.producthunt.util.ApiManager;
+import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +26,7 @@ public class ApiModule {
 
     @Singleton
     @Provides
-    private OkHttpClient providesOkHttpClient() {
+    public OkHttpClient providesOkHttpClient() {
         return new OkHttpClient
                 .Builder()
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
@@ -33,20 +35,23 @@ public class ApiModule {
 
     @Singleton
     @Provides
-    public Retrofit provideApiInterface(OkHttpClient okHttpClient) {
+    public ApiInterface provideApiInterface(OkHttpClient okHttpClient) {
         return new Retrofit
                 .Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
                 .baseUrl(ApiInterface.BASE_URL)
-                .build();
+                .build()
+                .create(ApiInterface.class);
     }
 
     @Singleton
     @Provides
-    public ApiManager providesApiManager() {
-        return new ApiManager();
+    public ApiManager providesApiManager(ProductHuntApp productHuntApp,
+                                         ApiInterface apiInterface,
+                                         SessionRepository sessionRepository) {
+        return new ApiManager(productHuntApp, apiInterface, sessionRepository);
     }
 
 }
