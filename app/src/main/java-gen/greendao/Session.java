@@ -5,7 +5,7 @@ package greendao;
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
 /**
- * Entity mapped to table SESSION.
+ * Entity mapped to table "SESSION".
  */
 public class Session {
 

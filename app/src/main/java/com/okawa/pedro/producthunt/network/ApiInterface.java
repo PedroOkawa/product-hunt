@@ -2,12 +2,15 @@ package com.okawa.pedro.producthunt.network;
 
 import com.google.gson.JsonObject;
 
+import java.util.List;
 import java.util.Map;
 
+import greendao.Category;
 import greendao.Session;
 import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.QueryMap;
 import rx.Observable;
 
@@ -29,12 +32,18 @@ public interface ApiInterface {
 
     String PATH_POSTS = "posts";
 
-    @GET(PATH_TOKEN)
+    String PATH_CATEGORIES = "categories";
+
+    String PATH_CATEGORIES_POSTS = "categories/{category}/posts";
+
+    @POST(PATH_TOKEN)
     Observable<Session> grantAccess(@Field(FIELD_CLIENT_ID) String clientId,
                                     @Field(FIELD_CLIENT_SECRET) String clientSecret,
                                     @Field(FIELD_GRANT_TYPE) String grantType);
 
     @GET(PATH_POSTS)
-    Observable posts(@Header(FIELD_AUTHORIZATION) String authorization,
-                     @QueryMap Map<String, String> parameters);
+    Observable posts(@Header(FIELD_AUTHORIZATION) String authorization);
+
+    @GET(PATH_CATEGORIES)
+    Observable<List<Category>> categories(@Header(FIELD_AUTHORIZATION) String authorization);
 }

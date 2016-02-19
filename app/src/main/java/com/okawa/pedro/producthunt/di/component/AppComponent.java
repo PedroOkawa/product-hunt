@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.di.component;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
+import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
 import com.okawa.pedro.producthunt.di.module.ApiModule;
 import com.okawa.pedro.producthunt.di.module.AppModule;
@@ -36,5 +37,6 @@ public interface AppComponent {
     /* DATABASE */
 
     DaoSession providesDaoSession();
+    CategoryRepository providesCategoryRepository();
     SessionRepository providesSessionRepository();
 }

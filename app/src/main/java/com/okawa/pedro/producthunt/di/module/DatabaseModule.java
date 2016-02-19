@@ -3,6 +3,7 @@ package com.okawa.pedro.producthunt.di.module;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
+import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
 
 import javax.inject.Singleton;
@@ -27,6 +28,12 @@ public class DatabaseModule {
         SQLiteDatabase database = devOpenHelper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(database);
         return daoMaster.newSession();
+    }
+
+    @Singleton
+    @Provides
+    public CategoryRepository providesCategoryRepository(DaoSession daoSession) {
+        return new CategoryRepository(daoSession);
     }
 
     @Singleton
