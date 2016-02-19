@@ -8,6 +8,7 @@ import java.util.Map;
 import greendao.Category;
 import greendao.Session;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -36,6 +37,7 @@ public interface ApiInterface {
 
     String PATH_CATEGORIES_POSTS = "categories/{category}/posts";
 
+    @FormUrlEncoded
     @POST(PATH_TOKEN)
     Observable<Session> grantAccess(@Field(FIELD_CLIENT_ID) String clientId,
                                     @Field(FIELD_CLIENT_SECRET) String clientSecret,

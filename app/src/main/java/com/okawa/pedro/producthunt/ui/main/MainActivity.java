@@ -8,7 +8,7 @@ import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 import com.okawa.pedro.producthunt.di.component.AppComponent;
 import com.okawa.pedro.producthunt.di.component.DaggerMainComponent;
 import com.okawa.pedro.producthunt.di.module.MainModule;
-import com.okawa.pedro.producthunt.presenter.MainPresenter;
+import com.okawa.pedro.producthunt.presenter.main.MainPresenter;
 import com.okawa.pedro.producthunt.ui.common.BaseActivity;
 
 import javax.inject.Inject;
@@ -17,6 +17,8 @@ import javax.inject.Inject;
  * Created by pokawa on 19/02/16.
  */
 public class MainActivity extends BaseActivity implements MainView {
+
+    private ActivityMainBinding binding;
 
     @Inject
     MainPresenter mainPresenter;
@@ -38,7 +40,9 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     protected void doOnCreated(Bundle savedInstanceState) {
-        mainPresenter.initializeViews((ActivityMainBinding) getDataBinding());
+        binding = (ActivityMainBinding) getDataBinding();
+
+        mainPresenter.initializeViews(binding);
     }
 
     @Override

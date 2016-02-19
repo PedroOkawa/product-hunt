@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.okawa.pedro.producthunt">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <!-- APPLICATION (PRODUCT HUNT APP) -->
 
     <application
@@ -11,10 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- MAIN ACTIVITY -->
+        <!-- LOADING ACTIVITY -->
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.loading.LoadingActivity"
             android:configChanges="orientation">
 
             <intent-filter>
@@ -23,6 +25,12 @@
             </intent-filter>
 
         </activity>
+
+        <!-- MAIN ACTIVITY -->
+
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:configChanges="orientation"/>
 
     </application>
 

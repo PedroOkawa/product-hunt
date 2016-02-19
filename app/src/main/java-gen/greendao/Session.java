@@ -4,17 +4,24 @@ package greendao;
 
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Entity mapped to table "SESSION".
  */
 public class Session {
 
+    // KEEP FIELDS - put your custom fields here
+
     private Long id;
+    @SerializedName("access_token")
     private String accessToken;
+    @SerializedName("token_type")
     private String tokenType;
+    @SerializedName("expires_in")
     private Long expiresIn;
 
-    // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
     public Session() {

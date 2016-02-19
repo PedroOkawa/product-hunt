@@ -14,6 +14,7 @@ import de.greenrobot.dao.DaoException;
 public class Post {
 
     private Long postId;
+    private Long creatorId;
     private java.util.Date date;
     private String name;
     private String image;
@@ -44,8 +45,9 @@ public class Post {
         this.postId = postId;
     }
 
-    public Post(Long postId, java.util.Date date, String name, String image, String tagline, Long votesCount, String redirectUrl, String screenshotSmall, String screenshotBig) {
+    public Post(Long postId, Long creatorId, java.util.Date date, String name, String image, String tagline, Long votesCount, String redirectUrl, String screenshotSmall, String screenshotBig) {
         this.postId = postId;
+        this.creatorId = creatorId;
         this.date = date;
         this.name = name;
         this.image = image;
@@ -68,6 +70,14 @@ public class Post {
 
     public void setPostId(Long postId) {
         this.postId = postId;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public java.util.Date getDate() {
@@ -136,7 +146,7 @@ public class Post {
 
     /** To-one relationship, resolved on first access. */
     public User getUser() {
-        Long __key = this.userId;
+        Long __key = this.creatorId;
         if (user__resolvedKey == null || !user__resolvedKey.equals(__key)) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
@@ -154,8 +164,8 @@ public class Post {
     public void setUser(User user) {
         synchronized (this) {
             this.user = user;
-            userId = user == null ? null : user.getUserId();
-            user__resolvedKey = userId;
+            creatorId = user == null ? null : user.getUserId();
+            user__resolvedKey = creatorId;
         }
     }
 

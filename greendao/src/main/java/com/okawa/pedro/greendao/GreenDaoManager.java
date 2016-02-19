@@ -35,6 +35,7 @@ public class GreenDaoManager {
 
     private static final String ENTITY_POST = "Post";
     private static final String FIELD_POST_ID = "postId";
+    private static final String FIELD_POST_CREATOR_ID = "creatorId";
     private static final String FIELD_POST_DATE = "date";
     private static final String FIELD_POST_NAME = "name";
     private static final String FIELD_POST_IMAGE = "image";
@@ -95,6 +96,7 @@ public class GreenDaoManager {
         Entity post = schema.addEntity(ENTITY_POST);
 
         Property postId = post.addLongProperty(FIELD_POST_ID).primaryKey().getProperty();
+        Property creatorId = post.addLongProperty(FIELD_POST_CREATOR_ID).getProperty();
         post.addDateProperty(FIELD_POST_DATE);
         post.addStringProperty(FIELD_POST_NAME);
         post.addStringProperty(FIELD_POST_IMAGE);
@@ -108,12 +110,12 @@ public class GreenDaoManager {
 
         /* RELATIONSHIP USER */
 
-        user.addToMany(user, postId).setName(FIELD_USER_POSTS);
+        user.addToMany(post, postId).setName(FIELD_USER_POSTS);
 
         /* RELATIONSHIP POST */
 
+        post.addToOne(user, creatorId).setName(FIELD_POST_USER);
         post.addToMany(user, userId).setName(FIELD_POST_MAKERS);
-        post.addToOne(user, userId).setName(FIELD_POST_USER);
 
     }
 

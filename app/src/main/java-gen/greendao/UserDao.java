@@ -34,12 +34,10 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property Headline = new Property(5, String.class, "headline", false, "HEADLINE");
         public final static Property TwitterUser = new Property(6, String.class, "twitterUser", false, "TWITTER_USER");
         public final static Property TwitterProfile = new Property(7, String.class, "twitterProfile", false, "TWITTER_PROFILE");
-        public final static Property PostId = new Property(8, Long.class, "postId", true, "POST_ID");
     };
 
     private DaoSession daoSession;
 
-    private Query<User> user_PostsQuery;
     private Query<User> post_MakersQuery;
 
     public UserDao(DaoConfig config) {
@@ -62,8 +60,7 @@ public class UserDao extends AbstractDao<User, Long> {
                 "\"USERNAME\" TEXT," + // 4: username
                 "\"HEADLINE\" TEXT," + // 5: headline
                 "\"TWITTER_USER\" TEXT," + // 6: twitterUser
-                "\"TWITTER_PROFILE\" TEXT," + // 7: twitterProfile
-                "\"POST_ID\" INTEGER PRIMARY KEY );"); // 8: postId
+                "\"TWITTER_PROFILE\" TEXT);"); // 7: twitterProfile
     }
 
     /** Drops the underlying database table. */
@@ -182,20 +179,6 @@ public class UserDao extends AbstractDao<User, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "posts" to-many relationship of User. */
-    public List<User> _queryUser_Posts(Long postId) {
-        synchronized (this) {
-            if (user_PostsQuery == null) {
-                QueryBuilder<User> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.PostId.eq(null));
-                user_PostsQuery = queryBuilder.build();
-            }
-        }
-        Query<User> query = user_PostsQuery.forCurrentThread();
-        query.setParameter(0, postId);
-        return query.list();
-    }
-
     /** Internal query to resolve the "makers" to-many relationship of Post. */
     public List<User> _queryPost_Makers(Long userId) {
         synchronized (this) {

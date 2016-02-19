@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.SessionRepository;
 import com.okawa.pedro.producthunt.network.ApiInterface;
@@ -52,8 +53,8 @@ public class ApiManager {
 
         apiInterface
                 .grantAccess(apiId, apiSecret, ACCESS_GRANT_TYPE)
-                .observeOn(Schedulers.newThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Session>() {
                     @Override
                     public void onCompleted() {
@@ -68,6 +69,7 @@ public class ApiManager {
                     @Override
                     public void onNext(Session session) {
                         sessionRepository.updateSession(session);
+                        Log.d("TEST", "SESSION: " + session.getToken());
                     }
                 });
     }

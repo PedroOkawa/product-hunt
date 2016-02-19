@@ -28,7 +28,7 @@ public class User {
     /** Used for active entity operations. */
     private transient UserDao myDao;
 
-    private List<User> posts;
+    private List<Post> posts;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -122,13 +122,13 @@ public class User {
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<User> getPosts() {
+    public List<Post> getPosts() {
         if (posts == null) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            UserDao targetDao = daoSession.getUserDao();
-            List<User> postsNew = targetDao._queryUser_Posts(userId);
+            PostDao targetDao = daoSession.getPostDao();
+            List<Post> postsNew = targetDao._queryUser_Posts(userId);
             synchronized (this) {
                 if(posts == null) {
                     posts = postsNew;

@@ -25,4 +25,8 @@ public class SessionRepository {
         return sessionDao.queryBuilder().where(SessionDao.Properties.Id.eq(SESSION_ID)).unique();
     }
 
+    public boolean containsSession() {
+        return sessionDao.count() > 0;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.presenter;
+package com.okawa.pedro.producthunt.presenter.main;
 
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 
@@ -8,5 +8,6 @@ import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 public interface MainPresenter {
 
     void initializeViews(ActivityMainBinding binding);
+    void requestData();
 
 }
