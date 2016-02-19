@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/view_post_details_card_height"
+        android:elevation="@dimen/adapter_main_posts_card_elevation"
+        android:outlineProvider="bounds"
+        android:clipToPadding="false"
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <include layout="@layout/view_post_details"/>
+
+    </LinearLayout>
+
+</layout>
