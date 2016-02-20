@@ -28,18 +28,21 @@ public class PostDao extends AbstractDao<Post, Long> {
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
-        public final static Property PostId = new Property(0, Long.class, "postId", true, "POST_ID");
-        public final static Property Date = new Property(1, String.class, "date", false, "DATE");
-        public final static Property Name = new Property(2, String.class, "name", false, "NAME");
-        public final static Property Tagline = new Property(3, String.class, "tagline", false, "TAGLINE");
-        public final static Property VotesCount = new Property(4, Long.class, "votesCount", false, "VOTES_COUNT");
-        public final static Property RedirectUrl = new Property(5, String.class, "redirectUrl", false, "REDIRECT_URL");
-        public final static Property User = new Property(6, Long.class, "user", false, "userId");
+        public final static Property Id = new Property(0, Long.class, "id", true, "ID");
+        public final static Property UserIdFK = new Property(1, Long.class, "userIdFK", false, "USER_ID_FK");
+        public final static Property ThumbnailIdFK = new Property(2, Long.class, "thumbnailIdFK", false, "THUMBNAIL_ID_FK");
+        public final static Property CategoryIdFK = new Property(3, Long.class, "categoryIdFK", false, "CATEGORY_ID_FK");
+        public final static Property Date = new Property(4, String.class, "date", false, "DATE");
+        public final static Property Name = new Property(5, String.class, "name", false, "NAME");
+        public final static Property Tagline = new Property(6, String.class, "tagline", false, "TAGLINE");
+        public final static Property VotesCount = new Property(7, Long.class, "votesCount", false, "VOTES_COUNT");
+        public final static Property RedirectUrl = new Property(8, String.class, "redirectUrl", false, "REDIRECT_URL");
     };
 
     private DaoSession daoSession;
 
     private Query<Post> user_PostsQuery;
+    private Query<Post> category_PostListQuery;
 
     public PostDao(DaoConfig config) {
         super(config);
@@ -54,13 +57,15 @@ public class PostDao extends AbstractDao<Post, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"POST\" (" + //
-                "\"POST_ID\" INTEGER PRIMARY KEY ," + // 0: postId
-                "\"DATE\" TEXT," + // 1: date
-                "\"NAME\" TEXT," + // 2: name
-                "\"TAGLINE\" TEXT," + // 3: tagline
-                "\"VOTES_COUNT\" INTEGER," + // 4: votesCount
-                "\"REDIRECT_URL\" TEXT," + // 5: redirectUrl
-                "\"userId\" INTEGER);"); // 6: user
+                "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"USER_ID_FK\" INTEGER," + // 1: userIdFK
+                "\"THUMBNAIL_ID_FK\" INTEGER," + // 2: thumbnailIdFK
+                "\"CATEGORY_ID_FK\" INTEGER," + // 3: categoryIdFK
+                "\"DATE\" TEXT," + // 4: date
+                "\"NAME\" TEXT," + // 5: name
+                "\"TAGLINE\" TEXT," + // 6: tagline
+                "\"VOTES_COUNT\" INTEGER," + // 7: votesCount
+                "\"REDIRECT_URL\" TEXT);"); // 8: redirectUrl
     }
 
     /** Drops the underlying database table. */
@@ -74,34 +79,49 @@ public class PostDao extends AbstractDao<Post, Long> {
     protected void bindValues(SQLiteStatement stmt, Post entity) {
         stmt.clearBindings();
  
-        Long postId = entity.getPostId();
-        if (postId != null) {
-            stmt.bindLong(1, postId);
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
+        Long userIdFK = entity.getUserIdFK();
+        if (userIdFK != null) {
+            stmt.bindLong(2, userIdFK);
+        }
+ 
+        Long thumbnailIdFK = entity.getThumbnailIdFK();
+        if (thumbnailIdFK != null) {
+            stmt.bindLong(3, thumbnailIdFK);
+        }
+ 
+        Long categoryIdFK = entity.getCategoryIdFK();
+        if (categoryIdFK != null) {
+            stmt.bindLong(4, categoryIdFK);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(2, date);
+            stmt.bindString(5, date);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(3, name);
+            stmt.bindString(6, name);
         }
  
         String tagline = entity.getTagline();
         if (tagline != null) {
-            stmt.bindString(4, tagline);
+            stmt.bindString(7, tagline);
         }
  
         Long votesCount = entity.getVotesCount();
         if (votesCount != null) {
-            stmt.bindLong(5, votesCount);
+            stmt.bindLong(8, votesCount);
         }
  
         String redirectUrl = entity.getRedirectUrl();
         if (redirectUrl != null) {
-            stmt.bindString(6, redirectUrl);
+            stmt.bindString(9, redirectUrl);
         }
     }
 
@@ -121,12 +141,15 @@ public class PostDao extends AbstractDao<Post, Long> {
     @Override
     public Post readEntity(Cursor cursor, int offset) {
         Post entity = new Post( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // postId
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // date
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // tagline
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // votesCount
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // redirectUrl
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userIdFK
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // thumbnailIdFK
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // categoryIdFK
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // date
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // tagline
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // votesCount
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // redirectUrl
         );
         return entity;
     }
@@ -134,18 +157,21 @@ public class PostDao extends AbstractDao<Post, Long> {
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Post entity, int offset) {
-        entity.setPostId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setDate(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setTagline(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setVotesCount(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setRedirectUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setUserIdFK(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setThumbnailIdFK(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setCategoryIdFK(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setTagline(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setVotesCount(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
+        entity.setRedirectUrl(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
      }
     
     /** @inheritdoc */
     @Override
     protected Long updateKeyAfterInsert(Post entity, long rowId) {
-        entity.setPostId(rowId);
+        entity.setId(rowId);
         return rowId;
     }
     
@@ -153,7 +179,7 @@ public class PostDao extends AbstractDao<Post, Long> {
     @Override
     public Long getKey(Post entity) {
         if(entity != null) {
-            return entity.getPostId();
+            return entity.getId();
         } else {
             return null;
         }
@@ -166,16 +192,30 @@ public class PostDao extends AbstractDao<Post, Long> {
     }
     
     /** Internal query to resolve the "posts" to-many relationship of User. */
-    public List<Post> _queryUser_Posts(Long postId) {
+    public List<Post> _queryUser_Posts(Long id) {
         synchronized (this) {
             if (user_PostsQuery == null) {
                 QueryBuilder<Post> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.PostId.eq(null));
+                queryBuilder.where(Properties.Id.eq(null));
                 user_PostsQuery = queryBuilder.build();
             }
         }
         Query<Post> query = user_PostsQuery.forCurrentThread();
-        query.setParameter(0, postId);
+        query.setParameter(0, id);
+        return query.list();
+    }
+
+    /** Internal query to resolve the "postList" to-many relationship of Category. */
+    public List<Post> _queryCategory_PostList(Long categoryIdFK) {
+        synchronized (this) {
+            if (category_PostListQuery == null) {
+                QueryBuilder<Post> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.CategoryIdFK.eq(null));
+                category_PostListQuery = queryBuilder.build();
+            }
+        }
+        Query<Post> query = category_PostListQuery.forCurrentThread();
+        query.setParameter(0, categoryIdFK);
         return query.list();
     }
 
@@ -187,8 +227,14 @@ public class PostDao extends AbstractDao<Post, Long> {
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getUserDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getThumbnailDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T2", daoSession.getScreenshotDao().getAllColumns());
             builder.append(" FROM POST T");
-            builder.append(" LEFT JOIN USER T0 ON T.\"userId\"=T0.\"USER_ID\"");
+            builder.append(" LEFT JOIN USER T0 ON T.\"USER_ID_FK\"=T0.\"ID\"");
+            builder.append(" LEFT JOIN THUMBNAIL T1 ON T.\"THUMBNAIL_ID_FK\"=T1.\"ID\"");
+            builder.append(" LEFT JOIN SCREENSHOT T2 ON T.\"ID\"=T2.\"ID\"");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -201,6 +247,14 @@ public class PostDao extends AbstractDao<Post, Long> {
 
         User user = loadCurrentOther(daoSession.getUserDao(), cursor, offset);
         entity.setUser(user);
+        offset += daoSession.getUserDao().getAllColumns().length;
+
+        Thumbnail thumbnail = loadCurrentOther(daoSession.getThumbnailDao(), cursor, offset);
+        entity.setThumbnail(thumbnail);
+        offset += daoSession.getThumbnailDao().getAllColumns().length;
+
+        Screenshot screenshot = loadCurrentOther(daoSession.getScreenshotDao(), cursor, offset);
+        entity.setScreenshot(screenshot);
 
         return entity;    
     }

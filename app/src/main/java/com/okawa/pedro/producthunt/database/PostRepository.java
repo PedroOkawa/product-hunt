@@ -27,4 +27,8 @@ public class PostRepository {
         return postDao.queryBuilder().where(PostDao.Properties.Date.eq(date)).list();
     }
 
+    public Post selectPostById(long id) {
+        return postDao.queryBuilder().where(PostDao.Properties.Id.eq(id)).unique();
+    }
+
 }

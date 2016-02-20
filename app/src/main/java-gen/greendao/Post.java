@@ -15,22 +15,21 @@ import de.greenrobot.dao.DaoException;
  */
 public class Post {
 
-
     // KEEP FIELDS - put your custom fields here
 
-    @SerializedName("id")
-    private Long postId;
+    private Long id;
+    private Long userIdFK;
+    private Long thumbnailIdFK;
+    @SerializedName("category_id")
+    private Long categoryIdFK;
     @SerializedName("day")
     private String date;
     private String name;
-//    private String image;
     private String tagline;
     @SerializedName("votes_count")
     private Long votesCount;
     @SerializedName("redirect_url")
     private String redirectUrl;
-//    private String screenshotSmall;
-//    private String screenshotBig;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -39,21 +38,30 @@ public class Post {
     private transient PostDao myDao;
 
     private User user;
-    private boolean user__refreshed;
+    private Long user__resolvedKey;
+
+    private Thumbnail thumbnail;
+    private Long thumbnail__resolvedKey;
+
+    @SerializedName("screenshot_url")
+    private Screenshot screenshot;
+    private Long screenshot__resolvedKey;
 
     private List<User> makers;
-
     // KEEP FIELDS END
 
     public Post() {
     }
 
-    public Post(Long postId) {
-        this.postId = postId;
+    public Post(Long id) {
+        this.id = id;
     }
 
-    public Post(Long postId, String date, String name, String tagline, Long votesCount, String redirectUrl) {
-        this.postId = postId;
+    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryIdFK, String date, String name, String tagline, Long votesCount, String redirectUrl) {
+        this.id = id;
+        this.userIdFK = userIdFK;
+        this.thumbnailIdFK = thumbnailIdFK;
+        this.categoryIdFK = categoryIdFK;
         this.date = date;
         this.name = name;
         this.tagline = tagline;
@@ -67,12 +75,36 @@ public class Post {
         myDao = daoSession != null ? daoSession.getPostDao() : null;
     }
 
-    public Long getPostId() {
-        return postId;
+    public Long getId() {
+        return id;
     }
 
-    public void setPostId(Long postId) {
-        this.postId = postId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserIdFK() {
+        return userIdFK;
+    }
+
+    public void setUserIdFK(Long userIdFK) {
+        this.userIdFK = userIdFK;
+    }
+
+    public Long getThumbnailIdFK() {
+        return thumbnailIdFK;
+    }
+
+    public void setThumbnailIdFK(Long thumbnailIdFK) {
+        this.thumbnailIdFK = thumbnailIdFK;
+    }
+
+    public Long getCategoryIdFK() {
+        return categoryIdFK;
+    }
+
+    public void setCategoryIdFK(Long categoryIdFK) {
+        this.categoryIdFK = categoryIdFK;
     }
 
     public String getDate() {
@@ -117,26 +149,76 @@ public class Post {
 
     /** To-one relationship, resolved on first access. */
     public User getUser() {
-        if (user != null || !user__refreshed) {
+        Long __key = this.userIdFK;
+        if (user__resolvedKey == null || !user__resolvedKey.equals(__key)) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserDao targetDao = daoSession.getUserDao();
-            targetDao.refresh(user);
-            user__refreshed = true;
+            User userNew = targetDao.load(__key);
+            synchronized (this) {
+                user = userNew;
+            	user__resolvedKey = __key;
+            }
         }
-        return user;
-    }
-
-    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
-    public User peakUser() {
         return user;
     }
 
     public void setUser(User user) {
         synchronized (this) {
             this.user = user;
-            user__refreshed = true;
+            userIdFK = user == null ? null : user.getId();
+            user__resolvedKey = userIdFK;
+        }
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public Thumbnail getThumbnail() {
+        Long __key = this.thumbnailIdFK;
+        if (thumbnail__resolvedKey == null || !thumbnail__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            ThumbnailDao targetDao = daoSession.getThumbnailDao();
+            Thumbnail thumbnailNew = targetDao.load(__key);
+            synchronized (this) {
+                thumbnail = thumbnailNew;
+            	thumbnail__resolvedKey = __key;
+            }
+        }
+        return thumbnail;
+    }
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        synchronized (this) {
+            this.thumbnail = thumbnail;
+            thumbnailIdFK = thumbnail == null ? null : thumbnail.getId();
+            thumbnail__resolvedKey = thumbnailIdFK;
+        }
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public Screenshot getScreenshot() {
+        Long __key = this.id;
+        if (screenshot__resolvedKey == null || !screenshot__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            ScreenshotDao targetDao = daoSession.getScreenshotDao();
+            Screenshot screenshotNew = targetDao.load(__key);
+            synchronized (this) {
+                screenshot = screenshotNew;
+            	screenshot__resolvedKey = __key;
+            }
+        }
+        return screenshot;
+    }
+
+    public void setScreenshot(Screenshot screenshot) {
+        synchronized (this) {
+            this.screenshot = screenshot;
+            id = screenshot == null ? null : screenshot.getId();
+            screenshot__resolvedKey = id;
         }
     }
 
@@ -147,7 +229,7 @@ public class Post {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserDao targetDao = daoSession.getUserDao();
-            List<User> makersNew = targetDao._queryPost_Makers(postId);
+            List<User> makersNew = targetDao._queryPost_Makers(id);
             synchronized (this) {
                 if(makers == null) {
                     makers = makersNew;
@@ -187,6 +269,13 @@ public class Post {
     }
 
     // KEEP METHODS - put your custom methods here
+
+    public void sync() {
+        setUser(user);
+        setThumbnail(thumbnail);
+        screenshot.setId(id);
+        setScreenshot(screenshot);
+    }
     // KEEP METHODS END
 
 }

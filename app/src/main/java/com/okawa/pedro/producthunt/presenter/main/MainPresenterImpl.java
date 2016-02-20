@@ -2,6 +2,7 @@ package com.okawa.pedro.producthunt.presenter.main;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
@@ -42,7 +43,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     @Override
-    public void initializeViews(ActivityMainBinding binding) {
+    public void initialize(ActivityMainBinding binding) {
 
         /* STORES BINDING */
 
@@ -59,16 +60,24 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         binding.rvActivityMainPosts.setAdapter(adapterPost);
         binding.rvActivityMainPosts.setLayoutManager(gridLayoutManager);
+
+        /* REQUEST INITIAL DATA */
+
+        requestTodayData();
+    }
+
+    private void requestTodayData() {
+        apiManager.requestPostsByDay(this);
+        apiManager.requestCategories(this);
     }
 
     @Override
-    public void requestData() {
-        apiManager.fetchPosts(this);
-    }
-
-    @Override
-    public void onDataLoaded() {
-        adapterPost.addDataSet(postRepository.selectPostByDate(new Date()));
+    public void onDataLoaded(int process) {
+        if(process == ApiManager.PROCESS_POSTS_ID) {
+            adapterPost.addDataSet(postRepository.selectPostByDate(new Date()));
+        } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
+            Log.wtf("TEST", "CATEGORIES");
+        }
     }
 
     @Override

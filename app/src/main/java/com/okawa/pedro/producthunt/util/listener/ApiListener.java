@@ -5,7 +5,7 @@ package com.okawa.pedro.producthunt.util.listener;
  */
 public interface ApiListener {
 
-    void onDataLoaded();
+    void onDataLoaded(int process);
     void onError(String error);
 
 }

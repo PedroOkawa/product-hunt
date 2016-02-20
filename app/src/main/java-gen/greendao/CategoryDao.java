@@ -23,11 +23,13 @@ public class CategoryDao extends AbstractDao<Category, Long> {
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
-        public final static Property CategoryId = new Property(0, Long.class, "categoryId", true, "CATEGORY_ID");
+        public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property Slug = new Property(1, String.class, "slug", false, "SLUG");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property ItemName = new Property(3, String.class, "itemName", false, "ITEM_NAME");
     };
+
+    private DaoSession daoSession;
 
 
     public CategoryDao(DaoConfig config) {
@@ -36,13 +38,14 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     
     public CategoryDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"CATEGORY\" (" + //
-                "\"CATEGORY_ID\" INTEGER PRIMARY KEY ," + // 0: categoryId
+                "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"SLUG\" TEXT," + // 1: slug
                 "\"NAME\" TEXT," + // 2: name
                 "\"ITEM_NAME\" TEXT);"); // 3: itemName
@@ -59,9 +62,9 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     protected void bindValues(SQLiteStatement stmt, Category entity) {
         stmt.clearBindings();
  
-        Long categoryId = entity.getCategoryId();
-        if (categoryId != null) {
-            stmt.bindLong(1, categoryId);
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
         }
  
         String slug = entity.getSlug();
@@ -80,6 +83,12 @@ public class CategoryDao extends AbstractDao<Category, Long> {
         }
     }
 
+    @Override
+    protected void attachEntity(Category entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
+    }
+
     /** @inheritdoc */
     @Override
     public Long readKey(Cursor cursor, int offset) {
@@ -90,7 +99,7 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     @Override
     public Category readEntity(Cursor cursor, int offset) {
         Category entity = new Category( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // categoryId
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // slug
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // itemName
@@ -101,7 +110,7 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Category entity, int offset) {
-        entity.setCategoryId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setSlug(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setItemName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
@@ -110,7 +119,7 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     /** @inheritdoc */
     @Override
     protected Long updateKeyAfterInsert(Category entity, long rowId) {
-        entity.setCategoryId(rowId);
+        entity.setId(rowId);
         return rowId;
     }
     
@@ -118,7 +127,7 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     @Override
     public Long getKey(Category entity) {
         if(entity != null) {
-            return entity.getCategoryId();
+            return entity.getId();
         } else {
             return null;
         }

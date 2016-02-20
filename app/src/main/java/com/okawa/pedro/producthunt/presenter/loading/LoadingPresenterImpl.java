@@ -34,7 +34,7 @@ public class LoadingPresenterImpl implements LoadingPresenter, ApiListener {
     }
 
     @Override
-    public void onDataLoaded() {
+    public void onDataLoaded(int process) {
         loadingView.onComplete();
     }
 

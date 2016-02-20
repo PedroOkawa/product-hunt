@@ -7,7 +7,6 @@ import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
  */
 public interface MainPresenter {
 
-    void initializeViews(ActivityMainBinding binding);
-    void requestData();
+    void initialize(ActivityMainBinding binding);
 
 }

@@ -1,12 +1,14 @@
 package greendao;
 
 import java.util.List;
+import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
+import de.greenrobot.dao.internal.SqlUtils;
 import de.greenrobot.dao.internal.DaoConfig;
 import de.greenrobot.dao.query.Query;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -26,7 +28,7 @@ public class UserDao extends AbstractDao<User, Long> {
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
-        public final static Property UserId = new Property(0, Long.class, "userId", true, "USER_ID");
+        public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property CreatedAt = new Property(1, String.class, "createdAt", false, "CREATED_AT");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property Username = new Property(3, String.class, "username", false, "USERNAME");
@@ -52,7 +54,7 @@ public class UserDao extends AbstractDao<User, Long> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" + //
-                "\"USER_ID\" INTEGER PRIMARY KEY ," + // 0: userId
+                "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"CREATED_AT\" TEXT," + // 1: createdAt
                 "\"NAME\" TEXT," + // 2: name
                 "\"USERNAME\" TEXT," + // 3: username
@@ -72,9 +74,9 @@ public class UserDao extends AbstractDao<User, Long> {
     protected void bindValues(SQLiteStatement stmt, User entity) {
         stmt.clearBindings();
  
-        Long userId = entity.getUserId();
-        if (userId != null) {
-            stmt.bindLong(1, userId);
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
         }
  
         String createdAt = entity.getCreatedAt();
@@ -124,7 +126,7 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     public User readEntity(Cursor cursor, int offset) {
         User entity = new User( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // userId
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // createdAt
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // username
@@ -138,7 +140,7 @@ public class UserDao extends AbstractDao<User, Long> {
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
-        entity.setUserId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setCreatedAt(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setUsername(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
@@ -150,7 +152,7 @@ public class UserDao extends AbstractDao<User, Long> {
     /** @inheritdoc */
     @Override
     protected Long updateKeyAfterInsert(User entity, long rowId) {
-        entity.setUserId(rowId);
+        entity.setId(rowId);
         return rowId;
     }
     
@@ -158,7 +160,7 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     public Long getKey(User entity) {
         if(entity != null) {
-            return entity.getUserId();
+            return entity.getId();
         } else {
             return null;
         }
@@ -171,17 +173,108 @@ public class UserDao extends AbstractDao<User, Long> {
     }
     
     /** Internal query to resolve the "makers" to-many relationship of Post. */
-    public List<User> _queryPost_Makers(Long userId) {
+    public List<User> _queryPost_Makers(Long id) {
         synchronized (this) {
             if (post_MakersQuery == null) {
                 QueryBuilder<User> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.UserId.eq(null));
+                queryBuilder.where(Properties.Id.eq(null));
                 post_MakersQuery = queryBuilder.build();
             }
         }
         Query<User> query = post_MakersQuery.forCurrentThread();
-        query.setParameter(0, userId);
+        query.setParameter(0, id);
         return query.list();
     }
 
+    private String selectDeep;
+
+    protected String getSelectDeep() {
+        if (selectDeep == null) {
+            StringBuilder builder = new StringBuilder("SELECT ");
+            SqlUtils.appendColumns(builder, "T", getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T0", daoSession.getAvatarDao().getAllColumns());
+            builder.append(" FROM USER T");
+            builder.append(" LEFT JOIN AVATAR T0 ON T.\"ID\"=T0.\"ID\"");
+            builder.append(' ');
+            selectDeep = builder.toString();
+        }
+        return selectDeep;
+    }
+    
+    protected User loadCurrentDeep(Cursor cursor, boolean lock) {
+        User entity = loadCurrent(cursor, 0, lock);
+        int offset = getAllColumns().length;
+
+        Avatar avatar = loadCurrentOther(daoSession.getAvatarDao(), cursor, offset);
+        entity.setAvatar(avatar);
+
+        return entity;    
+    }
+
+    public User loadDeep(Long key) {
+        assertSinglePk();
+        if (key == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder(getSelectDeep());
+        builder.append("WHERE ");
+        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
+        String sql = builder.toString();
+        
+        String[] keyArray = new String[] { key.toString() };
+        Cursor cursor = db.rawQuery(sql, keyArray);
+        
+        try {
+            boolean available = cursor.moveToFirst();
+            if (!available) {
+                return null;
+            } else if (!cursor.isLast()) {
+                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
+            }
+            return loadCurrentDeep(cursor, true);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
+    public List<User> loadAllDeepFromCursor(Cursor cursor) {
+        int count = cursor.getCount();
+        List<User> list = new ArrayList<User>(count);
+        
+        if (cursor.moveToFirst()) {
+            if (identityScope != null) {
+                identityScope.lock();
+                identityScope.reserveRoom(count);
+            }
+            try {
+                do {
+                    list.add(loadCurrentDeep(cursor, false));
+                } while (cursor.moveToNext());
+            } finally {
+                if (identityScope != null) {
+                    identityScope.unlock();
+                }
+            }
+        }
+        return list;
+    }
+    
+    protected List<User> loadDeepAllAndCloseCursor(Cursor cursor) {
+        try {
+            return loadAllDeepFromCursor(cursor);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+
+    /** A raw-style query where you can pass any WHERE clause and arguments. */
+    public List<User> queryDeep(String where, String... selectionArg) {
+        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
+        return loadDeepAllAndCloseCursor(cursor);
+    }
+ 
 }

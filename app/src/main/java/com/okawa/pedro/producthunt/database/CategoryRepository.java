@@ -1,5 +1,9 @@
 package com.okawa.pedro.producthunt.database;
 
+import java.util.Collection;
+import java.util.List;
+
+import greendao.Category;
 import greendao.CategoryDao;
 import greendao.DaoSession;
 
@@ -14,5 +18,12 @@ public class CategoryRepository {
         this.categoryDao = daoSession.getCategoryDao();
     }
 
+    public void updateCategories(Collection<Category> categories) {
+        categoryDao.insertOrReplaceInTx(categories);
+    }
+
+    public List<Category> selectCategories() {
+        return categoryDao.loadAll();
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.ui.main;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.okawa.pedro.producthunt.R;
@@ -43,8 +42,7 @@ public class MainActivity extends BaseActivity implements MainView {
     protected void doOnCreated(Bundle savedInstanceState) {
         binding = (ActivityMainBinding) getDataBinding();
 
-        mainPresenter.initializeViews(binding);
-        mainPresenter.requestData();
+        mainPresenter.initialize(binding);
     }
 
     @Override

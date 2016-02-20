@@ -17,8 +17,7 @@ public class User {
 
     // KEEP FIELDS - put your custom fields here
 
-    @SerializedName("id")
-    private Long userId;
+    private Long id;
     @SerializedName("created_at")
     private String createdAt;
     private String name;
@@ -35,19 +34,22 @@ public class User {
     /** Used for active entity operations. */
     private transient UserDao myDao;
 
-    private List<Post> posts;
+    @SerializedName("image_url")
+    private Avatar avatar;
+    private Long avatar__resolvedKey;
 
+    private List<Post> posts;
     // KEEP FIELDS END
 
     public User() {
     }
 
-    public User(Long userId) {
-        this.userId = userId;
+    public User(Long id) {
+        this.id = id;
     }
 
-    public User(Long userId, String createdAt, String name, String username, String headline, String twitterUser, String profileUrl) {
-        this.userId = userId;
+    public User(Long id, String createdAt, String name, String username, String headline, String twitterUser, String profileUrl) {
+        this.id = id;
         this.createdAt = createdAt;
         this.name = name;
         this.username = username;
@@ -62,12 +64,12 @@ public class User {
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCreatedAt() {
@@ -118,6 +120,31 @@ public class User {
         this.profileUrl = profileUrl;
     }
 
+    /** To-one relationship, resolved on first access. */
+    public Avatar getAvatar() {
+        Long __key = this.id;
+        if (avatar__resolvedKey == null || !avatar__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AvatarDao targetDao = daoSession.getAvatarDao();
+            Avatar avatarNew = targetDao.load(__key);
+            synchronized (this) {
+                avatar = avatarNew;
+            	avatar__resolvedKey = __key;
+            }
+        }
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        synchronized (this) {
+            this.avatar = avatar;
+            id = avatar == null ? null : avatar.getId();
+            avatar__resolvedKey = id;
+        }
+    }
+
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
     public List<Post> getPosts() {
         if (posts == null) {
@@ -125,7 +152,7 @@ public class User {
                 throw new DaoException("Entity is detached from DAO context");
             }
             PostDao targetDao = daoSession.getPostDao();
-            List<Post> postsNew = targetDao._queryUser_Posts(userId);
+            List<Post> postsNew = targetDao._queryUser_Posts(id);
             synchronized (this) {
                 if(posts == null) {
                     posts = postsNew;
@@ -165,6 +192,11 @@ public class User {
     }
 
     // KEEP METHODS - put your custom methods here
+
+    public void sync() {
+        avatar.setId(id);
+        setAvatar(avatar);
+    }
     // KEEP METHODS END
 
 }

@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.network;
 
+import com.google.gson.JsonObject;
+import com.okawa.pedro.producthunt.model.CategoryResponse;
 import com.okawa.pedro.producthunt.model.PostResponse;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 import rx.Observable;
 
@@ -31,13 +34,15 @@ public interface ApiInterface {
 
     String FIELD_AUTHORIZATION = "Authorization";
 
-    String PATH_POSTS = "posts";
-    String FIELD_DAY = "day";
-    String FIELD_DAYS_AGO = "days_ago";
+    String PATH_CATEGORY = "categories";
 
-    String PATH_CATEGORIES = "categories";
+    String PATH_POSTS = "posts/all";
+    String PATH_CATEGORY_ID = "categoryId";
+    String FIELD_OLDER = "older";
+    String FIELD_NEWER = "newer";
+    String FIELD_PER_PAGE = "per_page";
 
-    String PATH_CATEGORIES_POSTS = "categories/{category}/posts";
+    String PATH_POSTS_CATEGORY = "categories/{categoryId}/posts";
 
     @FormUrlEncoded
     @POST(PATH_TOKEN)
@@ -45,13 +50,15 @@ public interface ApiInterface {
                                     @Field(FIELD_CLIENT_SECRET) String clientSecret,
                                     @Field(FIELD_GRANT_TYPE) String grantType);
 
-    @GET(PATH_CATEGORIES)
-    Observable<List<Category>> categories(@Header(FIELD_AUTHORIZATION) String authorization);
+    @GET(PATH_CATEGORY)
+    Observable<CategoryResponse> categories(@Header(FIELD_AUTHORIZATION) String authorization);
 
     @GET(PATH_POSTS)
-    Observable<PostResponse> posts(@Header(FIELD_AUTHORIZATION) String authorization);
+    Observable<PostResponse> postsToday(@Header(FIELD_AUTHORIZATION) String authorization,
+                                        @QueryMap Map<String, String> parameters);
 
-    @GET(PATH_POSTS)
-    Observable<PostResponse> posts(@Header(FIELD_AUTHORIZATION) String authorization,
-                                 @QueryMap Map<String, String> parameters);
+    @GET(PATH_POSTS_CATEGORY)
+    Observable<PostResponse> postsByCategory(@Header(FIELD_AUTHORIZATION) String authorization,
+                                             @Path(PATH_CATEGORY_ID) String categoryId,
+                                             @QueryMap Map<String, String> parameters);
 }
