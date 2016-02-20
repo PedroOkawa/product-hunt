@@ -8,15 +8,18 @@
     <!-- MAIN ACTIVITY (ADAPTER POST) -->
 
     <dimen name="adapter_post_card_elevation">2dp</dimen>
+    <dimen name="adapter_post_card_margin">4dp</dimen>
 
     <!-- VIEW POST DETAILS -->
 
-    <dimen name="view_post_details_card_margin">8dp</dimen>
-    <dimen name="view_post_details_card_height">360dp</dimen>
-    <dimen name="view_post_details_preview_margin">4dp</dimen>
     <dimen name="view_post_details_preview_height">300dp</dimen>
     <dimen name="view_post_details_info_margin">4dp</dimen>
+    <dimen name="view_post_details_user_avatar_size">56dp</dimen>
     <dimen name="view_post_details_user_name_margin">4dp</dimen>
     <dimen name="view_post_details_vote_margin">4dp</dimen>
+
+    <!-- CARD STYLE -->
+
+    <dimen name="card_style_text_padding">4dp</dimen>
 
 </resources>

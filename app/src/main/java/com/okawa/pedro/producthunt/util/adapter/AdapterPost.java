@@ -5,6 +5,7 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;
+import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 
 import java.util.List;
 
@@ -26,10 +27,26 @@ public class AdapterPost extends BindingAdapter<Post, AdapterPostBinding> {
 
     @Override
     protected void doOnBindViewHolder(BindViewHolder bindViewHolder, AdapterPostBinding binding, Post item, int position) {
+
+        /* DEFINE BINDING POST VARIABLE */
+
+        binding.viewPostDetails.setPost(item);
+
+        /* POST PREVIEW */
+
         Glide.with(binding.getRoot().getContext())
                 .load(item.getThumbnail().getImage())
-                .dontAnimate()
+                .asBitmap()
                 .centerCrop()
                 .into(binding.viewPostDetails.ivViewPostDetailsPreview);
+
+        /* USER AVATAR */
+
+        Glide.with(binding.getRoot().getContext())
+                .load(item.getUser().getAvatar().getOriginal())
+                .asBitmap()
+                .centerCrop()
+                .transform(new GlideCircleTransform(binding.getRoot().getContext()))
+                .into(binding.viewPostDetails.ivViewPostDetailsUser);
     }
 }

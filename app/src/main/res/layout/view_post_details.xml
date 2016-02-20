@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable
+            name="post"
+            type="greendao.Post"/>
+    </data>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/view_post_details_card_height"
-        android:layout_margin="@dimen/view_post_details_card_margin">
+        android:layout_height="wrap_content">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/view_post_details_preview_height"
-            android:layout_margin="@dimen/view_post_details_preview_margin">
+            android:layout_height="@dimen/view_post_details_preview_height">
 
             <ImageView
                 android:id="@+id/ivViewPostDetailsPreview"
@@ -26,14 +30,12 @@
                 android:background="@drawable/background_overlay">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TEST NAME"/>
+                    style="@style/CardTitle"
+                    android:text="@{post.name}"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TEST DESCRIPTION"/>
+                    style="@style/CardBody"
+                    android:text="@{post.tagline}"/>
 
             </LinearLayout>
 
@@ -46,29 +48,23 @@
 
             <ImageView
                 android:id="@+id/ivViewPostDetailsUser"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_width="@dimen/view_post_details_user_avatar_size"
+                android:layout_height="@dimen/view_post_details_user_avatar_size"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/view_post_details_user_name_margin"
+                style="@style/CardInfoText"
                 android:layout_toRightOf="@+id/ivViewPostDetailsUser"
                 android:layout_toEndOf="@+id/ivViewPostDetailsUser"
-                android:layout_centerVertical="true"
-                android:text="USER"/>
+                android:text="@{post.user.name}"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/CardInfoText"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
                 android:drawableLeft="@mipmap/ic_thumb_up"
                 android:drawableStart="@mipmap/ic_thumb_up"
                 android:drawablePadding="@dimen/view_post_details_vote_margin"
-                android:text="999"/>
+                android:text="@{String.valueOf(post.votesCount)}"/>
 
         </RelativeLayout>
 

@@ -4,11 +4,13 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/view_post_details_card_height"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/adapter_post_card_margin"
         android:elevation="@dimen/adapter_post_card_elevation"
         android:outlineProvider="bounds"
         android:clipToPadding="false"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:foreground="?android:attr/selectableItemBackground"
+        android:background="@color/white">
 
         <include
             android:id="@+id/viewPostDetails"

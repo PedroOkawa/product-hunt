@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="display_four">112sp</dimen>
+    <dimen name="display_three">56sp</dimen>
+    <dimen name="display_two">45sp</dimen>
+    <dimen name="display_one">34sp</dimen>
+    <dimen name="headline">24sp</dimen>
+    <dimen name="title">20sp</dimen>
+    <dimen name="subheading">16sp</dimen>
+    <dimen name="body">14sp</dimen>
+    <dimen name="caption">12sp</dimen>
+
+</resources>
