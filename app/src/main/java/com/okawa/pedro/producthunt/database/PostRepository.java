@@ -1,5 +1,6 @@
 package com.okawa.pedro.producthunt.database;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,8 @@ public class PostRepository {
     }
 
     public List<Post> selectPostByDate(Date date) {
-        return postDao.queryBuilder().where(PostDao.Properties.Date.eq(date)).list();
+        String day = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        return postDao.queryBuilder().where(PostDao.Properties.Date.eq(day)).list();
     }
 
     public Post selectPostById(long id) {

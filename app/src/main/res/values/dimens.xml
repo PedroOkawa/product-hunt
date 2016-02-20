@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ADAPTER POST -->
+    <!-- MAIN ACTIVITY (NAVIGATION HEADER) -->
+
+    <dimen name="main_activity_navigation_header_height">128dp</dimen>
+
+    <!-- MAIN ACTIVITY (ADAPTER POST) -->
 
     <dimen name="adapter_post_card_elevation">2dp</dimen>
 

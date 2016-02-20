@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">ProductHunt</string>
+
+    <!-- APP -->
+
+    <string name="app_name">Product Hunt</string>
+
+    <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
+
+    <string name="navigation_menu_home">Home</string>
+    <string name="navigation_menu_calendar">Calendar</string>
+    <string name="navigation_menu_collections">Collections</string>
+    <string name="navigation_menu_categories">Categories</string>
+
 </resources>

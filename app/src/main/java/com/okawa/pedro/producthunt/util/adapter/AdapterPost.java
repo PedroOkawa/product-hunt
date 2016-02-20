@@ -1,5 +1,8 @@
 package com.okawa.pedro.producthunt.util.adapter;
 
+import android.util.Log;
+
+import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;
 
@@ -23,6 +26,10 @@ public class AdapterPost extends BindingAdapter<Post, AdapterPostBinding> {
 
     @Override
     protected void doOnBindViewHolder(BindViewHolder bindViewHolder, AdapterPostBinding binding, Post item, int position) {
-
+        Glide.with(binding.getRoot().getContext())
+                .load(item.getThumbnail().getImage())
+                .dontAnimate()
+                .centerCrop()
+                .into(binding.viewPostDetails.ivViewPostDetailsPreview);
     }
 }

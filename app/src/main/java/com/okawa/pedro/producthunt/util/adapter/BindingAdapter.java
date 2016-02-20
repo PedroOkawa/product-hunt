@@ -32,6 +32,7 @@ public abstract class BindingAdapter<T, K extends ViewDataBinding> extends BaseA
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         BindViewHolder bindViewHolder = (BindViewHolder) holder;
+        doOnBindViewHolder(bindViewHolder, bindViewHolder.getBinding(), getItem(position), position);
     }
 
     public class BindViewHolder extends RecyclerView.ViewHolder {

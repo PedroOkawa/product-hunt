@@ -26,4 +26,8 @@ public class CategoryRepository {
         return categoryDao.loadAll();
     }
 
+    public boolean checkCategoriesLoaded() {
+        return categoryDao.count() > 0;
+    }
+
 }

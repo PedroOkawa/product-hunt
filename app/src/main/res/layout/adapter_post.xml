@@ -10,7 +10,9 @@
         android:clipToPadding="false"
         android:foreground="?android:attr/selectableItemBackground">
 
-        <include layout="@layout/view_post_details"/>
+        <include
+            android:id="@+id/viewPostDetails"
+            layout="@layout/view_post_details"/>
 
     </LinearLayout>
 

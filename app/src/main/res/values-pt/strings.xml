@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
+
+    <string name="navigation_menu_home">Inicio</string>
+    <string name="navigation_menu_calendar">Calendario</string>
+    <string name="navigation_menu_collections">Coleçoes</string>
+    <string name="navigation_menu_categories">Categorias</string>
+
+</resources>

@@ -2,8 +2,10 @@ package com.okawa.pedro.producthunt.presenter.main;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
+import android.view.SubMenu;
 
+import com.okawa.pedro.producthunt.R;
+import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 import com.okawa.pedro.producthunt.ui.main.MainView;
@@ -15,6 +17,7 @@ import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import java.util.ArrayList;
 import java.util.Date;
 
+import greendao.Category;
 import greendao.Post;
 
 /**
@@ -25,6 +28,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private MainView mainView;
     private ApiManager apiManager;
     private ConfigHelper configHelper;
+    private CategoryRepository categoryRepository;
     private PostRepository postRepository;
 
     private ActivityMainBinding binding;
@@ -35,10 +39,12 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
                              ConfigHelper configHelper,
+                             CategoryRepository categoryRepository,
                              PostRepository postRepository) {
         this.mainView = mainView;
         this.apiManager = apiManager;
         this.configHelper = configHelper;
+        this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
     }
 
@@ -63,12 +69,19 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* REQUEST INITIAL DATA */
 
-        requestTodayData();
+        requestInitialData();
     }
 
-    private void requestTodayData() {
+    private void requestInitialData() {
         apiManager.requestPostsByDay(this);
-        apiManager.requestCategories(this);
+
+        /* INITIALIZE CATEGORIES SUB MENU */
+
+        if(categoryRepository.checkCategoriesLoaded()) {
+            initializeCategoriesMenu();
+        } else {
+            apiManager.requestCategories(this);
+        }
     }
 
     @Override
@@ -76,12 +89,20 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         if(process == ApiManager.PROCESS_POSTS_ID) {
             adapterPost.addDataSet(postRepository.selectPostByDate(new Date()));
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
-            Log.wtf("TEST", "CATEGORIES");
+            initializeCategoriesMenu();
         }
     }
 
     @Override
     public void onError(String error) {
         mainView.onError(error);
+    }
+
+    private void initializeCategoriesMenu() {
+        SubMenu categories = binding.nvActivityMain.getMenu().addSubMenu(R.string.navigation_menu_categories);
+
+        for(Category category : categoryRepository.selectCategories()) {
+            categories.add(category.getName());
+        }
     }
 }

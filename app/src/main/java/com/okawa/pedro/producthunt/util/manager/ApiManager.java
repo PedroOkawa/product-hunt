@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.PostRepository;
@@ -118,10 +117,6 @@ public class ApiManager {
                     @Override
                     public void onNext(List<Category> categories) {
                         categoryRepository.updateCategories(categories);
-                        for(Category category : categoryRepository.selectCategories()) {
-                            Log.wtf("TEST", "CATEGORY: " + category.getName());
-                            Log.wtf("TEST", "POSTS: " + category.getPostList().size());
-                        }
                     }
                 });
     }
@@ -170,7 +165,6 @@ public class ApiManager {
     }
 
     public void fetchPaginatedPosts(final ApiListener apiListener) {
-
         apiInterface
                 .postsByCategory(sessionRepository.selectSession().getToken(), "tech", null)
                 .subscribeOn(Schedulers.newThread())
