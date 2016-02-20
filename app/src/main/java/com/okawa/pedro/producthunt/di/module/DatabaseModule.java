@@ -6,6 +6,7 @@ import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import javax.inject.Singleton;
 
@@ -39,8 +40,8 @@ public class DatabaseModule {
 
     @Singleton
     @Provides
-    public PostRepository providesPostRepository(DaoSession daoSession) {
-        return new PostRepository(daoSession);
+    public PostRepository providesPostRepository(DaoSession daoSession, ConfigHelper configHelper) {
+        return new PostRepository(daoSession, configHelper);
     }
 
     @Singleton

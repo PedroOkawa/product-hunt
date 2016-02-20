@@ -38,6 +38,8 @@ public interface ApiInterface {
 
     String PATH_POSTS = "posts/all";
     String PATH_CATEGORY_ID = "categoryId";
+    String FIELD_DAY = "day";
+    String FIELD_DAYS_AGO = "days_ago";
     String FIELD_OLDER = "older";
     String FIELD_NEWER = "newer";
     String FIELD_PER_PAGE = "per_page";

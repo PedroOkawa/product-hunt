@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.database;
 
+import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -15,9 +17,11 @@ import greendao.PostDao;
 public class PostRepository {
 
     private PostDao postDao;
+    private ConfigHelper configHelper;
 
-    public PostRepository(DaoSession daoSession) {
+    public PostRepository(DaoSession daoSession, ConfigHelper configHelper) {
         postDao = daoSession.getPostDao();
+        this.configHelper = configHelper;
     }
 
     public void updatePosts(Collection<Post> posts) {
@@ -25,8 +29,7 @@ public class PostRepository {
     }
 
     public List<Post> selectPostByDate(Date date) {
-        String day = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        return postDao.queryBuilder().where(PostDao.Properties.Date.eq(day)).list();
+        return postDao.queryBuilder().where(PostDao.Properties.Date.eq(configHelper.convertDateToString(date))).list();
     }
 
     public Post selectPostById(long id) {

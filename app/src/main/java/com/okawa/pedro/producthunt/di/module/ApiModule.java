@@ -5,6 +5,7 @@ import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
 import com.okawa.pedro.producthunt.network.ApiInterface;
+import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import java.util.concurrent.TimeUnit;
@@ -52,10 +53,11 @@ public class ApiModule {
     @Provides
     public ApiManager providesApiManager(ProductHuntApp productHuntApp,
                                          ApiInterface apiInterface,
+                                         ConfigHelper configHelper,
                                          CategoryRepository categoryRepository,
                                          PostRepository postRepository,
                                          SessionRepository sessionRepository) {
-        return new ApiManager(productHuntApp, apiInterface, categoryRepository, postRepository, sessionRepository);
+        return new ApiManager(productHuntApp, apiInterface, configHelper, categoryRepository, postRepository, sessionRepository);
     }
 
 }

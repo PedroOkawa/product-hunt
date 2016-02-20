@@ -5,10 +5,19 @@ import android.content.res.Configuration;
 
 import com.okawa.pedro.producthunt.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by pokawa on 20/02/16.
  */
 public class ConfigHelper {
+
+    /* DATE FORMAT */
+
+    public String convertDateToString(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
 
     /* LAYOUT MANAGER */
 

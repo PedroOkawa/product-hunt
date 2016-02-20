@@ -73,7 +73,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     private void requestInitialData() {
-        apiManager.requestPostsByDay(this);
+        apiManager.requestPostsByDate(this, new Date());
 
         /* INITIALIZE CATEGORIES SUB MENU */
 
@@ -99,7 +99,10 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     private void initializeCategoriesMenu() {
-        SubMenu categories = binding.nvActivityMain.getMenu().addSubMenu(R.string.navigation_menu_categories);
+        SubMenu categories = binding
+                .navigationView
+                .navigationView
+                .getMenu().addSubMenu(R.string.navigation_menu_categories);
 
         for(Category category : categoryRepository.selectCategories()) {
             categories.add(category.getName());
