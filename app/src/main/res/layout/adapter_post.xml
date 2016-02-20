@@ -5,7 +5,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="@dimen/view_post_details_card_height"
-        android:elevation="@dimen/adapter_main_posts_card_elevation"
+        android:elevation="@dimen/adapter_post_card_elevation"
         android:outlineProvider="bounds"
         android:clipToPadding="false"
         android:foreground="?android:attr/selectableItemBackground">

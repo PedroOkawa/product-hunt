@@ -5,8 +5,8 @@ package com.okawa.pedro.producthunt.ui.loading;
  */
 public interface LoadingView {
 
-    void onLoadData();
-    void onDataLoaded();
+    void onRequest();
+    void onComplete();
     void onError(String error);
 
 }

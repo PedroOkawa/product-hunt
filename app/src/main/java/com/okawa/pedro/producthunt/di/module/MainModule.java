@@ -1,9 +1,11 @@
 package com.okawa.pedro.producthunt.di.module;
 
+import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.di.scope.Activity;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenter;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenterImpl;
 import com.okawa.pedro.producthunt.ui.main.MainView;
+import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import dagger.Module;
@@ -30,8 +32,10 @@ public class MainModule {
     @Activity
     @Provides
     public MainPresenter providesPresenter(MainView mainView,
-                                           ApiManager apiManager) {
-        return new MainPresenterImpl(mainView, apiManager);
+                                           ApiManager apiManager,
+                                           ConfigHelper configHelper,
+                                           PostRepository postRepository) {
+        return new MainPresenterImpl(mainView, apiManager, configHelper, postRepository);
     }
 
 }

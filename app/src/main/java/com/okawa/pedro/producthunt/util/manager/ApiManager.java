@@ -3,7 +3,9 @@ package com.okawa.pedro.producthunt.util.manager;
 import android.content.Context;
 import android.util.Log;
 
+import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.model.PostResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 
@@ -28,13 +30,16 @@ public class ApiManager {
     private ApiInterface apiInterface;
     private Context context;
     private SessionRepository sessionRepository;
+    private PostRepository postRepository;
 
     public ApiManager(Context context,
                       ApiInterface apiInterface,
-                      SessionRepository sessionRepository) {
+                      SessionRepository sessionRepository,
+                      PostRepository postRepository) {
         this.context = context;
         this.apiInterface = apiInterface;
         this.sessionRepository = sessionRepository;
+        this.postRepository = postRepository;
     }
 
     public void validateSession(final ApiListener apiListener) {
@@ -69,7 +74,29 @@ public class ApiManager {
                     @Override
                     public void onNext(Session session) {
                         sessionRepository.updateSession(session);
-                        Log.d("TEST", "SESSION: " + session.getToken());
+                    }
+                });
+    }
+
+    public void fetchPosts(final ApiListener apiListener) {
+        apiInterface
+                .posts(sessionRepository.selectSession().getToken())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<PostResponse>() {
+                    @Override
+                    public void onCompleted() {
+                        apiListener.onDataLoaded();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        apiListener.onError(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(PostResponse postResponse) {
+                        postRepository.updatePosts(postResponse.getPosts());
                     }
                 });
     }

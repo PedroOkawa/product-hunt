@@ -10,6 +10,7 @@ import com.okawa.pedro.producthunt.di.component.DaggerLoadingComponent;
 import com.okawa.pedro.producthunt.di.module.LoadingModule;
 import com.okawa.pedro.producthunt.presenter.loading.LoadingPresenter;
 import com.okawa.pedro.producthunt.ui.common.BaseActivity;
+import com.okawa.pedro.producthunt.util.manager.CallManager;
 
 import javax.inject.Inject;
 
@@ -19,6 +20,9 @@ import javax.inject.Inject;
 public class LoadingActivity extends BaseActivity implements LoadingView {
 
     private ActivityLoadingBinding binding;
+
+    @Inject
+    CallManager callManager;
 
     @Inject
     LoadingPresenter loadingPresenter;
@@ -46,14 +50,14 @@ public class LoadingActivity extends BaseActivity implements LoadingView {
     }
 
     @Override
-    public void onLoadData() {
+    public void onRequest() {
         binding.pbActivityLoading.show();
     }
 
     @Override
-    public void onDataLoaded() {
+    public void onComplete() {
         binding.pbActivityLoading.hide();
-        Toast.makeText(this, "IT WORKS", Toast.LENGTH_SHORT).show();
+        callManager.main(this);
     }
 
     @Override

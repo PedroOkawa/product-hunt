@@ -13,7 +13,6 @@ public class GreenDaoManager {
 
     private static final String ENTITY_SESSION = "Session";
     private static final String FIELD_SESSION_ACCESS_TOKEN = "accessToken";
-    private static final String FIELD_SESSION_TOKEN_TYPE = "tokenType";
     private static final String FILED_SESSION_EXPIRES_IN = "expiresIn";
 
     private static final String ENTITY_CATEGORY = "Category";
@@ -30,7 +29,7 @@ public class GreenDaoManager {
     private static final String FIELD_USER_USERNAME = "username";
     private static final String FIELD_USER_HEADLINE = "headline";
     private static final String FIELD_USER_TWITTER_USER = "twitterUser";
-    private static final String FIELD_USER_TWITTER_PROFILE = "twitterProfile";
+    private static final String FIELD_USER_PROFILE_URL = "profileUrl";
     private static final String FIELD_USER_POSTS = "posts";
 
     private static final String ENTITY_POST = "Post";
@@ -60,7 +59,6 @@ public class GreenDaoManager {
 
         session.addIdProperty().primaryKey();
         session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
-        session.addStringProperty(FIELD_SESSION_TOKEN_TYPE);
         session.addLongProperty(FILED_SESSION_EXPIRES_IN);
 
         session.setHasKeepSections(true);
@@ -81,13 +79,13 @@ public class GreenDaoManager {
         Entity user = schema.addEntity(ENTITY_USER);
 
         Property userId = user.addLongProperty(FIELD_USER_ID).primaryKey().getProperty();
-        user.addDateProperty(FIELD_USER_CREATED_AT);
+        user.addStringProperty(FIELD_USER_CREATED_AT);
         user.addStringProperty(FIELD_USER_NAME);
-        user.addStringProperty(FIELD_USER_IMAGE);
+//        user.addStringProperty(FIELD_USER_IMAGE);
         user.addStringProperty(FIELD_USER_USERNAME);
         user.addStringProperty(FIELD_USER_HEADLINE);
         user.addStringProperty(FIELD_USER_TWITTER_USER);
-        user.addStringProperty(FIELD_USER_TWITTER_PROFILE);
+        user.addStringProperty(FIELD_USER_PROFILE_URL);
 
         user.setHasKeepSections(true);
 
@@ -96,15 +94,14 @@ public class GreenDaoManager {
         Entity post = schema.addEntity(ENTITY_POST);
 
         Property postId = post.addLongProperty(FIELD_POST_ID).primaryKey().getProperty();
-        Property creatorId = post.addLongProperty(FIELD_POST_CREATOR_ID).getProperty();
-        post.addDateProperty(FIELD_POST_DATE);
+        post.addStringProperty(FIELD_POST_DATE);
         post.addStringProperty(FIELD_POST_NAME);
-        post.addStringProperty(FIELD_POST_IMAGE);
+//        post.addStringProperty(FIELD_POST_IMAGE);
         post.addStringProperty(FIELD_POST_TAGLINE);
         post.addLongProperty(FIELD_POST_VOTES_COUNT);
         post.addStringProperty(FIELD_POST_REDIRECT_URL);
-        post.addStringProperty(FIELD_POST_SCREENSHOT_SMALL);
-        post.addStringProperty(FIELD_POST_SCREENSHOT_BIG);
+//        post.addStringProperty(FIELD_POST_SCREENSHOT_SMALL);
+//        post.addStringProperty(FIELD_POST_SCREENSHOT_BIG);
 
         post.setHasKeepSections(true);
 
@@ -114,7 +111,7 @@ public class GreenDaoManager {
 
         /* RELATIONSHIP POST */
 
-        post.addToOne(user, creatorId).setName(FIELD_POST_USER);
+        post.addToOneWithoutProperty(FIELD_POST_USER, user, FIELD_USER_ID);
         post.addToMany(user, userId).setName(FIELD_POST_MAKERS);
 
     }

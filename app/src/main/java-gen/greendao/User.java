@@ -1,5 +1,7 @@
 package greendao;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import greendao.DaoSession;
 import de.greenrobot.dao.DaoException;
@@ -13,14 +15,19 @@ import de.greenrobot.dao.DaoException;
  */
 public class User {
 
+    // KEEP FIELDS - put your custom fields here
+
+    @SerializedName("id")
     private Long userId;
-    private java.util.Date createdAt;
+    @SerializedName("created_at")
+    private String createdAt;
     private String name;
-    private String image;
     private String username;
     private String headline;
+    @SerializedName("twitter_username")
     private String twitterUser;
-    private String twitterProfile;
+    @SerializedName("profile_url")
+    private String profileUrl;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -30,7 +37,6 @@ public class User {
 
     private List<Post> posts;
 
-    // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
     public User() {
@@ -40,15 +46,14 @@ public class User {
         this.userId = userId;
     }
 
-    public User(Long userId, java.util.Date createdAt, String name, String image, String username, String headline, String twitterUser, String twitterProfile) {
+    public User(Long userId, String createdAt, String name, String username, String headline, String twitterUser, String profileUrl) {
         this.userId = userId;
         this.createdAt = createdAt;
         this.name = name;
-        this.image = image;
         this.username = username;
         this.headline = headline;
         this.twitterUser = twitterUser;
-        this.twitterProfile = twitterProfile;
+        this.profileUrl = profileUrl;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -65,11 +70,11 @@ public class User {
         this.userId = userId;
     }
 
-    public java.util.Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(java.util.Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -79,14 +84,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public String getUsername() {
@@ -113,12 +110,12 @@ public class User {
         this.twitterUser = twitterUser;
     }
 
-    public String getTwitterProfile() {
-        return twitterProfile;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setTwitterProfile(String twitterProfile) {
-        this.twitterProfile = twitterProfile;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */

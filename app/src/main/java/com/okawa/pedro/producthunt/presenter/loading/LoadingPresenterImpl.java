@@ -24,10 +24,10 @@ public class LoadingPresenterImpl implements LoadingPresenter, ApiListener {
 
     @Override
     public void validateToken() {
-        loadingView.onLoadData();
+        loadingView.onRequest();
 
         if(sessionRepository.containsSession()) {
-            loadingView.onDataLoaded();
+            loadingView.onComplete();
         } else {
             apiManager.validateSession(this);
         }
@@ -35,7 +35,7 @@ public class LoadingPresenterImpl implements LoadingPresenter, ApiListener {
 
     @Override
     public void onDataLoaded() {
-        loadingView.onDataLoaded();
+        loadingView.onComplete();
     }
 
     @Override

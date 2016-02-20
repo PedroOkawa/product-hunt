@@ -2,12 +2,17 @@ package com.okawa.pedro.producthunt.di.component;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.database.CategoryRepository;
+import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
 import com.okawa.pedro.producthunt.di.module.ApiModule;
 import com.okawa.pedro.producthunt.di.module.AppModule;
+import com.okawa.pedro.producthunt.di.module.CallModule;
+import com.okawa.pedro.producthunt.di.module.ConfigModule;
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.network.ApiInterface;
+import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
+import com.okawa.pedro.producthunt.util.manager.CallManager;
 
 import javax.inject.Singleton;
 
@@ -19,7 +24,7 @@ import okhttp3.OkHttpClient;
  * Created by pokawa on 19/02/16.
  */
 @Singleton
-@Component( modules = { AppModule.class, ApiModule.class, DatabaseModule.class } )
+@Component( modules = { AppModule.class, ApiModule.class, CallModule.class, ConfigModule.class, DatabaseModule.class } )
 public interface AppComponent {
 
     void inject(ProductHuntApp productHuntApp);
@@ -34,9 +39,18 @@ public interface AppComponent {
     ApiInterface provideApiInterface();
     ApiManager providesApiManager();
 
+    /* CALL MANAGER */
+
+    CallManager providesCallManager();
+
+    /* CONFIG HELPER */
+
+    ConfigHelper providesConfigHelper();
+
     /* DATABASE */
 
     DaoSession providesDaoSession();
     CategoryRepository providesCategoryRepository();
+    PostRepository providesPostRepository();
     SessionRepository providesSessionRepository();
 }

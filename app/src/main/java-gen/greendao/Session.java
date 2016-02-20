@@ -14,14 +14,13 @@ public class Session {
 
     // KEEP FIELDS - put your custom fields here
 
+    private static final String TOKEN_PREFIX = "Bearer ";
+
     private Long id;
     @SerializedName("access_token")
     private String accessToken;
-    @SerializedName("token_type")
-    private String tokenType;
     @SerializedName("expires_in")
     private Long expiresIn;
-
     // KEEP FIELDS END
 
     public Session() {
@@ -31,10 +30,9 @@ public class Session {
         this.id = id;
     }
 
-    public Session(Long id, String accessToken, String tokenType, Long expiresIn) {
+    public Session(Long id, String accessToken, Long expiresIn) {
         this.id = id;
         this.accessToken = accessToken;
-        this.tokenType = tokenType;
         this.expiresIn = expiresIn;
     }
 
@@ -54,14 +52,6 @@ public class Session {
         this.accessToken = accessToken;
     }
 
-    public String getTokenType() {
-        return tokenType;
-    }
-
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
-    }
-
     public Long getExpiresIn() {
         return expiresIn;
     }
@@ -74,7 +64,7 @@ public class Session {
 
     public String getToken() {
         StringBuilder stringBuilder = new StringBuilder();
-        return stringBuilder.append(tokenType).append(" ").append(accessToken).toString();
+        return stringBuilder.append(TOKEN_PREFIX).append(accessToken).toString();
     }
     // KEEP METHODS END
 

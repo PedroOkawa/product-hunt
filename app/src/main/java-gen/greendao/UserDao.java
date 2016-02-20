@@ -27,13 +27,12 @@ public class UserDao extends AbstractDao<User, Long> {
     */
     public static class Properties {
         public final static Property UserId = new Property(0, Long.class, "userId", true, "USER_ID");
-        public final static Property CreatedAt = new Property(1, java.util.Date.class, "createdAt", false, "CREATED_AT");
+        public final static Property CreatedAt = new Property(1, String.class, "createdAt", false, "CREATED_AT");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
-        public final static Property Image = new Property(3, String.class, "image", false, "IMAGE");
-        public final static Property Username = new Property(4, String.class, "username", false, "USERNAME");
-        public final static Property Headline = new Property(5, String.class, "headline", false, "HEADLINE");
-        public final static Property TwitterUser = new Property(6, String.class, "twitterUser", false, "TWITTER_USER");
-        public final static Property TwitterProfile = new Property(7, String.class, "twitterProfile", false, "TWITTER_PROFILE");
+        public final static Property Username = new Property(3, String.class, "username", false, "USERNAME");
+        public final static Property Headline = new Property(4, String.class, "headline", false, "HEADLINE");
+        public final static Property TwitterUser = new Property(5, String.class, "twitterUser", false, "TWITTER_USER");
+        public final static Property ProfileUrl = new Property(6, String.class, "profileUrl", false, "PROFILE_URL");
     };
 
     private DaoSession daoSession;
@@ -54,13 +53,12 @@ public class UserDao extends AbstractDao<User, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" + //
                 "\"USER_ID\" INTEGER PRIMARY KEY ," + // 0: userId
-                "\"CREATED_AT\" INTEGER," + // 1: createdAt
+                "\"CREATED_AT\" TEXT," + // 1: createdAt
                 "\"NAME\" TEXT," + // 2: name
-                "\"IMAGE\" TEXT," + // 3: image
-                "\"USERNAME\" TEXT," + // 4: username
-                "\"HEADLINE\" TEXT," + // 5: headline
-                "\"TWITTER_USER\" TEXT," + // 6: twitterUser
-                "\"TWITTER_PROFILE\" TEXT);"); // 7: twitterProfile
+                "\"USERNAME\" TEXT," + // 3: username
+                "\"HEADLINE\" TEXT," + // 4: headline
+                "\"TWITTER_USER\" TEXT," + // 5: twitterUser
+                "\"PROFILE_URL\" TEXT);"); // 6: profileUrl
     }
 
     /** Drops the underlying database table. */
@@ -79,9 +77,9 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindLong(1, userId);
         }
  
-        java.util.Date createdAt = entity.getCreatedAt();
+        String createdAt = entity.getCreatedAt();
         if (createdAt != null) {
-            stmt.bindLong(2, createdAt.getTime());
+            stmt.bindString(2, createdAt);
         }
  
         String name = entity.getName();
@@ -89,29 +87,24 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindString(3, name);
         }
  
-        String image = entity.getImage();
-        if (image != null) {
-            stmt.bindString(4, image);
-        }
- 
         String username = entity.getUsername();
         if (username != null) {
-            stmt.bindString(5, username);
+            stmt.bindString(4, username);
         }
  
         String headline = entity.getHeadline();
         if (headline != null) {
-            stmt.bindString(6, headline);
+            stmt.bindString(5, headline);
         }
  
         String twitterUser = entity.getTwitterUser();
         if (twitterUser != null) {
-            stmt.bindString(7, twitterUser);
+            stmt.bindString(6, twitterUser);
         }
  
-        String twitterProfile = entity.getTwitterProfile();
-        if (twitterProfile != null) {
-            stmt.bindString(8, twitterProfile);
+        String profileUrl = entity.getProfileUrl();
+        if (profileUrl != null) {
+            stmt.bindString(7, profileUrl);
         }
     }
 
@@ -132,13 +125,12 @@ public class UserDao extends AbstractDao<User, Long> {
     public User readEntity(Cursor cursor, int offset) {
         User entity = new User( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // userId
-            cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)), // createdAt
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // createdAt
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // image
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // username
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // headline
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // twitterUser
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // twitterProfile
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // username
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // headline
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // twitterUser
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // profileUrl
         );
         return entity;
     }
@@ -147,13 +139,12 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
         entity.setUserId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setCreatedAt(cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)));
+        entity.setCreatedAt(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setImage(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setUsername(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setHeadline(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setTwitterUser(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setTwitterProfile(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setUsername(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setHeadline(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setTwitterUser(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setProfileUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     /** @inheritdoc */

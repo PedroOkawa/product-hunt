@@ -1,6 +1,6 @@
 package com.okawa.pedro.producthunt.network;
 
-import com.google.gson.JsonObject;
+import com.okawa.pedro.producthunt.model.PostResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,8 @@ public interface ApiInterface {
     String FIELD_AUTHORIZATION = "Authorization";
 
     String PATH_POSTS = "posts";
+    String FIELD_DAY = "day";
+    String FIELD_DAYS_AGO = "days_ago";
 
     String PATH_CATEGORIES = "categories";
 
@@ -43,9 +45,13 @@ public interface ApiInterface {
                                     @Field(FIELD_CLIENT_SECRET) String clientSecret,
                                     @Field(FIELD_GRANT_TYPE) String grantType);
 
-    @GET(PATH_POSTS)
-    Observable posts(@Header(FIELD_AUTHORIZATION) String authorization);
-
     @GET(PATH_CATEGORIES)
     Observable<List<Category>> categories(@Header(FIELD_AUTHORIZATION) String authorization);
+
+    @GET(PATH_POSTS)
+    Observable<PostResponse> posts(@Header(FIELD_AUTHORIZATION) String authorization);
+
+    @GET(PATH_POSTS)
+    Observable<PostResponse> posts(@Header(FIELD_AUTHORIZATION) String authorization,
+                                 @QueryMap Map<String, String> parameters);
 }

@@ -29,15 +29,12 @@ public class PostDao extends AbstractDao<Post, Long> {
     */
     public static class Properties {
         public final static Property PostId = new Property(0, Long.class, "postId", true, "POST_ID");
-        public final static Property CreatorId = new Property(1, Long.class, "creatorId", false, "CREATOR_ID");
-        public final static Property Date = new Property(2, java.util.Date.class, "date", false, "DATE");
-        public final static Property Name = new Property(3, String.class, "name", false, "NAME");
-        public final static Property Image = new Property(4, String.class, "image", false, "IMAGE");
-        public final static Property Tagline = new Property(5, String.class, "tagline", false, "TAGLINE");
-        public final static Property VotesCount = new Property(6, Long.class, "votesCount", false, "VOTES_COUNT");
-        public final static Property RedirectUrl = new Property(7, String.class, "redirectUrl", false, "REDIRECT_URL");
-        public final static Property ScreenshotSmall = new Property(8, String.class, "screenshotSmall", false, "SCREENSHOT_SMALL");
-        public final static Property ScreenshotBig = new Property(9, String.class, "screenshotBig", false, "SCREENSHOT_BIG");
+        public final static Property Date = new Property(1, String.class, "date", false, "DATE");
+        public final static Property Name = new Property(2, String.class, "name", false, "NAME");
+        public final static Property Tagline = new Property(3, String.class, "tagline", false, "TAGLINE");
+        public final static Property VotesCount = new Property(4, Long.class, "votesCount", false, "VOTES_COUNT");
+        public final static Property RedirectUrl = new Property(5, String.class, "redirectUrl", false, "REDIRECT_URL");
+        public final static Property User = new Property(6, Long.class, "user", false, "userId");
     };
 
     private DaoSession daoSession;
@@ -58,15 +55,12 @@ public class PostDao extends AbstractDao<Post, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"POST\" (" + //
                 "\"POST_ID\" INTEGER PRIMARY KEY ," + // 0: postId
-                "\"CREATOR_ID\" INTEGER," + // 1: creatorId
-                "\"DATE\" INTEGER," + // 2: date
-                "\"NAME\" TEXT," + // 3: name
-                "\"IMAGE\" TEXT," + // 4: image
-                "\"TAGLINE\" TEXT," + // 5: tagline
-                "\"VOTES_COUNT\" INTEGER," + // 6: votesCount
-                "\"REDIRECT_URL\" TEXT," + // 7: redirectUrl
-                "\"SCREENSHOT_SMALL\" TEXT," + // 8: screenshotSmall
-                "\"SCREENSHOT_BIG\" TEXT);"); // 9: screenshotBig
+                "\"DATE\" TEXT," + // 1: date
+                "\"NAME\" TEXT," + // 2: name
+                "\"TAGLINE\" TEXT," + // 3: tagline
+                "\"VOTES_COUNT\" INTEGER," + // 4: votesCount
+                "\"REDIRECT_URL\" TEXT," + // 5: redirectUrl
+                "\"userId\" INTEGER);"); // 6: user
     }
 
     /** Drops the underlying database table. */
@@ -85,49 +79,29 @@ public class PostDao extends AbstractDao<Post, Long> {
             stmt.bindLong(1, postId);
         }
  
-        Long creatorId = entity.getCreatorId();
-        if (creatorId != null) {
-            stmt.bindLong(2, creatorId);
-        }
- 
-        java.util.Date date = entity.getDate();
+        String date = entity.getDate();
         if (date != null) {
-            stmt.bindLong(3, date.getTime());
+            stmt.bindString(2, date);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(4, name);
-        }
- 
-        String image = entity.getImage();
-        if (image != null) {
-            stmt.bindString(5, image);
+            stmt.bindString(3, name);
         }
  
         String tagline = entity.getTagline();
         if (tagline != null) {
-            stmt.bindString(6, tagline);
+            stmt.bindString(4, tagline);
         }
  
         Long votesCount = entity.getVotesCount();
         if (votesCount != null) {
-            stmt.bindLong(7, votesCount);
+            stmt.bindLong(5, votesCount);
         }
  
         String redirectUrl = entity.getRedirectUrl();
         if (redirectUrl != null) {
-            stmt.bindString(8, redirectUrl);
-        }
- 
-        String screenshotSmall = entity.getScreenshotSmall();
-        if (screenshotSmall != null) {
-            stmt.bindString(9, screenshotSmall);
-        }
- 
-        String screenshotBig = entity.getScreenshotBig();
-        if (screenshotBig != null) {
-            stmt.bindString(10, screenshotBig);
+            stmt.bindString(6, redirectUrl);
         }
     }
 
@@ -148,15 +122,11 @@ public class PostDao extends AbstractDao<Post, Long> {
     public Post readEntity(Cursor cursor, int offset) {
         Post entity = new Post( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // postId
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // creatorId
-            cursor.isNull(offset + 2) ? null : new java.util.Date(cursor.getLong(offset + 2)), // date
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // image
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // tagline
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // votesCount
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // redirectUrl
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // screenshotSmall
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // screenshotBig
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // date
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // tagline
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // votesCount
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // redirectUrl
         );
         return entity;
     }
@@ -165,15 +135,11 @@ public class PostDao extends AbstractDao<Post, Long> {
     @Override
     public void readEntity(Cursor cursor, Post entity, int offset) {
         entity.setPostId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setCreatorId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setDate(cursor.isNull(offset + 2) ? null : new java.util.Date(cursor.getLong(offset + 2)));
-        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setImage(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setTagline(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setVotesCount(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
-        entity.setRedirectUrl(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setScreenshotSmall(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setScreenshotBig(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setDate(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTagline(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setVotesCount(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setRedirectUrl(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     /** @inheritdoc */
@@ -222,7 +188,7 @@ public class PostDao extends AbstractDao<Post, Long> {
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getUserDao().getAllColumns());
             builder.append(" FROM POST T");
-            builder.append(" LEFT JOIN USER T0 ON T.\"CREATOR_ID\"=T0.\"USER_ID\"");
+            builder.append(" LEFT JOIN USER T0 ON T.\"userId\"=T0.\"USER_ID\"");
             builder.append(' ');
             selectDeep = builder.toString();
         }

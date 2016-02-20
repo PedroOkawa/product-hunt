@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.database.CategoryRepository;
+import com.okawa.pedro.producthunt.database.PostRepository;
 import com.okawa.pedro.producthunt.database.SessionRepository;
 
 import javax.inject.Singleton;
@@ -34,6 +35,12 @@ public class DatabaseModule {
     @Provides
     public CategoryRepository providesCategoryRepository(DaoSession daoSession) {
         return new CategoryRepository(daoSession);
+    }
+
+    @Singleton
+    @Provides
+    public PostRepository providesPostRepository(DaoSession daoSession) {
+        return new PostRepository(daoSession);
     }
 
     @Singleton

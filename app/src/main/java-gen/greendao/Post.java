@@ -1,5 +1,7 @@
 package greendao;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import greendao.DaoSession;
 import de.greenrobot.dao.DaoException;
@@ -13,16 +15,22 @@ import de.greenrobot.dao.DaoException;
  */
 public class Post {
 
+
+    // KEEP FIELDS - put your custom fields here
+
+    @SerializedName("id")
     private Long postId;
-    private Long creatorId;
-    private java.util.Date date;
+    @SerializedName("day")
+    private String date;
     private String name;
-    private String image;
+//    private String image;
     private String tagline;
+    @SerializedName("votes_count")
     private Long votesCount;
+    @SerializedName("redirect_url")
     private String redirectUrl;
-    private String screenshotSmall;
-    private String screenshotBig;
+//    private String screenshotSmall;
+//    private String screenshotBig;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -31,11 +39,10 @@ public class Post {
     private transient PostDao myDao;
 
     private User user;
-    private Long user__resolvedKey;
+    private boolean user__refreshed;
 
     private List<User> makers;
 
-    // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
     public Post() {
@@ -45,17 +52,13 @@ public class Post {
         this.postId = postId;
     }
 
-    public Post(Long postId, Long creatorId, java.util.Date date, String name, String image, String tagline, Long votesCount, String redirectUrl, String screenshotSmall, String screenshotBig) {
+    public Post(Long postId, String date, String name, String tagline, Long votesCount, String redirectUrl) {
         this.postId = postId;
-        this.creatorId = creatorId;
         this.date = date;
         this.name = name;
-        this.image = image;
         this.tagline = tagline;
         this.votesCount = votesCount;
         this.redirectUrl = redirectUrl;
-        this.screenshotSmall = screenshotSmall;
-        this.screenshotBig = screenshotBig;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -72,19 +75,11 @@ public class Post {
         this.postId = postId;
     }
 
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public java.util.Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(java.util.Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -94,14 +89,6 @@ public class Post {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public String getTagline() {
@@ -128,44 +115,28 @@ public class Post {
         this.redirectUrl = redirectUrl;
     }
 
-    public String getScreenshotSmall() {
-        return screenshotSmall;
-    }
-
-    public void setScreenshotSmall(String screenshotSmall) {
-        this.screenshotSmall = screenshotSmall;
-    }
-
-    public String getScreenshotBig() {
-        return screenshotBig;
-    }
-
-    public void setScreenshotBig(String screenshotBig) {
-        this.screenshotBig = screenshotBig;
-    }
-
     /** To-one relationship, resolved on first access. */
     public User getUser() {
-        Long __key = this.creatorId;
-        if (user__resolvedKey == null || !user__resolvedKey.equals(__key)) {
+        if (user != null || !user__refreshed) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserDao targetDao = daoSession.getUserDao();
-            User userNew = targetDao.load(__key);
-            synchronized (this) {
-                user = userNew;
-            	user__resolvedKey = __key;
-            }
+            targetDao.refresh(user);
+            user__refreshed = true;
         }
+        return user;
+    }
+
+    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
+    public User peakUser() {
         return user;
     }
 
     public void setUser(User user) {
         synchronized (this) {
             this.user = user;
-            creatorId = user == null ? null : user.getUserId();
-            user__resolvedKey = creatorId;
+            user__refreshed = true;
         }
     }
 
