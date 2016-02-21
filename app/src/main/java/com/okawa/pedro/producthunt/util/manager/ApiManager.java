@@ -1,7 +1,7 @@
 package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
-import android.util.Log;
+import android.os.AsyncTask;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.CategoryResponse;
@@ -152,29 +152,10 @@ public class ApiManager {
                         return Observable.just(postResponse.getPosts());
                     }
                 })
-                .flatMapIterable(new Func1<List<Post>, Iterable<Post>>() {
-                    @Override
-                    public Iterable<Post> call(List<Post> posts) {
-                        return posts;
-                    }
-                })
-                .doOnNext(new Action1<Post>() {
-                    @Override
-                    public void call(Post post) {
-                        post.sync();
-                        post.getUser().sync();
-
-                        databaseRepository.updateScreenshot(post.getScreenshot());
-                        databaseRepository.updateThumbnail(post.getThumbnail());
-                        databaseRepository.updateUser(post.getUser());
-                        databaseRepository.updateAvatar(post.getUser().getAvatar());
-                    }
-                })
-                .toList()
                 .subscribe(new Observer<List<Post>>() {
                     @Override
                     public void onCompleted() {
-                        apiListener.onDataLoaded(PROCESS_POSTS_ID);
+
                     }
 
                     @Override
@@ -184,7 +165,7 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        databaseRepository.updatePosts(posts);
+                        new PersistenceTask(apiListener, posts).execute();
                     }
                 });
     }
@@ -200,24 +181,9 @@ public class ApiManager {
                         return Observable.just(postResponse.getPosts());
                     }
                 })
-                .flatMapIterable(new Func1<List<Post>, Iterable<Post>>() {
-                    @Override
-                    public Iterable<Post> call(List<Post> posts) {
-                        return posts;
-                    }
-                })
-                .doOnNext(new Action1<Post>() {
-                    @Override
-                    public void call(Post post) {
-                        post.sync();
-                        post.getUser().sync();
-                    }
-                })
-                .toList()
                 .subscribe(new Observer<List<Post>>() {
                     @Override
                     public void onCompleted() {
-                        apiListener.onDataLoaded(PROCESS_POSTS_ID);
                     }
 
                     @Override
@@ -227,9 +193,44 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        databaseRepository.updatePosts(posts);
+                        new PersistenceTask(apiListener, posts).execute();
                     }
                 });
+    }
+
+    protected class PersistenceTask extends AsyncTask<Void, Void, Void> {
+
+        private ApiListener apiListener;
+        private List<Post> posts;
+
+        protected PersistenceTask(ApiListener apiListener, List<Post> posts) {
+            this.apiListener = apiListener;
+            this.posts = posts;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            for(Post post : posts) {
+                post.sync();
+                post.getUser().sync();
+
+                databaseRepository.updateScreenshot(post.getScreenshot());
+                databaseRepository.updateThumbnail(post.getThumbnail());
+                databaseRepository.updateUser(post.getUser());
+                databaseRepository.updateAvatar(post.getUser().getAvatar());
+            }
+
+            databaseRepository.updatePosts(posts);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            super.onPostExecute(aVoid);
+        }
     }
 
 }
