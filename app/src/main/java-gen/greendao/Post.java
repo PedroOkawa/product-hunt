@@ -1,5 +1,7 @@
 package greendao;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import greendao.DaoSession;
@@ -247,6 +249,7 @@ public class Post {
 
     public void sync() {
         setUser(user);
+        thumbnail.setId(id);
         setThumbnail(thumbnail);
         screenshot.setId(id);
         setScreenshot(screenshot);

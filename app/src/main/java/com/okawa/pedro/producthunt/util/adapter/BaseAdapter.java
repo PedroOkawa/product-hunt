@@ -3,7 +3,9 @@ package com.okawa.pedro.producthunt.util.adapter;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pokawa on 20/02/16.
@@ -11,9 +13,11 @@ import java.util.List;
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter {
 
     private List<T> data;
+    private Set<T> uniques;
 
     public BaseAdapter(List<T> data) {
         this.data = data;
+        this.uniques = new LinkedHashSet<>();
     }
 
     @Override
@@ -25,7 +29,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter {
     }
 
     public void addDataSet(Collection<T> data) {
-        this.data.addAll(data);
+        uniques.addAll(data);
+        this.data.clear();
+        this.data.addAll(uniques);
         notifyDataSetChanged();
     }
 
@@ -53,6 +59,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter {
     }
 
     public void reset() {
+        uniques.clear();
         data.clear();
         notifyDataSetChanged();
     }

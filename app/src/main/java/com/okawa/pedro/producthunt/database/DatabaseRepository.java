@@ -86,7 +86,7 @@ public class DatabaseRepository {
     }
 
     public String getCurrentCategoryName() {
-        return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getName();
+        return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getSlug();
     }
 
     /* POST */

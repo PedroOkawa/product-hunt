@@ -1,8 +1,10 @@
 package com.okawa.pedro.producthunt.presenter.main;
 
 import android.content.Context;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.view.MenuItem;
 import android.view.SubMenu;
 
 import com.okawa.pedro.producthunt.R;
@@ -69,6 +71,10 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         binding.rvActivityMainPosts.setLayoutManager(gridLayoutManager);
         binding.rvActivityMainPosts.addOnScrollListener(onPostsRecyclerViewListener);
         binding.srlActivityMainPosts.setOnRefreshListener(new OnPostsRefreshListener());
+
+        /* NAVIGATION VIEW */
+
+        binding.navigationView.navigationView.setNavigationItemSelectedListener(new OnMenuItemSelectedListener());
 
         /* TOOLBAR */
 
@@ -154,6 +160,17 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         @Override
         public void onRefresh() {
             resetDataList();
+        }
+    }
+
+    protected class OnMenuItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
+
+        @Override
+        public boolean onNavigationItemSelected(MenuItem item) {
+            databaseRepository.setCurrentCategory(item.getTitle().toString());
+            binding.dlActivityMain.closeDrawers();
+            resetDataList();
+            return false;
         }
     }
 }
