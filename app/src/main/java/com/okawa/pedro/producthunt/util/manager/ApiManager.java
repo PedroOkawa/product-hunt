@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
-import com.okawa.pedro.producthunt.model.CategoryResponse;
-import com.okawa.pedro.producthunt.model.PostResponse;
+import com.okawa.pedro.producthunt.model.response.CategoryResponse;
+import com.okawa.pedro.producthunt.model.response.PostResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;

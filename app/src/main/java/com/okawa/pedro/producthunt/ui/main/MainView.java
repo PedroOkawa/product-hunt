@@ -9,5 +9,6 @@ public interface MainView {
     void onRequest();
     void onComplete();
     void onError(String error);
+    void openPostDetails(long postId);
 
 }

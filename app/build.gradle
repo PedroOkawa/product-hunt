@@ -64,6 +64,10 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0.2'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
+    /* EVENT BUS */
+
+    compile 'org.greenrobot:eventbus:3.0.0'
+
     /* FUNCTIONAL */
 
     compile 'io.reactivex:rxandroid:1.1.0'

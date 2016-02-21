@@ -1,7 +1,7 @@
 package com.okawa.pedro.producthunt.network;
 
-import com.okawa.pedro.producthunt.model.CategoryResponse;
-import com.okawa.pedro.producthunt.model.PostResponse;
+import com.okawa.pedro.producthunt.model.response.CategoryResponse;
+import com.okawa.pedro.producthunt.model.response.PostResponse;
 
 import java.util.Map;
 

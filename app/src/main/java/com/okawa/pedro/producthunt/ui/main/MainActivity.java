@@ -12,6 +12,7 @@ import com.okawa.pedro.producthunt.di.component.DaggerMainComponent;
 import com.okawa.pedro.producthunt.di.module.MainModule;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenter;
 import com.okawa.pedro.producthunt.ui.common.BaseActivity;
+import com.okawa.pedro.producthunt.util.manager.CallManager;
 
 import javax.inject.Inject;
 
@@ -24,6 +25,9 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Inject
     MainPresenter mainPresenter;
+
+    @Inject
+    CallManager callManager;
 
     @Override
     protected int layoutToInflate() {
@@ -70,6 +74,11 @@ public class MainActivity extends BaseActivity implements MainView {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
         binding.pbActivityMain.hide();
         binding.srlActivityMainPosts.setRefreshing(false);
+    }
+
+    @Override
+    public void openPostDetails(long postId) {
+        callManager.postDetails(this, postId);
     }
 
     @Override

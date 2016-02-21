@@ -10,12 +10,16 @@ import android.view.SubMenu;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
+import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -53,6 +57,10 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     @Override
     public void initialize(ActivityMainBinding binding) {
+
+        /* REGISTER ON EVENT BUS */
+
+        EventBus.getDefault().register(this);
 
         /* STORES BINDING */
 
@@ -148,6 +156,11 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         onPostsRecyclerViewListener.reset();
         databaseRepository.resetDaysAgo();
         requestData();
+    }
+
+    @Subscribe
+    public void onEvent(PostSelectEvent event) {
+        mainView.openPostDetails(event.getPostId());
     }
 
     protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {

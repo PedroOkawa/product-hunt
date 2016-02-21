@@ -34,6 +34,11 @@
             android:name=".ui.main.MainActivity"
             android:configChanges="orientation|screenSize"/>
 
+        <!-- POST DETAILS ACTIVITY -->
+
+        <activity android:name=".ui.post.PostDetailsActivity"
+            android:configChanges="orientation|screenSize"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="ba5c840c3dcb3f0734c1922eae67b9846f4e0ee6" />

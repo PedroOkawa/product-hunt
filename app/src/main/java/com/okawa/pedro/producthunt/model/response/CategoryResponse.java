@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.model;
+package com.okawa.pedro.producthunt.model.response;
 
 import java.util.List;
 
