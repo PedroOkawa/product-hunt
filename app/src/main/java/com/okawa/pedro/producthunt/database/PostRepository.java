@@ -1,5 +1,6 @@
 package com.okawa.pedro.producthunt.database;
 
+import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +31,10 @@ public class PostRepository {
 
     public List<Post> selectPostByDate(Date date) {
         return postDao.queryBuilder().where(PostDao.Properties.Date.eq(configHelper.convertDateToString(date))).list();
+    }
+
+    public List<Post> selectAllPostsPaged(int offset) {
+        return postDao.queryBuilder().orderDesc(PostDao.Properties.Date).limit(DatabaseModule.SELECT_LIMIT).offset(offset).list();
     }
 
     public Post selectPostById(long id) {

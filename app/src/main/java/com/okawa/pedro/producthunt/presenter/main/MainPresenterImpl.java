@@ -1,7 +1,9 @@
 package com.okawa.pedro.producthunt.presenter.main;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.SubMenu;
 
 import com.okawa.pedro.producthunt.R;
@@ -12,6 +14,7 @@ import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
+import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     private AdapterPost adapterPost;
     private GridLayoutManager gridLayoutManager;
+    private OnPostsRecyclerViewListener onPostsRecyclerViewListener;
 
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
@@ -63,9 +67,12 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         adapterPost = new AdapterPost(new ArrayList<Post>());
         gridLayoutManager = new GridLayoutManager(context, configHelper.defineSpanCount(context));
+        onPostsRecyclerViewListener = new OnPostsRecyclerViewListener(gridLayoutManager);
 
         binding.rvActivityMainPosts.setAdapter(adapterPost);
         binding.rvActivityMainPosts.setLayoutManager(gridLayoutManager);
+        binding.rvActivityMainPosts.addOnScrollListener(onPostsRecyclerViewListener);
+        binding.srlActivityMainPosts.setOnRefreshListener(new OnPostsRefreshListener());
 
         /* REQUEST INITIAL DATA */
 
@@ -73,6 +80,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     private void requestInitialData() {
+        mainView.onInitialRequest();
         apiManager.requestPostsByDate(this, new Date());
 
         /* INITIALIZE CATEGORIES SUB MENU */
@@ -84,10 +92,17 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         }
     }
 
+    private void requestDataDaysAgo() {
+        mainView.onRequest();
+        configHelper.addDayAgo();
+        apiManager.requestPostsByDaysAgo(this);
+    }
+
     @Override
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(postRepository.selectPostByDate(new Date()));
+            adapterPost.addDataSet(postRepository.selectAllPostsPaged(adapterPost.getItemCount()));
+            mainView.onComplete();
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
             initializeCategoriesMenu();
         }
@@ -106,6 +121,26 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         for(Category category : categoryRepository.selectCategories()) {
             categories.add(category.getName());
+        }
+    }
+
+    protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {
+
+        public OnPostsRecyclerViewListener(GridLayoutManager gridLayoutManager) {
+            super(gridLayoutManager);
+        }
+
+        @Override
+        public void onVisibleThreshold() {
+            requestDataDaysAgo();
+        }
+    }
+
+    protected class OnPostsRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+
         }
     }
 }

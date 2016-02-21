@@ -5,8 +5,9 @@ package com.okawa.pedro.producthunt.ui.main;
  */
 public interface MainView {
 
-    void onLoadData();
-    void onDataLoaded();
+    void onInitialRequest();
+    void onRequest();
+    void onComplete();
     void onError(String error);
 
 }

@@ -1,13 +1,10 @@
 package com.okawa.pedro.producthunt.network;
 
-import com.google.gson.JsonObject;
 import com.okawa.pedro.producthunt.model.CategoryResponse;
 import com.okawa.pedro.producthunt.model.PostResponse;
 
-import java.util.List;
 import java.util.Map;
 
-import greendao.Category;
 import greendao.Session;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -36,15 +33,17 @@ public interface ApiInterface {
 
     String PATH_CATEGORY = "categories";
 
-    String PATH_POSTS = "posts/all";
+    String PATH_POSTS_CATEGORY = "categories/{categoryId}/posts";
     String PATH_CATEGORY_ID = "categoryId";
+
+    String PATH_POSTS = "posts";
     String FIELD_DAY = "day";
     String FIELD_DAYS_AGO = "days_ago";
+
+    String PATH_ALL_POSTS = "posts/all";
     String FIELD_OLDER = "older";
     String FIELD_NEWER = "newer";
     String FIELD_PER_PAGE = "per_page";
-
-    String PATH_POSTS_CATEGORY = "categories/{categoryId}/posts";
 
     @FormUrlEncoded
     @POST(PATH_TOKEN)
@@ -55,9 +54,13 @@ public interface ApiInterface {
     @GET(PATH_CATEGORY)
     Observable<CategoryResponse> categories(@Header(FIELD_AUTHORIZATION) String authorization);
 
+    @GET(PATH_ALL_POSTS)
+    Observable<PostResponse> allPosts(@Header(FIELD_AUTHORIZATION) String authorization,
+                                      @QueryMap Map<String, String> parameters);
+
     @GET(PATH_POSTS)
-    Observable<PostResponse> postsToday(@Header(FIELD_AUTHORIZATION) String authorization,
-                                        @QueryMap Map<String, String> parameters);
+    Observable<PostResponse> postsByDate(@Header(FIELD_AUTHORIZATION) String authorization,
+                                         @QueryMap Map<String, String> parameters);
 
     @GET(PATH_POSTS_CATEGORY)
     Observable<PostResponse> postsByCategory(@Header(FIELD_AUTHORIZATION) String authorization,

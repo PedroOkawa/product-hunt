@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/adapter_post_card_margin"
-        android:elevation="@dimen/adapter_post_card_elevation"
-        android:outlineProvider="bounds"
         android:clipToPadding="false"
         android:foreground="?android:attr/selectableItemBackground"
-        android:background="@color/white">
+        card_view:cardPreventCornerOverlap="false"
+        card_view:cardElevation="@dimen/adapter_post_card_elevation"
+        card_view:cardCornerRadius="@dimen/adapter_post_card_radius">
 
         <include
             android:id="@+id/viewPostDetails"
             layout="@layout/view_post_details"/>
 
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 </layout>

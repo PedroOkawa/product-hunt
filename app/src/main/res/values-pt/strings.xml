@@ -3,9 +3,8 @@
 
     <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
 
-    <string name="navigation_menu_home">Inicio</string>
-    <string name="navigation_menu_calendar">Calendario</string>
-    <string name="navigation_menu_collections">Coleçoes</string>
+    <string name="navigation_menu_home">Início</string>
+    <string name="navigation_menu_collections">Coleções</string>
     <string name="navigation_menu_categories">Categorias</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.CategoryRepository;
 import com.okawa.pedro.producthunt.database.PostRepository;
@@ -131,10 +132,26 @@ public class ApiManager {
     public void requestPostsByDate(final ApiListener apiListener, Date date) {
         Map<String, String> parameters = new HashMap<>();
 
-        parameters.put(ApiInterface.FIELD_DAY, configHelper.convertDateToString(date));
+        if(!configHelper.checkIsToday(date)) {
+            parameters.put(ApiInterface.FIELD_DAY, configHelper.convertDateToString(date));
+        }
 
+        latestPosts(apiListener, parameters);
+    }
+
+    public void requestPostsByDaysAgo(final ApiListener apiListener) {
+        Map<String, String> parameters = new HashMap<>();
+
+        Log.wtf("TEST", "DAYS AGO: " + configHelper.getDaysAgo());
+
+        parameters.put(ApiInterface.FIELD_DAYS_AGO, configHelper.getDaysAgo());
+
+        latestPosts(apiListener, parameters);
+    }
+
+    private void latestPosts(final ApiListener apiListener, Map<String, String> parameters) {
         apiInterface
-                .postsToday(sessionRepository.selectSession().getToken(), parameters)
+                .postsByDate(sessionRepository.selectSession().getToken(), parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -153,7 +170,6 @@ public class ApiManager {
                     @Override
                     public void call(Post post) {
                         post.sync();
-                        post.getUser().sync();
                     }
                 })
                 .toList()
@@ -175,9 +191,9 @@ public class ApiManager {
                 });
     }
 
-    public void fetchPaginatedPosts(final ApiListener apiListener) {
+    public void requestPostsByCategory(final ApiListener apiListener, String category) {
         apiInterface
-                .postsByCategory(sessionRepository.selectSession().getToken(), "tech", null)
+                .postsByCategory(sessionRepository.selectSession().getToken(), category, null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {

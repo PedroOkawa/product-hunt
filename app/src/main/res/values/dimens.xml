@@ -7,8 +7,9 @@
 
     <!-- MAIN ACTIVITY (ADAPTER POST) -->
 
-    <dimen name="adapter_post_card_elevation">2dp</dimen>
+    <dimen name="adapter_post_card_elevation">4dp</dimen>
     <dimen name="adapter_post_card_margin">4dp</dimen>
+    <dimen name="adapter_post_card_radius">2dp</dimen>
 
     <!-- VIEW POST DETAILS -->
 

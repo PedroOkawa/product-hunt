@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import com.okawa.pedro.producthunt.R;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -13,10 +14,40 @@ import java.util.Date;
  */
 public class ConfigHelper {
 
+    private int daysAgo = 0;
+
     /* DATE FORMAT */
 
     public String convertDateToString(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    public void resetDaysAgo() {
+        daysAgo = 0;
+    }
+
+    public void addDayAgo() {
+        daysAgo++;
+    }
+
+    public String getDaysAgo() {
+        return String.valueOf(daysAgo);
+    }
+
+    public boolean checkIsToday(Date date) {
+        return removeTime(new Date()).compareTo(removeTime(date)) == 0;
+    }
+
+    private Date removeTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.getTime();
     }
 
     /* LAYOUT MANAGER */

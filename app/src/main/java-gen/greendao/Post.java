@@ -275,6 +275,8 @@ public class Post {
         setThumbnail(thumbnail);
         screenshot.setId(id);
         setScreenshot(screenshot);
+
+        getUser().sync();
     }
     // KEEP METHODS END
 

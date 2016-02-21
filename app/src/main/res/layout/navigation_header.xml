@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/main_activity_navigation_header_height"
-    android:background="@color/colorPrimary">
+    android:background="@color/color_primary">
 
     <TextView
         android:layout_width="wrap_content"
