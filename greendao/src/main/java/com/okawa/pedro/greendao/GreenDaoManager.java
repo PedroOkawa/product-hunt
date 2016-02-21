@@ -46,7 +46,6 @@ public class GreenDaoManager {
     private static final String FIELD_POST_TAGLINE = "tagline";
     private static final String FIELD_POST_VOTES_COUNT = "votesCount";
     private static final String FIELD_POST_REDIRECT_URL = "redirectUrl";
-    private static final String FIELD_POST_MAKERS = "makers";
     private static final String FIELD_POST_USER = "user";
     private static final String FIELD_POST_THUMBNAIL = "thumbnail";
     private static final String FIELD_POST_SCREENSHOT = "screenshot";
@@ -131,7 +130,7 @@ public class GreenDaoManager {
 
         Entity thumbnail = schema.addEntity(ENTITY_THUMBNAIL);
 
-        thumbnail.addLongProperty(FIELD_THUMBNAIL_ID).primaryKey().getProperty();
+        thumbnail.addLongProperty(FIELD_THUMBNAIL_ID).primaryKey();
         thumbnail.addStringProperty(FIELD_THUMBNAIL_IMAGE);
 
         thumbnail.setHasKeepSections(true);
@@ -161,10 +160,6 @@ public class GreenDaoManager {
         /* RELATIONSHIP POST 1 > USER 1 */
 
         post.addToOne(user, userIdFK, FIELD_POST_USER);
-
-        /* RELATIONSHIP POST 1 > MAKERS N */
-
-        post.addToMany(user, userIdPK, FIELD_POST_MAKERS);
 
         /* RELATIONSHIP POST 1 > THUMBNAIL 1 */
 

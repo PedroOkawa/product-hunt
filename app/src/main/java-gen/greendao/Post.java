@@ -2,7 +2,6 @@ package greendao;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 import greendao.DaoSession;
 import de.greenrobot.dao.DaoException;
 
@@ -14,6 +13,7 @@ import de.greenrobot.dao.DaoException;
  * Entity mapped to table "POST".
  */
 public class Post {
+
 
     // KEEP FIELDS - put your custom fields here
 
@@ -46,8 +46,6 @@ public class Post {
     @SerializedName("screenshot_url")
     private Screenshot screenshot;
     private Long screenshot__resolvedKey;
-
-    private List<User> makers;
     // KEEP FIELDS END
 
     public Post() {
@@ -222,28 +220,6 @@ public class Post {
         }
     }
 
-    /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<User> getMakers() {
-        if (makers == null) {
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            UserDao targetDao = daoSession.getUserDao();
-            List<User> makersNew = targetDao._queryPost_Makers(id);
-            synchronized (this) {
-                if(makers == null) {
-                    makers = makersNew;
-                }
-            }
-        }
-        return makers;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetMakers() {
-        makers = null;
-    }
-
     /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */
     public void delete() {
         if (myDao == null) {
@@ -275,8 +251,6 @@ public class Post {
         setThumbnail(thumbnail);
         screenshot.setId(id);
         setScreenshot(screenshot);
-
-        getUser().sync();
     }
     // KEEP METHODS END
 

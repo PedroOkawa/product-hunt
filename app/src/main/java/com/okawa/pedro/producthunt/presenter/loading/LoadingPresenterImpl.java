@@ -1,6 +1,6 @@
 package com.okawa.pedro.producthunt.presenter.loading;
 
-import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.ui.loading.LoadingView;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
@@ -12,21 +12,21 @@ public class LoadingPresenterImpl implements LoadingPresenter, ApiListener {
 
     private LoadingView loadingView;
     private ApiManager apiManager;
-    private SessionRepository sessionRepository;
+    private DatabaseRepository databaseRepository;
 
     public LoadingPresenterImpl(LoadingView loadingView,
                                 ApiManager apiManager,
-                                SessionRepository sessionRepository) {
+                                DatabaseRepository databaseRepository) {
         this.loadingView = loadingView;
         this.apiManager = apiManager;
-        this.sessionRepository = sessionRepository;
+        this.databaseRepository = databaseRepository;
     }
 
     @Override
     public void validateToken() {
         loadingView.onRequest();
 
-        if(sessionRepository.containsSession()) {
+        if(databaseRepository.containsSession()) {
             loadingView.onComplete();
         } else {
             apiManager.validateSession(this);

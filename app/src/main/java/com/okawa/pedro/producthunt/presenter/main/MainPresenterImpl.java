@@ -3,12 +3,10 @@ package com.okawa.pedro.producthunt.presenter.main;
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
 import android.view.SubMenu;
 
 import com.okawa.pedro.producthunt.R;
-import com.okawa.pedro.producthunt.database.CategoryRepository;
-import com.okawa.pedro.producthunt.database.PostRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
@@ -31,8 +29,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private MainView mainView;
     private ApiManager apiManager;
     private ConfigHelper configHelper;
-    private CategoryRepository categoryRepository;
-    private PostRepository postRepository;
+    private DatabaseRepository databaseRepository;
 
     private ActivityMainBinding binding;
 
@@ -43,13 +40,11 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
                              ConfigHelper configHelper,
-                             CategoryRepository categoryRepository,
-                             PostRepository postRepository) {
+                             DatabaseRepository databaseRepository) {
         this.mainView = mainView;
         this.apiManager = apiManager;
         this.configHelper = configHelper;
-        this.categoryRepository = categoryRepository;
-        this.postRepository = postRepository;
+        this.databaseRepository = databaseRepository;
     }
 
     @Override
@@ -76,32 +71,33 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* REQUEST INITIAL DATA */
 
-        requestInitialData();
+        requestCategoryData();
     }
 
-    private void requestInitialData() {
-        mainView.onInitialRequest();
-        apiManager.requestPostsByDate(this, new Date());
-
+    private void requestCategoryData() {
         /* INITIALIZE CATEGORIES SUB MENU */
 
-        if(categoryRepository.checkCategoriesLoaded()) {
+        if(databaseRepository.checkCategoriesLoaded()) {
             initializeCategoriesMenu();
         } else {
             apiManager.requestCategories(this);
         }
     }
 
+    private void requestLatestData() {
+        mainView.onInitialRequest();
+        apiManager.requestPostsByDate(this, new Date());
+    }
+
     private void requestDataDaysAgo() {
         mainView.onRequest();
-        configHelper.addDayAgo();
         apiManager.requestPostsByDaysAgo(this);
     }
 
     @Override
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(postRepository.selectAllPostsPaged(adapterPost.getItemCount()));
+            adapterPost.addDataSet(databaseRepository.selectAllPostsPaged(adapterPost.getItemCount()));
             mainView.onComplete();
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
             initializeCategoriesMenu();
@@ -119,7 +115,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
                 .navigationView
                 .getMenu().addSubMenu(R.string.navigation_menu_categories);
 
-        for(Category category : categoryRepository.selectCategories()) {
+        for(Category category : databaseRepository.selectCategories()) {
             categories.add(category.getName());
         }
     }
@@ -140,7 +136,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         @Override
         public void onRefresh() {
-
+            requestLatestData();
         }
     }
 }

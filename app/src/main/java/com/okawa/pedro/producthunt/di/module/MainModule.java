@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.di.module;
 
-import com.okawa.pedro.producthunt.database.CategoryRepository;
-import com.okawa.pedro.producthunt.database.PostRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.di.scope.Activity;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenter;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenterImpl;
@@ -35,9 +34,8 @@ public class MainModule {
     public MainPresenter providesPresenter(MainView mainView,
                                            ApiManager apiManager,
                                            ConfigHelper configHelper,
-                                           CategoryRepository categoryRepository,
-                                           PostRepository postRepository) {
-        return new MainPresenterImpl(mainView, apiManager, configHelper, categoryRepository, postRepository);
+                                           DatabaseRepository databaseRepository) {
+        return new MainPresenterImpl(mainView, apiManager, configHelper, databaseRepository);
     }
 
 }

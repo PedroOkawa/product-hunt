@@ -1,7 +1,5 @@
 package com.okawa.pedro.producthunt.util.adapter;
 
-import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;

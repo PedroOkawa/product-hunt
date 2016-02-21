@@ -1,9 +1,7 @@
 package com.okawa.pedro.producthunt.di.module;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
-import com.okawa.pedro.producthunt.database.CategoryRepository;
-import com.okawa.pedro.producthunt.database.PostRepository;
-import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
@@ -54,10 +52,8 @@ public class ApiModule {
     public ApiManager providesApiManager(ProductHuntApp productHuntApp,
                                          ApiInterface apiInterface,
                                          ConfigHelper configHelper,
-                                         CategoryRepository categoryRepository,
-                                         PostRepository postRepository,
-                                         SessionRepository sessionRepository) {
-        return new ApiManager(productHuntApp, apiInterface, configHelper, categoryRepository, postRepository, sessionRepository);
+                                         DatabaseRepository databaseRepository) {
+        return new ApiManager(productHuntApp, apiInterface, configHelper, databaseRepository);
     }
 
 }

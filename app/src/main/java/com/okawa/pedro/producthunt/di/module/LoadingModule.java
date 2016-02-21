@@ -1,6 +1,6 @@
 package com.okawa.pedro.producthunt.di.module;
 
-import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.di.scope.Activity;
 import com.okawa.pedro.producthunt.presenter.loading.LoadingPresenter;
 import com.okawa.pedro.producthunt.presenter.loading.LoadingPresenterImpl;
@@ -32,8 +32,8 @@ public class LoadingModule {
     @Provides
     public LoadingPresenter providesLoadingPresenter(LoadingView loadingView,
                                                      ApiManager apiManager,
-                                                     SessionRepository sessionRepository) {
-        return new LoadingPresenterImpl(loadingView, apiManager, sessionRepository);
+                                                     DatabaseRepository databaseRepository) {
+        return new LoadingPresenterImpl(loadingView, apiManager, databaseRepository);
     }
 
 }

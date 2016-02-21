@@ -3,9 +3,7 @@ package com.okawa.pedro.producthunt.util.manager;
 import android.content.Context;
 import android.util.Log;
 
-import com.okawa.pedro.producthunt.database.CategoryRepository;
-import com.okawa.pedro.producthunt.database.PostRepository;
-import com.okawa.pedro.producthunt.database.SessionRepository;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.CategoryResponse;
 import com.okawa.pedro.producthunt.model.PostResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
@@ -46,22 +44,16 @@ public class ApiManager {
     private Context context;
     private ApiInterface apiInterface;
     private ConfigHelper configHelper;
-    private SessionRepository sessionRepository;
-    private CategoryRepository categoryRepository;
-    private PostRepository postRepository;
+    private DatabaseRepository databaseRepository;
 
     public ApiManager(Context context,
                       ApiInterface apiInterface,
                       ConfigHelper configHelper,
-                      CategoryRepository categoryRepository,
-                      PostRepository postRepository,
-                      SessionRepository sessionRepository) {
+                      DatabaseRepository databaseRepository) {
         this.context = context;
         this.apiInterface = apiInterface;
         this.configHelper = configHelper;
-        this.categoryRepository = categoryRepository;
-        this.postRepository = postRepository;
-        this.sessionRepository = sessionRepository;
+        this.databaseRepository = databaseRepository;
     }
 
     public void validateSession(final ApiListener apiListener) {
@@ -95,14 +87,14 @@ public class ApiManager {
 
                     @Override
                     public void onNext(Session session) {
-                        sessionRepository.updateSession(session);
+                        databaseRepository.updateSession(session);
                     }
                 });
     }
 
     public void requestCategories(final ApiListener apiListener) {
         apiInterface
-                .categories(sessionRepository.selectSession().getToken())
+                .categories(databaseRepository.selectSession().getToken())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<CategoryResponse, Observable<List<Category>>>() {
@@ -124,7 +116,7 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Category> categories) {
-                        categoryRepository.updateCategories(categories);
+                        databaseRepository.updateCategories(categories);
                     }
                 });
     }
@@ -142,16 +134,16 @@ public class ApiManager {
     public void requestPostsByDaysAgo(final ApiListener apiListener) {
         Map<String, String> parameters = new HashMap<>();
 
-        Log.wtf("TEST", "DAYS AGO: " + configHelper.getDaysAgo());
+        String page = configHelper.getDaysAgo();
 
-        parameters.put(ApiInterface.FIELD_DAYS_AGO, configHelper.getDaysAgo());
+        parameters.put(ApiInterface.FIELD_DAYS_AGO, page);
 
         latestPosts(apiListener, parameters);
     }
 
     private void latestPosts(final ApiListener apiListener, Map<String, String> parameters) {
         apiInterface
-                .postsByDate(sessionRepository.selectSession().getToken(), parameters)
+                .postsByDate(databaseRepository.selectSession().getToken(), parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -170,6 +162,12 @@ public class ApiManager {
                     @Override
                     public void call(Post post) {
                         post.sync();
+                        post.getUser().sync();
+
+                        databaseRepository.updateScreenshot(post.getScreenshot());
+                        databaseRepository.updateThumbnail(post.getThumbnail());
+                        databaseRepository.updateUser(post.getUser());
+                        databaseRepository.updateAvatar(post.getUser().getAvatar());
                     }
                 })
                 .toList()
@@ -186,14 +184,14 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        postRepository.updatePosts(posts);
+                        databaseRepository.updatePosts(posts);
                     }
                 });
     }
 
     public void requestPostsByCategory(final ApiListener apiListener, String category) {
         apiInterface
-                .postsByCategory(sessionRepository.selectSession().getToken(), category, null)
+                .postsByCategory(databaseRepository.selectSession().getToken(), category, null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -212,6 +210,7 @@ public class ApiManager {
                     @Override
                     public void call(Post post) {
                         post.sync();
+                        post.getUser().sync();
                     }
                 })
                 .toList()
@@ -228,7 +227,7 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        postRepository.updatePosts(posts);
+                        databaseRepository.updatePosts(posts);
                     }
                 });
     }

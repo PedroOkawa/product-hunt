@@ -10,8 +10,6 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import de.greenrobot.dao.internal.SqlUtils;
 import de.greenrobot.dao.internal.DaoConfig;
-import de.greenrobot.dao.query.Query;
-import de.greenrobot.dao.query.QueryBuilder;
 
 import greendao.User;
 
@@ -39,7 +37,6 @@ public class UserDao extends AbstractDao<User, Long> {
 
     private DaoSession daoSession;
 
-    private Query<User> post_MakersQuery;
 
     public UserDao(DaoConfig config) {
         super(config);
@@ -172,20 +169,6 @@ public class UserDao extends AbstractDao<User, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "makers" to-many relationship of Post. */
-    public List<User> _queryPost_Makers(Long id) {
-        synchronized (this) {
-            if (post_MakersQuery == null) {
-                QueryBuilder<User> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.Id.eq(null));
-                post_MakersQuery = queryBuilder.build();
-            }
-        }
-        Query<User> query = post_MakersQuery.forCurrentThread();
-        query.setParameter(0, id);
-        return query.list();
-    }
-
     private String selectDeep;
 
     protected String getSelectDeep() {

@@ -26,12 +26,8 @@ public class ConfigHelper {
         daysAgo = 0;
     }
 
-    public void addDayAgo() {
-        daysAgo++;
-    }
-
     public String getDaysAgo() {
-        return String.valueOf(daysAgo);
+        return String.valueOf(daysAgo++);
     }
 
     public boolean checkIsToday(Date date) {
