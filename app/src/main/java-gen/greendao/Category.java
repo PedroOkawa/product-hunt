@@ -14,6 +14,11 @@ public class Category {
 
     // KEEP FIELDS - put your custom fields here
 
+    public static final long CATEGORY_TECH_ID = 1;
+    public static final long CATEGORY_GAMES_ID = 2;
+    public static final long CATEGORY_PODCASTS_ID = 3;
+    public static final long CATEGORY_BOOKS_ID = 4;
+
     private Long id;
     private String slug;
     private String name;

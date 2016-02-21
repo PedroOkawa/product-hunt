@@ -18,7 +18,6 @@ import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import greendao.Category;
 import greendao.Post;
@@ -39,6 +38,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private AdapterPost adapterPost;
     private GridLayoutManager gridLayoutManager;
     private OnPostsRecyclerViewListener onPostsRecyclerViewListener;
+
+    private OnMenuItemSelectedListener onMenuItemSelectedListener;
 
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
@@ -74,7 +75,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* NAVIGATION VIEW */
 
-        binding.navigationView.navigationView.setNavigationItemSelectedListener(new OnMenuItemSelectedListener());
+        onMenuItemSelectedListener = new OnMenuItemSelectedListener();
+        binding.navigationView.navigationView.setNavigationItemSelectedListener(onMenuItemSelectedListener);
 
         /* TOOLBAR */
 
@@ -96,7 +98,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
             adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(adapterPost.getItemCount()));
             mainView.onComplete();
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
-            initializeCategoriesMenu();
+            initializeNavigationMenu();
         }
     }
 
@@ -109,38 +111,43 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         /* INITIALIZE CATEGORIES SUB MENU */
 
         if(databaseRepository.checkCategoriesLoaded()) {
-            initializeCategoriesMenu();
+            initializeNavigationMenu();
         } else {
             apiManager.requestCategories(this);
         }
     }
 
-    private void resetDataList() {
-        adapterPost.reset();
-        onPostsRecyclerViewListener.reset();
-        databaseRepository.resetDaysAgo();
-        requestDataDaysAgo();
-    }
-
-    private void requestDataByDay(Date date) {
-        mainView.onRequest();
-        apiManager.requestPostsByDate(this, date);
-    }
-
-    private void requestDataDaysAgo() {
-        mainView.onRequest();
-        apiManager.requestPostsByDaysAgo(this);
-    }
-
-    private void initializeCategoriesMenu() {
+    private void initializeNavigationMenu() {
         SubMenu categories = binding
                 .navigationView
                 .navigationView
                 .getMenu().addSubMenu(R.string.navigation_menu_categories);
 
+        binding.navigationView
+                .navigationView
+                .getMenu().add(R.string.navigation_menu_collections)
+                .setCheckable(true);
+
         for(Category category : databaseRepository.selectCategories()) {
-            categories.add(category.getName());
+            MenuItem menuItem = categories.add(category.getName()).setCheckable(true);
+
+            if(category.getId().equals(Category.CATEGORY_TECH_ID)) {
+                onMenuItemSelectedListener.setPreviousItem(menuItem);
+                menuItem.setChecked(true);
+            }
         }
+    }
+
+    private void requestData() {
+        mainView.onRequest();
+        apiManager.requestPostsByDaysAgo(this);
+    }
+
+    private void resetData() {
+        adapterPost.reset();
+        onPostsRecyclerViewListener.reset();
+        databaseRepository.resetDaysAgo();
+        requestData();
     }
 
     protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {
@@ -151,7 +158,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         @Override
         public void onVisibleThreshold() {
-            requestDataDaysAgo();
+            requestData();
         }
     }
 
@@ -159,18 +166,30 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         @Override
         public void onRefresh() {
-            resetDataList();
+            resetData();
         }
     }
 
     protected class OnMenuItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
 
+        private MenuItem previousItem;
+
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
             databaseRepository.setCurrentCategory(item.getTitle().toString());
             binding.dlActivityMain.closeDrawers();
-            resetDataList();
+            resetData();
+
+            item.setChecked(true);
+            if(previousItem != null) {
+                previousItem.setChecked(false);
+            }
+            previousItem = item;
             return false;
+        }
+
+        public void setPreviousItem(MenuItem menuItem) {
+            this.previousItem = menuItem;
         }
     }
 }
