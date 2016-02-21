@@ -1,5 +1,6 @@
 package com.okawa.pedro.producthunt.ui.main;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -65,5 +66,12 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mainPresenter.updateGridLayoutSpan();
     }
 }

@@ -23,7 +23,6 @@ import greendao.Session;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -134,9 +133,7 @@ public class ApiManager {
     public void requestPostsByDaysAgo(final ApiListener apiListener) {
         Map<String, String> parameters = new HashMap<>();
 
-        String page = configHelper.getDaysAgo();
-
-        parameters.put(ApiInterface.FIELD_DAYS_AGO, page);
+        parameters.put(ApiInterface.FIELD_DAYS_AGO, configHelper.getDaysAgo());
 
         latestPosts(apiListener, parameters);
     }

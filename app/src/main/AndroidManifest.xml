@@ -17,7 +17,7 @@
 
         <activity
             android:name=".ui.loading.LoadingActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:noHistory="true">
 
             <intent-filter>
@@ -31,7 +31,7 @@
 
         <activity
             android:name=".ui.main.MainActivity"
-            android:configChanges="orientation"/>
+            android:configChanges="orientation|screenSize"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

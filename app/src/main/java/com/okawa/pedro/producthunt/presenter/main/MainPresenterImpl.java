@@ -32,6 +32,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private DatabaseRepository databaseRepository;
 
     private ActivityMainBinding binding;
+    private Context context;
 
     private AdapterPost adapterPost;
     private GridLayoutManager gridLayoutManager;
@@ -56,7 +57,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* CONTEXT */
 
-        Context context = binding.getRoot().getContext();
+        context = binding.getRoot().getContext();
 
         /* RECYCLER VIEW */
 
@@ -74,6 +75,11 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         requestCategoryData();
     }
 
+    @Override
+    public void updateGridLayoutSpan() {
+        gridLayoutManager.setSpanCount(configHelper.defineSpanCount(context));
+    }
+
     private void requestCategoryData() {
         /* INITIALIZE CATEGORIES SUB MENU */
 
@@ -84,9 +90,16 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         }
     }
 
-    private void requestLatestData() {
-        mainView.onInitialRequest();
-        apiManager.requestPostsByDate(this, new Date());
+    private void resetDataList() {
+        adapterPost.reset();
+        onPostsRecyclerViewListener.reset();
+        configHelper.resetDaysAgo();
+        requestDataDaysAgo();
+    }
+
+    private void requestDataByDay(Date date) {
+        mainView.onRequest();
+        apiManager.requestPostsByDate(this, date);
     }
 
     private void requestDataDaysAgo() {
@@ -136,7 +149,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         @Override
         public void onRefresh() {
-            requestLatestData();
+            resetDataList();
         }
     }
 }
