@@ -36,7 +36,6 @@ public interface ApiInterface {
     String PATH_POSTS_CATEGORY = "categories/{categoryId}/posts";
     String PATH_CATEGORY_ID = "categoryId";
 
-    String PATH_POSTS = "posts";
     String FIELD_DAY = "day";
     String FIELD_DAYS_AGO = "days_ago";
 
@@ -57,10 +56,6 @@ public interface ApiInterface {
     @GET(PATH_ALL_POSTS)
     Observable<PostResponse> allPosts(@Header(FIELD_AUTHORIZATION) String authorization,
                                       @QueryMap Map<String, String> parameters);
-
-    @GET(PATH_POSTS)
-    Observable<PostResponse> postsByDate(@Header(FIELD_AUTHORIZATION) String authorization,
-                                         @QueryMap Map<String, String> parameters);
 
     @GET(PATH_POSTS_CATEGORY)
     Observable<PostResponse> postsByCategory(@Header(FIELD_AUTHORIZATION) String authorization,

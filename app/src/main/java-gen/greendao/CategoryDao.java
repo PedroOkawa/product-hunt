@@ -29,8 +29,6 @@ public class CategoryDao extends AbstractDao<Category, Long> {
         public final static Property ItemName = new Property(3, String.class, "itemName", false, "ITEM_NAME");
     };
 
-    private DaoSession daoSession;
-
 
     public CategoryDao(DaoConfig config) {
         super(config);
@@ -38,7 +36,6 @@ public class CategoryDao extends AbstractDao<Category, Long> {
     
     public CategoryDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -47,7 +44,7 @@ public class CategoryDao extends AbstractDao<Category, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"CATEGORY\" (" + //
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"SLUG\" TEXT," + // 1: slug
-                "\"NAME\" TEXT," + // 2: name
+                "\"NAME\" TEXT UNIQUE ," + // 2: name
                 "\"ITEM_NAME\" TEXT);"); // 3: itemName
     }
 
@@ -81,12 +78,6 @@ public class CategoryDao extends AbstractDao<Category, Long> {
         if (itemName != null) {
             stmt.bindString(4, itemName);
         }
-    }
-
-    @Override
-    protected void attachEntity(Category entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
     }
 
     /** @inheritdoc */

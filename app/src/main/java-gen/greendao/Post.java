@@ -14,14 +14,13 @@ import de.greenrobot.dao.DaoException;
  */
 public class Post {
 
-
     // KEEP FIELDS - put your custom fields here
 
     private Long id;
     private Long userIdFK;
     private Long thumbnailIdFK;
     @SerializedName("category_id")
-    private Long categoryIdFK;
+    private Long categoryId;
     @SerializedName("day")
     private String date;
     private String name;
@@ -55,11 +54,11 @@ public class Post {
         this.id = id;
     }
 
-    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryIdFK, String date, String name, String tagline, Long votesCount, String redirectUrl) {
+    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryId, String date, String name, String tagline, Long votesCount, String redirectUrl) {
         this.id = id;
         this.userIdFK = userIdFK;
         this.thumbnailIdFK = thumbnailIdFK;
-        this.categoryIdFK = categoryIdFK;
+        this.categoryId = categoryId;
         this.date = date;
         this.name = name;
         this.tagline = tagline;
@@ -97,12 +96,12 @@ public class Post {
         this.thumbnailIdFK = thumbnailIdFK;
     }
 
-    public Long getCategoryIdFK() {
-        return categoryIdFK;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategoryIdFK(Long categoryIdFK) {
-        this.categoryIdFK = categoryIdFK;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getDate() {

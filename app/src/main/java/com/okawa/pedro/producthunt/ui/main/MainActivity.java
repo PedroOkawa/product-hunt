@@ -48,8 +48,10 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
-    public void onInitialRequest() {
-        binding.pbActivityMain.show();
+    public void initializeToolbar() {
+        setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     @Override
@@ -66,6 +68,8 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        binding.pbActivityMain.hide();
+        binding.srlActivityMainPosts.setRefreshing(false);
     }
 
     @Override

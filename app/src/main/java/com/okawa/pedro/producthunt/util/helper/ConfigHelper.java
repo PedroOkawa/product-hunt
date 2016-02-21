@@ -2,48 +2,31 @@ package com.okawa.pedro.producthunt.util.helper;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.okawa.pedro.producthunt.R;
+import com.okawa.pedro.producthunt.database.DatabaseRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import greendao.Category;
 
 /**
  * Created by pokawa on 20/02/16.
  */
 public class ConfigHelper {
 
-    private int daysAgo = 0;
+    public static final String CONNECTION_ERROR = "It seems that you not online";
 
-    /* DATE FORMAT */
+    /* CONNECTION */
 
-    public String convertDateToString(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
-    }
-
-    public void resetDaysAgo() {
-        daysAgo = 0;
-    }
-
-    public String getDaysAgo() {
-        return String.valueOf(daysAgo++);
-    }
-
-    public boolean checkIsToday(Date date) {
-        return removeTime(new Date()).compareTo(removeTime(date)) == 0;
-    }
-
-    private Date removeTime(Date date) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTime();
+    public boolean isConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return (activeNetwork != null);
     }
 
     /* LAYOUT MANAGER */

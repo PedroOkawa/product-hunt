@@ -38,7 +38,7 @@ public class GreenDaoManager {
 
     private static final String ENTITY_POST = "Post";
     private static final String FIELD_POST_ID = "id";
-    private static final String FIELD_POST_CATEGORY_ID = "categoryIdFK";
+    private static final String FIELD_POST_CATEGORY_ID = "categoryId";
     private static final String FIELD_POST_USER_ID = "userIdFK";
     private static final String FIELD_POST_THUMBNAIL_ID = "thumbnailIdFK";
     private static final String FIELD_POST_DATE = "date";
@@ -82,7 +82,7 @@ public class GreenDaoManager {
 
         category.addLongProperty(FIELD_CATEGORY_ID).primaryKey();
         category.addStringProperty(FIELD_CATEGORY_SLUG);
-        category.addStringProperty(FIELD_CATEGORY_NAME);
+        category.addStringProperty(FIELD_CATEGORY_NAME).unique();
         category.addStringProperty(FIELD_CATEGORY_ITEM_NAME);
 
         category.setHasKeepSections(true);
@@ -117,7 +117,7 @@ public class GreenDaoManager {
         Property postIdPK = post.addLongProperty(FIELD_POST_ID).primaryKey().getProperty();
         Property userIdFK = post.addLongProperty(FIELD_POST_USER_ID).getProperty();
         Property thumbnailIdFK = post.addLongProperty(FIELD_POST_THUMBNAIL_ID).getProperty();
-        Property categoryIdFK = post.addLongProperty(FIELD_POST_CATEGORY_ID).getProperty();
+        post.addLongProperty(FIELD_POST_CATEGORY_ID);
         post.addStringProperty(FIELD_POST_DATE);
         post.addStringProperty(FIELD_POST_NAME);
         post.addStringProperty(FIELD_POST_TAGLINE);
@@ -152,10 +152,6 @@ public class GreenDaoManager {
         /* RELATIONSHIP USER 1 > POST N */
 
         user.addToMany(post, postIdPK, FIELD_USER_POSTS);
-
-        /* RELATIONSHIP CATEGORY 1 > POST N */
-
-        category.addToMany(post, categoryIdFK);
 
         /* RELATIONSHIP POST 1 > USER 1 */
 

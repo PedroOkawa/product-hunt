@@ -31,7 +31,7 @@ public class PostDao extends AbstractDao<Post, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property UserIdFK = new Property(1, Long.class, "userIdFK", false, "USER_ID_FK");
         public final static Property ThumbnailIdFK = new Property(2, Long.class, "thumbnailIdFK", false, "THUMBNAIL_ID_FK");
-        public final static Property CategoryIdFK = new Property(3, Long.class, "categoryIdFK", false, "CATEGORY_ID_FK");
+        public final static Property CategoryId = new Property(3, Long.class, "categoryId", false, "CATEGORY_ID");
         public final static Property Date = new Property(4, String.class, "date", false, "DATE");
         public final static Property Name = new Property(5, String.class, "name", false, "NAME");
         public final static Property Tagline = new Property(6, String.class, "tagline", false, "TAGLINE");
@@ -42,7 +42,6 @@ public class PostDao extends AbstractDao<Post, Long> {
     private DaoSession daoSession;
 
     private Query<Post> user_PostsQuery;
-    private Query<Post> category_PostListQuery;
 
     public PostDao(DaoConfig config) {
         super(config);
@@ -60,7 +59,7 @@ public class PostDao extends AbstractDao<Post, Long> {
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"USER_ID_FK\" INTEGER," + // 1: userIdFK
                 "\"THUMBNAIL_ID_FK\" INTEGER," + // 2: thumbnailIdFK
-                "\"CATEGORY_ID_FK\" INTEGER," + // 3: categoryIdFK
+                "\"CATEGORY_ID\" INTEGER," + // 3: categoryId
                 "\"DATE\" TEXT," + // 4: date
                 "\"NAME\" TEXT," + // 5: name
                 "\"TAGLINE\" TEXT," + // 6: tagline
@@ -94,9 +93,9 @@ public class PostDao extends AbstractDao<Post, Long> {
             stmt.bindLong(3, thumbnailIdFK);
         }
  
-        Long categoryIdFK = entity.getCategoryIdFK();
-        if (categoryIdFK != null) {
-            stmt.bindLong(4, categoryIdFK);
+        Long categoryId = entity.getCategoryId();
+        if (categoryId != null) {
+            stmt.bindLong(4, categoryId);
         }
  
         String date = entity.getDate();
@@ -144,7 +143,7 @@ public class PostDao extends AbstractDao<Post, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userIdFK
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // thumbnailIdFK
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // categoryIdFK
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // categoryId
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // date
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // tagline
@@ -160,7 +159,7 @@ public class PostDao extends AbstractDao<Post, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserIdFK(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setThumbnailIdFK(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setCategoryIdFK(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setCategoryId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
         entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setTagline(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
@@ -202,20 +201,6 @@ public class PostDao extends AbstractDao<Post, Long> {
         }
         Query<Post> query = user_PostsQuery.forCurrentThread();
         query.setParameter(0, id);
-        return query.list();
-    }
-
-    /** Internal query to resolve the "postList" to-many relationship of Category. */
-    public List<Post> _queryCategory_PostList(Long categoryIdFK) {
-        synchronized (this) {
-            if (category_PostListQuery == null) {
-                QueryBuilder<Post> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.CategoryIdFK.eq(null));
-                category_PostListQuery = queryBuilder.build();
-            }
-        }
-        Query<Post> query = category_PostListQuery.forCurrentThread();
-        query.setParameter(0, categoryIdFK);
         return query.list();
     }
 

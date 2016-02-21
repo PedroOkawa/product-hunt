@@ -34,8 +34,8 @@ public class DatabaseModule {
 
     @Singleton
     @Provides
-    public DatabaseRepository providesDatabaseRepository(DaoSession daoSession, ConfigHelper configHelper) {
-        return new DatabaseRepository(daoSession, configHelper);
+    public DatabaseRepository providesDatabaseRepository(DaoSession daoSession) {
+        return new DatabaseRepository(daoSession);
     }
 
 }

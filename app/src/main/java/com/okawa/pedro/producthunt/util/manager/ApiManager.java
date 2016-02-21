@@ -56,6 +56,11 @@ public class ApiManager {
     }
 
     public void validateSession(final ApiListener apiListener) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onError(ConfigHelper.CONNECTION_ERROR);
+            return;
+        }
+
         Properties properties = new Properties();
 
         try {
@@ -92,6 +97,11 @@ public class ApiManager {
     }
 
     public void requestCategories(final ApiListener apiListener) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_CATEGORIES_ID);
+            return;
+        }
+
         apiInterface
                 .categories(databaseRepository.selectSession().getToken())
                 .subscribeOn(Schedulers.newThread())
@@ -121,55 +131,39 @@ public class ApiManager {
     }
 
     public void requestPostsByDate(final ApiListener apiListener, Date date) {
-        Map<String, String> parameters = new HashMap<>();
-
-        if(!configHelper.checkIsToday(date)) {
-            parameters.put(ApiInterface.FIELD_DAY, configHelper.convertDateToString(date));
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            return;
         }
 
-        latestPosts(apiListener, parameters);
+        Map<String, String> parameters = new HashMap<>();
+
+        if(!databaseRepository.checkIsToday(date)) {
+            parameters.put(ApiInterface.FIELD_DAY, databaseRepository.convertDateToString(date));
+        }
+
+        requestPostsByCategory(apiListener, parameters);
     }
 
     public void requestPostsByDaysAgo(final ApiListener apiListener) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            return;
+        }
+
         Map<String, String> parameters = new HashMap<>();
 
-        parameters.put(ApiInterface.FIELD_DAYS_AGO, configHelper.getDaysAgo());
+        parameters.put(ApiInterface.FIELD_DAYS_AGO, databaseRepository.getDaysAgo());
 
-        latestPosts(apiListener, parameters);
+        requestPostsByCategory(apiListener, parameters);
     }
 
-    private void latestPosts(final ApiListener apiListener, Map<String, String> parameters) {
+    private void requestPostsByCategory(final ApiListener apiListener, Map<String, String> parameters) {
         apiInterface
-                .postsByDate(databaseRepository.selectSession().getToken(), parameters)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
-                    @Override
-                    public Observable<List<Post>> call(PostResponse postResponse) {
-                        return Observable.just(postResponse.getPosts());
-                    }
-                })
-                .subscribe(new Observer<List<Post>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<Post> posts) {
-                        new PersistenceTask(apiListener, posts).execute();
-                    }
-                });
-    }
-
-    public void requestPostsByCategory(final ApiListener apiListener, String category) {
-        apiInterface
-                .postsByCategory(databaseRepository.selectSession().getToken(), category, null)
+                .postsByCategory(
+                        databaseRepository.selectSession().getToken(),
+                        databaseRepository.getCurrentCategoryName(),
+                        parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {

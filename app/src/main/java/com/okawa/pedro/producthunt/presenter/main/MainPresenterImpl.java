@@ -70,6 +70,10 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         binding.rvActivityMainPosts.addOnScrollListener(onPostsRecyclerViewListener);
         binding.srlActivityMainPosts.setOnRefreshListener(new OnPostsRefreshListener());
 
+        /* TOOLBAR */
+
+        mainView.initializeToolbar();
+
         /* REQUEST INITIAL DATA */
 
         requestCategoryData();
@@ -78,6 +82,21 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     @Override
     public void updateGridLayoutSpan() {
         gridLayoutManager.setSpanCount(configHelper.defineSpanCount(context));
+    }
+
+    @Override
+    public void onDataLoaded(int process) {
+        if(process == ApiManager.PROCESS_POSTS_ID) {
+            adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(adapterPost.getItemCount()));
+            mainView.onComplete();
+        } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
+            initializeCategoriesMenu();
+        }
+    }
+
+    @Override
+    public void onError(String error) {
+        mainView.onError(error);
     }
 
     private void requestCategoryData() {
@@ -93,7 +112,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private void resetDataList() {
         adapterPost.reset();
         onPostsRecyclerViewListener.reset();
-        configHelper.resetDaysAgo();
+        databaseRepository.resetDaysAgo();
         requestDataDaysAgo();
     }
 
@@ -105,21 +124,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private void requestDataDaysAgo() {
         mainView.onRequest();
         apiManager.requestPostsByDaysAgo(this);
-    }
-
-    @Override
-    public void onDataLoaded(int process) {
-        if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(databaseRepository.selectAllPostsPaged(adapterPost.getItemCount()));
-            mainView.onComplete();
-        } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
-            initializeCategoriesMenu();
-        }
-    }
-
-    @Override
-    public void onError(String error) {
-        mainView.onError(error);
     }
 
     private void initializeCategoriesMenu() {

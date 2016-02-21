@@ -5,7 +5,7 @@ package com.okawa.pedro.producthunt.ui.main;
  */
 public interface MainView {
 
-    void onInitialRequest();
+    void initializeToolbar();
     void onRequest();
     void onComplete();
     void onError(String error);
