@@ -3,7 +3,7 @@
 
     <!-- MAIN ACTIVITY (NAVIGATION HEADER) -->
 
-    <dimen name="main_activity_navigation_header_height">128dp</dimen>
+    <dimen name="activity_main_navigation_header_height">128dp</dimen>
 
     <!-- MAIN ACTIVITY (ADAPTER POST) -->
 
@@ -14,8 +14,7 @@
     <!-- VIEW POST DETAILS -->
 
     <dimen name="view_post_details_preview_height">300dp</dimen>
-    <dimen name="view_post_details_info_margin">8dp</dimen>
-    <dimen name="view_post_details_user_avatar_size">56dp</dimen>
+    <dimen name="view_post_details_info_margin">4dp</dimen>
     <dimen name="view_post_details_user_name_margin">4dp</dimen>
     <dimen name="view_post_details_vote_margin">4dp</dimen>
 
@@ -24,7 +23,6 @@
     <dimen name="adapter_comment_card_elevation">4dp</dimen>
     <dimen name="adapter_comment_card_margin">4dp</dimen>
     <dimen name="adapter_comment_card_radius">2dp</dimen>
-    <dimen name="adapter_comment_avatar_margin">10dp</dimen>
 
     <!-- CARD STYLE -->
 
@@ -33,5 +31,10 @@
     <!-- DETAILS STYLE -->
 
     <dimen name="details_style_text_padding">6dp</dimen>
+
+    <!-- AVATAR STYLE -->
+
+    <dimen name="avatar_style_size">56dp</dimen>
+    <dimen name="avatar_style_margin">6dp</dimen>
 
 </resources>

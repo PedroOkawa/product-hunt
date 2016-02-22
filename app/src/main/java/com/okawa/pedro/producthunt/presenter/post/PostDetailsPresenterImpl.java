@@ -1,6 +1,9 @@
 package com.okawa.pedro.producthunt.presenter.post;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,26 +13,35 @@ import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
+import com.okawa.pedro.producthunt.util.adapter.AdapterVote;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
+import java.util.ArrayList;
+
 import greendao.Comment;
 import greendao.Post;
+import greendao.User;
+import greendao.Vote;
 
 /**
  * Created by pokawa on 21/02/16.
  */
 public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListener {
 
-    private static final int INDENTATION_RATE = 32;
+    private static final int INDENTATION_RATE = 64;
 
     private PostDetailsView postDetailsView;
     private ApiManager apiManager;
     private DatabaseRepository databaseRepository;
 
     private ActivityPostDetailsBinding binding;
+    private Context context;
     private LayoutInflater layoutInflater;
+
+    private AdapterVote adapterVote;
+    private LinearLayoutManager linearLayoutManager;
 
     private Post post;
 
@@ -47,6 +59,10 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         /* STORES BINDING */
 
         this.binding = binding;
+
+        /* CONTEXT */
+
+        context = binding.getRoot().getContext();
 
         /* STORES LAYOUT INFLATER */
 
@@ -75,6 +91,12 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .centerCrop()
                 .transform(new GlideCircleTransform(binding.getRoot().getContext()))
                 .into(binding.viewPostDetails.ivViewPostDetailsUser);
+
+        adapterVote = new AdapterVote(new ArrayList<Vote>());
+        linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+
+        binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
+        binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
 
         apiManager.requestCommentsByPost(this, postId);
     }
@@ -110,7 +132,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     @Override
     public void onDataLoaded(int process) {
-        for(Comment comment : databaseRepository.selectCommentsFromPost(0, post.getId())) {
+        for(Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
             printComment(comment, 0);
         }
     }

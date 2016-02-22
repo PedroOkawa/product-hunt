@@ -22,6 +22,7 @@ import greendao.Category;
 import greendao.Comment;
 import greendao.Post;
 import greendao.Session;
+import greendao.Vote;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -303,6 +304,74 @@ public class ApiManager {
             for(Comment child : comment.getChildren()) {
                 syncChildren(child);
             }
+        }
+    }
+
+    /* COMMENTS */
+
+    public void requestVotesByPost(final ApiListener apiListener, long postId) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
+            return;
+        }
+
+        apiInterface
+                .commentsByPost(databaseRepository.selectSession().getToken(), postId, null)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Func1<CommentResponse, Observable<List<Comment>>>() {
+                    @Override
+                    public Observable<List<Comment>> call(CommentResponse commentResponse) {
+                        return Observable.just(commentResponse.getComments());
+                    }
+                })
+                .subscribe(new Observer<List<Comment>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        apiListener.onError(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<Comment> comments) {
+                        new PersistenceComment(apiListener, comments).execute();
+                    }
+                });
+    }
+
+    protected class PersistenceVote extends AsyncTask<Void, Void, Void> {
+
+        private ApiListener apiListener;
+        private List<Vote> votes;
+
+        protected PersistenceVote(ApiListener apiListener, List<Vote> votes) {
+            this.apiListener = apiListener;
+            this.votes = votes;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            for(Vote vote : votes) {
+                vote.sync();
+
+                databaseRepository.updateUser(vote.getUser());
+                databaseRepository.updateAvatar(vote.getUser().getAvatar());
+            }
+
+//            databaseRepository.updateComments(votes);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            super.onPostExecute(aVoid);
         }
     }
 

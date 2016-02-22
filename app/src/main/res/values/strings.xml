@@ -8,5 +8,10 @@
 
     <string name="navigation_menu_collections">Collections</string>
     <string name="navigation_menu_categories">Categories</string>
+    
+    <!-- POST DETAILS ACTIVITY -->
+
+    <string name="post_details_activity_votes_title">Votes</string>
+    <string name="post_details_activity_comments_title">Comments</string>
 
 </resources>

@@ -14,27 +14,21 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/adapter_post_card_margin"
         android:clipToPadding="false"
-        android:foreground="?android:attr/selectableItemBackground"
         card_view:cardPreventCornerOverlap="false"
         card_view:cardElevation="@dimen/adapter_post_card_elevation"
-        card_view:cardCornerRadius="@dimen/adapter_post_card_radius"
-        android:layout_gravity="end">
+        card_view:cardCornerRadius="@dimen/adapter_post_card_radius">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
+                style="@style/Avatar"
                 android:id="@+id/ivAdapterCommentUser"
-                android:layout_width="@dimen/view_post_details_user_avatar_size"
-                android:layout_height="@dimen/view_post_details_user_avatar_size"
-                android:layout_alignParentTop="true"
-                android:layout_margin="@dimen/adapter_comment_avatar_margin"/>
+                android:layout_alignParentTop="true"/>
 
             <TextView
                 style="@style/DetailsCommentUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/ivAdapterCommentBody"
                 android:layout_toStartOf="@id/ivAdapterCommentBody"
                 android:layout_below="@id/ivAdapterCommentUser"
@@ -43,8 +37,6 @@
             <TextView
                 android:id="@id/ivAdapterCommentBody"
                 style="@style/DetailsCommentBody"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/ivAdapterCommentUser"
                 android:layout_toEndOf="@id/ivAdapterCommentUser"
                 android:text="@{comment.body}"/>

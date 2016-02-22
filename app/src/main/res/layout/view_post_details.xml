@@ -44,9 +44,8 @@
             android:layout_margin="@dimen/view_post_details_info_margin">
 
             <ImageView
-                android:id="@+id/ivViewPostDetailsUser"
-                android:layout_width="@dimen/view_post_details_user_avatar_size"
-                android:layout_height="@dimen/view_post_details_user_avatar_size"/>
+                style="@style/Avatar"
+                android:id="@+id/ivViewPostDetailsUser"/>
 
             <TextView
                 style="@style/CardInfoText"

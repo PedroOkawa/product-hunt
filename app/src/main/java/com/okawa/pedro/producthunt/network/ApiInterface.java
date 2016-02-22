@@ -46,6 +46,7 @@ public interface ApiInterface {
     String FIELD_PER_PAGE = "per_page";
 
     String PATH_POST_COMMENTS = "posts/{postId}/comments";
+    String PATH_POST_VOTES = "posts/{postId}/votes";
     String PATH_POST_ID = "postId";
 
     @FormUrlEncoded
@@ -70,4 +71,9 @@ public interface ApiInterface {
     Observable<CommentResponse> commentsByPost(@Header(FIELD_AUTHORIZATION) String authorization,
                                                @Path(PATH_POST_ID) long postId,
                                                @QueryMap Map<String, String> parameters);
+
+    @GET(PATH_POST_VOTES)
+    Observable<CommentResponse> votesByPost(@Header(FIELD_AUTHORIZATION) String authorization,
+                                            @Path(PATH_POST_ID) long postId,
+                                            @QueryMap Map<String, String> parameters);
 }

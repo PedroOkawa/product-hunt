@@ -99,13 +99,11 @@ public class DatabaseRepository {
         commentDao.insertOrReplaceInTx(comments);
     }
 
-    public List<Comment> selectCommentsFromPost(int offset, long postId) {
+    public List<Comment> selectCommentsFromPost(long postId) {
         return commentDao
                 .queryBuilder()
                 .orderDesc(CommentDao.Properties.CreatedAt)
                 .where(CommentDao.Properties.PostId.eq(postId))
-                .limit(DatabaseModule.SELECT_LIMIT)
-                .offset(offset)
                 .list();
     }
 

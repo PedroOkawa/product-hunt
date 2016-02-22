@@ -69,6 +69,13 @@ public class GreenDaoManager {
     private static final String FIELD_COMMENT_USER = "user";
     private static final String FIELD_COMMENT_CHILDREN = "children";
 
+    private static final String ENTITY_VOTE = "Vote";
+    private static final String FIELD_VOTE_ID = "id";
+    private static final String FIELD_VOTE_CREATED_AT = "createdAt";
+    private static final String FIELD_VOTE_USER_ID = "userId";
+    private static final String FIELD_VOTE_POST_ID = "postId";
+    private static final String FIELD_VOTE_USER = "user";
+
     public static void main(String[] args) throws Exception {
         Schema schema = new Schema(DATABASE_VERSION, PACKAGE_NAME);
         createTables(schema);
@@ -167,6 +174,17 @@ public class GreenDaoManager {
         comment.addLongProperty(FIELD_COMMENT_POST_ID);
 
         comment.setHasKeepSections(true);
+        
+        /* VOTE */
+        
+        Entity vote = schema.addEntity(ENTITY_VOTE);
+        
+        vote.addLongProperty(FIELD_VOTE_ID).primaryKey();
+        Property voteUserIdFK = vote.addLongProperty(FIELD_VOTE_USER_ID).getProperty();
+        vote.addDateProperty(FIELD_VOTE_CREATED_AT);
+        vote.addLongProperty(FIELD_VOTE_POST_ID);
+        
+        vote.setHasKeepSections(true);
 
         /* RELATIONSHIP USER 1 > AVATAR 1 */
 
@@ -195,6 +213,10 @@ public class GreenDaoManager {
         /* RELATIONSHIP COMMENT 1 > USER 1 */
 
         comment.addToOne(user, commentUserIdFK, FIELD_COMMENT_USER);
+
+        /* RELATIONSHIP VOTE 1 > USER 1 */
+
+        vote.addToOne(user, voteUserIdFK, FIELD_VOTE_USER);
     }
 
 }
