@@ -2,6 +2,7 @@ package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
@@ -301,9 +302,12 @@ public class ApiManager {
 
             databaseRepository.updateUser(comment.getUser());
             databaseRepository.updateAvatar(comment.getUser().getAvatar());
+
             for(Comment child : comment.getChildren()) {
                 syncChildren(child);
             }
+
+            databaseRepository.updateComments(comment.getChildren());
         }
     }
 

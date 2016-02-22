@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.ui.post;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
@@ -46,5 +47,21 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
                 .getLongExtra(CallManager.BUNDLE_POST_DETAILS_ID, Long.MIN_VALUE);
 
         postDetailsPresenter.initialize(binding, postId, getLayoutInflater());
+    }
+
+    @Override
+    public void onRequest() {
+        binding.pbActivityPostDetails.show();
+    }
+
+    @Override
+    public void onComplete() {
+        binding.pbActivityPostDetails.hide();
+    }
+
+    @Override
+    public void onError(String error) {
+        binding.pbActivityPostDetails.hide();
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }

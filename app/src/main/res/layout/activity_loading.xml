@@ -7,10 +7,7 @@
 
         <android.support.v4.widget.ContentLoadingProgressBar
             android:id="@+id/pbActivityLoading"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+            style="@style/ContentLoading" />
 
     </RelativeLayout>
 

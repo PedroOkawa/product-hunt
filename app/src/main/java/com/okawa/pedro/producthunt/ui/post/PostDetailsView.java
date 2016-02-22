@@ -5,5 +5,8 @@ package com.okawa.pedro.producthunt.ui.post;
  */
 public interface PostDetailsView {
 
+    void onRequest();
+    void onComplete();
+    void onError(String error);
 
 }

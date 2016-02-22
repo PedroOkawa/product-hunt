@@ -140,7 +140,6 @@ public class Vote {
     public void sync() {
         setUser(user);
     }
-
     // KEEP METHODS END
 
 }

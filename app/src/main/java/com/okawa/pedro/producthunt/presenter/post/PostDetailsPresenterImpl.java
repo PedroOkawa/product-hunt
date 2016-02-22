@@ -4,6 +4,8 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ViewStubCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -98,14 +100,21 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
         binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
 
-        apiManager.requestCommentsByPost(this, postId);
+        requestComments();
+    }
+
+    private void requestComments() {
+        postDetailsView.onRequest();
+        apiManager.requestCommentsByPost(this, post.getId());
     }
 
     private void printComment(Comment comment, int indentation) {
         addCommentView(comment, indentation);
         indentation += INDENTATION_RATE;
-        for(Comment child : comment.getChildren()) {
-            printComment(child, indentation);
+        if(comment.containsChildren()) {
+            for (Comment child : comment.getChildren()) {
+                printComment(child, indentation);
+            }
         }
     }
 
@@ -135,10 +144,11 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         for(Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
             printComment(comment, 0);
         }
+        postDetailsView.onComplete();
     }
 
     @Override
     public void onError(String error) {
-
+        postDetailsView.onError(error);
     }
 }

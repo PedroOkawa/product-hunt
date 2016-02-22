@@ -30,10 +30,11 @@ public class CommentDao extends AbstractDao<Comment, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property UserId = new Property(1, Long.class, "userId", false, "USER_ID");
-        public final static Property Body = new Property(2, String.class, "body", false, "BODY");
-        public final static Property CreatedAt = new Property(3, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property ParentCommentId = new Property(4, Long.class, "parentCommentId", false, "PARENT_COMMENT_ID");
-        public final static Property PostId = new Property(5, Long.class, "postId", false, "POST_ID");
+        public final static Property ParentCommentId = new Property(2, Long.class, "parentCommentId", false, "PARENT_COMMENT_ID");
+        public final static Property Body = new Property(3, String.class, "body", false, "BODY");
+        public final static Property CreatedAt = new Property(4, java.util.Date.class, "createdAt", false, "CREATED_AT");
+        public final static Property ChildCommentsCount = new Property(5, Long.class, "childCommentsCount", false, "CHILD_COMMENTS_COUNT");
+        public final static Property PostId = new Property(6, Long.class, "postId", false, "POST_ID");
     };
 
     private DaoSession daoSession;
@@ -55,10 +56,11 @@ public class CommentDao extends AbstractDao<Comment, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"COMMENT\" (" + //
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"USER_ID\" INTEGER," + // 1: userId
-                "\"BODY\" TEXT," + // 2: body
-                "\"CREATED_AT\" INTEGER," + // 3: createdAt
-                "\"PARENT_COMMENT_ID\" INTEGER," + // 4: parentCommentId
-                "\"POST_ID\" INTEGER);"); // 5: postId
+                "\"PARENT_COMMENT_ID\" INTEGER," + // 2: parentCommentId
+                "\"BODY\" TEXT," + // 3: body
+                "\"CREATED_AT\" INTEGER," + // 4: createdAt
+                "\"CHILD_COMMENTS_COUNT\" INTEGER," + // 5: childCommentsCount
+                "\"POST_ID\" INTEGER);"); // 6: postId
     }
 
     /** Drops the underlying database table. */
@@ -82,24 +84,29 @@ public class CommentDao extends AbstractDao<Comment, Long> {
             stmt.bindLong(2, userId);
         }
  
+        Long parentCommentId = entity.getParentCommentId();
+        if (parentCommentId != null) {
+            stmt.bindLong(3, parentCommentId);
+        }
+ 
         String body = entity.getBody();
         if (body != null) {
-            stmt.bindString(3, body);
+            stmt.bindString(4, body);
         }
  
         java.util.Date createdAt = entity.getCreatedAt();
         if (createdAt != null) {
-            stmt.bindLong(4, createdAt.getTime());
+            stmt.bindLong(5, createdAt.getTime());
         }
  
-        Long parentCommentId = entity.getParentCommentId();
-        if (parentCommentId != null) {
-            stmt.bindLong(5, parentCommentId);
+        Long childCommentsCount = entity.getChildCommentsCount();
+        if (childCommentsCount != null) {
+            stmt.bindLong(6, childCommentsCount);
         }
  
         Long postId = entity.getPostId();
         if (postId != null) {
-            stmt.bindLong(6, postId);
+            stmt.bindLong(7, postId);
         }
     }
 
@@ -121,10 +128,11 @@ public class CommentDao extends AbstractDao<Comment, Long> {
         Comment entity = new Comment( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userId
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // body
-            cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)), // createdAt
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // parentCommentId
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5) // postId
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // parentCommentId
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // body
+            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // createdAt
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // childCommentsCount
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // postId
         );
         return entity;
     }
@@ -134,10 +142,11 @@ public class CommentDao extends AbstractDao<Comment, Long> {
     public void readEntity(Cursor cursor, Comment entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setBody(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setCreatedAt(cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)));
-        entity.setParentCommentId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
-        entity.setPostId(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setParentCommentId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setBody(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setCreatedAt(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
+        entity.setChildCommentsCount(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setPostId(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }
     
     /** @inheritdoc */
@@ -164,16 +173,16 @@ public class CommentDao extends AbstractDao<Comment, Long> {
     }
     
     /** Internal query to resolve the "children" to-many relationship of Comment. */
-    public List<Comment> _queryComment_Children(Long id) {
+    public List<Comment> _queryComment_Children(Long parentCommentId) {
         synchronized (this) {
             if (comment_ChildrenQuery == null) {
                 QueryBuilder<Comment> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.Id.eq(null));
+                queryBuilder.where(Properties.ParentCommentId.eq(null));
                 comment_ChildrenQuery = queryBuilder.build();
             }
         }
         Query<Comment> query = comment_ChildrenQuery.forCurrentThread();
-        query.setParameter(0, id);
+        query.setParameter(0, parentCommentId);
         return query.list();
     }
 

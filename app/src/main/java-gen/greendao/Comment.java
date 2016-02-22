@@ -21,6 +21,8 @@ public class Comment {
     private String body;
     @SerializedName("created_at")
     private java.util.Date createdAt;
+    @SerializedName("child_comments_count")
+    private Long childCommentsCount;
     @SerializedName("parent_comment_id")
     private Long parentCommentId;
     @SerializedName("user_id")
@@ -47,12 +49,13 @@ public class Comment {
         this.id = id;
     }
 
-    public Comment(Long id, Long userId, String body, java.util.Date createdAt, Long parentCommentId, Long postId) {
+    public Comment(Long id, Long userId, Long parentCommentId, String body, java.util.Date createdAt, Long childCommentsCount, Long postId) {
         this.id = id;
         this.userId = userId;
+        this.parentCommentId = parentCommentId;
         this.body = body;
         this.createdAt = createdAt;
-        this.parentCommentId = parentCommentId;
+        this.childCommentsCount = childCommentsCount;
         this.postId = postId;
     }
 
@@ -78,6 +81,14 @@ public class Comment {
         this.userId = userId;
     }
 
+    public Long getParentCommentId() {
+        return parentCommentId;
+    }
+
+    public void setParentCommentId(Long parentCommentId) {
+        this.parentCommentId = parentCommentId;
+    }
+
     public String getBody() {
         return body;
     }
@@ -94,12 +105,12 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public Long getParentCommentId() {
-        return parentCommentId;
+    public Long getChildCommentsCount() {
+        return childCommentsCount;
     }
 
-    public void setParentCommentId(Long parentCommentId) {
-        this.parentCommentId = parentCommentId;
+    public void setChildCommentsCount(Long childCommentsCount) {
+        this.childCommentsCount = childCommentsCount;
     }
 
     public Long getPostId() {
@@ -182,6 +193,10 @@ public class Comment {
     }
 
     // KEEP METHODS - put your custom methods here
+
+    public boolean containsChildren() {
+        return childCommentsCount > 0;
+    }
 
     public void sync() {
         setUser(user);

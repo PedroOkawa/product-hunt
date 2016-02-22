@@ -63,6 +63,7 @@ public class GreenDaoManager {
     private static final String FIELD_COMMENT_ID = "id";
     private static final String FIELD_COMMENT_BODY = "body";
     private static final String FIELD_COMMENT_CREATED_AT = "createdAt";
+    private static final String FIELD_COMMENT_CHILDREN_COUNT = "childCommentsCount";
     private static final String FIELD_COMMENT_PARENT_ID = "parentCommentId";
     private static final String FIELD_COMMENT_USER_ID = "userId";
     private static final String FIELD_COMMENT_POST_ID = "postId";
@@ -166,11 +167,12 @@ public class GreenDaoManager {
 
         Entity comment = schema.addEntity(ENTITY_COMMENT);
 
-        Property commentIdPK = comment.addLongProperty(FIELD_COMMENT_ID).primaryKey().getProperty();
+        comment.addLongProperty(FIELD_COMMENT_ID).primaryKey();
         Property commentUserIdFK = comment.addLongProperty(FIELD_COMMENT_USER_ID).getProperty();
+        Property commentIdFK = comment.addLongProperty(FIELD_COMMENT_PARENT_ID).getProperty();
         comment.addStringProperty(FIELD_COMMENT_BODY);
         comment.addDateProperty(FIELD_COMMENT_CREATED_AT);
-        comment.addLongProperty(FIELD_COMMENT_PARENT_ID);
+        comment.addLongProperty(FIELD_COMMENT_CHILDREN_COUNT);
         comment.addLongProperty(FIELD_COMMENT_POST_ID);
 
         comment.setHasKeepSections(true);
@@ -208,7 +210,7 @@ public class GreenDaoManager {
 
         /* RELATIONSHIP COMMENT 1 > COMMENT 1 */
 
-        comment.addToMany(comment, commentIdPK, FIELD_COMMENT_CHILDREN);
+        comment.addToMany(comment, commentIdFK, FIELD_COMMENT_CHILDREN);
 
         /* RELATIONSHIP COMMENT 1 > USER 1 */
 
