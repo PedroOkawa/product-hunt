@@ -27,7 +27,7 @@ public class UserDao extends AbstractDao<User, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "ID");
-        public final static Property CreatedAt = new Property(1, String.class, "createdAt", false, "CREATED_AT");
+        public final static Property CreatedAt = new Property(1, java.util.Date.class, "createdAt", false, "CREATED_AT");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property Username = new Property(3, String.class, "username", false, "USERNAME");
         public final static Property Headline = new Property(4, String.class, "headline", false, "HEADLINE");
@@ -52,7 +52,7 @@ public class UserDao extends AbstractDao<User, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" + //
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
-                "\"CREATED_AT\" TEXT," + // 1: createdAt
+                "\"CREATED_AT\" INTEGER," + // 1: createdAt
                 "\"NAME\" TEXT," + // 2: name
                 "\"USERNAME\" TEXT," + // 3: username
                 "\"HEADLINE\" TEXT," + // 4: headline
@@ -76,9 +76,9 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindLong(1, id);
         }
  
-        String createdAt = entity.getCreatedAt();
+        java.util.Date createdAt = entity.getCreatedAt();
         if (createdAt != null) {
-            stmt.bindString(2, createdAt);
+            stmt.bindLong(2, createdAt.getTime());
         }
  
         String name = entity.getName();
@@ -124,7 +124,7 @@ public class UserDao extends AbstractDao<User, Long> {
     public User readEntity(Cursor cursor, int offset) {
         User entity = new User( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // createdAt
+            cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)), // createdAt
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // username
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // headline
@@ -138,7 +138,7 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setCreatedAt(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setCreatedAt(cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setUsername(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setHeadline(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));

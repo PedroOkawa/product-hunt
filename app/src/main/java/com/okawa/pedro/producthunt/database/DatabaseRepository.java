@@ -13,6 +13,8 @@ import greendao.Avatar;
 import greendao.AvatarDao;
 import greendao.Category;
 import greendao.CategoryDao;
+import greendao.Comment;
+import greendao.CommentDao;
 import greendao.DaoSession;
 import greendao.Post;
 import greendao.PostDao;
@@ -38,6 +40,7 @@ public class DatabaseRepository {
 
     private AvatarDao avatarDao;
     private CategoryDao categoryDao;
+    private CommentDao commentDao;
     private PostDao postDao;
     private ScreenshotDao screenshotDao;
     private SessionDao sessionDao;
@@ -47,6 +50,7 @@ public class DatabaseRepository {
     public DatabaseRepository(DaoSession daoSession) {
         this.avatarDao = daoSession.getAvatarDao();
         this.categoryDao = daoSession.getCategoryDao();
+        this.commentDao = daoSession.getCommentDao();
         this.postDao = daoSession.getPostDao();
         this.screenshotDao = daoSession.getScreenshotDao();
         this.sessionDao = daoSession.getSessionDao();
@@ -89,6 +93,22 @@ public class DatabaseRepository {
         return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getSlug();
     }
 
+    /* COMMENT */
+
+    public void updateComments(Collection<Comment> comments) {
+        commentDao.insertOrReplaceInTx(comments);
+    }
+
+    public List<Comment> selectCommentsFromPost(int offset, long postId) {
+        return commentDao
+                .queryBuilder()
+                .orderDesc(CommentDao.Properties.CreatedAt)
+                .where(CommentDao.Properties.PostId.eq(postId))
+                .limit(DatabaseModule.SELECT_LIMIT)
+                .offset(offset)
+                .list();
+    }
+
     /* POST */
 
     public void updatePosts(Collection<Post> posts) {
@@ -98,14 +118,14 @@ public class DatabaseRepository {
     public List<Post> selectPostByDate(Date date) {
         return postDao
                 .queryBuilder()
-                .where(PostDao.Properties.Date.eq(convertDateToString(date)))
+                .where(PostDao.Properties.CreatedAt.eq(convertDateToString(date)))
                 .list();
     }
 
     public List<Post> selectAllPostsPaged(int offset) {
         return postDao
                 .queryBuilder()
-                .orderDesc(PostDao.Properties.Date)
+                .orderDesc(PostDao.Properties.CreatedAt)
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset)
                 .list();
@@ -114,7 +134,7 @@ public class DatabaseRepository {
     public List<Post> selectPostsByCategoryPaged(int offset) {
         return postDao
                 .queryBuilder()
-                .orderDesc(PostDao.Properties.Date)
+                .orderDesc(PostDao.Properties.CreatedAt)
                 .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset)

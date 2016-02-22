@@ -29,7 +29,7 @@ public class AdapterPost extends BindingAdapter<Post, AdapterPostBinding> {
     }
 
     @Override
-    protected void doOnBindViewHolder(BindViewHolder bindViewHolder, AdapterPostBinding binding, final Post post, int position) {
+    protected void doOnBindViewHolder(BindViewHolder bindViewHolder, final AdapterPostBinding binding, final Post post, int position) {
 
         /* DEFINE BINDING POST VARIABLE */
 
@@ -55,7 +55,7 @@ public class AdapterPost extends BindingAdapter<Post, AdapterPostBinding> {
         binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new PostSelectEvent(post.getId()));
+                EventBus.getDefault().post(new PostSelectEvent(post.getId(), binding.viewPostDetails.llViewPostDetails));
             }
         });
     }

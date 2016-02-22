@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.di.module;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.network.ApiInterface;
@@ -27,6 +29,12 @@ public class ApiModule {
 
     @Singleton
     @Provides
+    public Gson providesGson() {
+        return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSzzz").create();
+    }
+
+    @Singleton
+    @Provides
     public OkHttpClient providesOkHttpClient() {
         return new OkHttpClient
                 .Builder()
@@ -36,10 +44,10 @@ public class ApiModule {
 
     @Singleton
     @Provides
-    public ApiInterface provideApiInterface(OkHttpClient okHttpClient) {
+    public ApiInterface provideApiInterface(Gson gson, OkHttpClient okHttpClient) {
         return new Retrofit
                 .Builder()
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(okHttpClient)
                 .baseUrl(ApiInterface.BASE_URL)

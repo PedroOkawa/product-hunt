@@ -1,7 +1,10 @@
 package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.okawa.pedro.producthunt.ui.main.MainActivity;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsActivity;
@@ -17,10 +20,12 @@ public class CallManager {
     }
 
     public static final String BUNDLE_POST_DETAILS_ID = "BUNDLE_POST_DETAILS_ID";
-    public void postDetails(AppCompatActivity activity, long postId) {
+    private static final String TRANSITION_POST_VIEW = "TRANSITION_POST_VIEW";
+    public void postDetails(AppCompatActivity activity, long postId, View view) {
         Intent intent = new Intent(activity, PostDetailsActivity.class);
         intent.putExtra(BUNDLE_POST_DETAILS_ID, postId);
-        activity.startActivity(intent);
-    }
 
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, view, TRANSITION_POST_VIEW);
+        ActivityCompat.startActivity(activity, intent, options.toBundle());
+    }
 }

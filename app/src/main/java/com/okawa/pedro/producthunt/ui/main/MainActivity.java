@@ -77,8 +77,8 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
-    public void openPostDetails(long postId) {
-        callManager.postDetails(this, postId);
+    public void openPostDetails(long postId, View view) {
+        callManager.postDetails(this, postId, view);
     }
 
     @Override

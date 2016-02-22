@@ -1,7 +1,5 @@
 package greendao;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 import greendao.DaoSession;
@@ -23,8 +21,8 @@ public class Post {
     private Long thumbnailIdFK;
     @SerializedName("category_id")
     private Long categoryId;
-    @SerializedName("day")
-    private String date;
+    @SerializedName("created_at")
+    private java.util.Date createdAt;
     private String name;
     private String tagline;
     @SerializedName("votes_count")
@@ -56,12 +54,12 @@ public class Post {
         this.id = id;
     }
 
-    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryId, String date, String name, String tagline, Long votesCount, String redirectUrl) {
+    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryId, java.util.Date createdAt, String name, String tagline, Long votesCount, String redirectUrl) {
         this.id = id;
         this.userIdFK = userIdFK;
         this.thumbnailIdFK = thumbnailIdFK;
         this.categoryId = categoryId;
-        this.date = date;
+        this.createdAt = createdAt;
         this.name = name;
         this.tagline = tagline;
         this.votesCount = votesCount;
@@ -106,12 +104,12 @@ public class Post {
         this.categoryId = categoryId;
     }
 
-    public String getDate() {
-        return date;
+    public java.util.Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setCreatedAt(java.util.Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getName() {
@@ -249,6 +247,7 @@ public class Post {
 
     public void sync() {
         setUser(user);
+        getUser().sync();
         thumbnail.setId(id);
         setThumbnail(thumbnail);
         screenshot.setId(id);

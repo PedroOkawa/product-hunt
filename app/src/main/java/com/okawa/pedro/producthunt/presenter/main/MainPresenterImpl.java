@@ -160,7 +160,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     @Subscribe
     public void onEvent(PostSelectEvent event) {
-        mainView.openPostDetails(event.getPostId());
+        mainView.openPostDetails(event.getPostId(), event.getView());
     }
 
     protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {

@@ -8,6 +8,7 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/llViewPostDetails"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -33,10 +34,6 @@
                     style="@style/CardTitle"
                     android:text="@{post.name}"/>
 
-                <TextView
-                    style="@style/CardBody"
-                    android:text="@{post.tagline}"/>
-
             </LinearLayout>
 
         </FrameLayout>
@@ -55,10 +52,13 @@
                 style="@style/CardInfoText"
                 android:layout_toRightOf="@+id/ivViewPostDetailsUser"
                 android:layout_toEndOf="@+id/ivViewPostDetailsUser"
+                android:layout_toLeftOf="@+id/tvPostVotes"
+                android:layout_toStartOf="@+id/tvPostVotes"
                 android:text="@{post.user.name}"/>
 
             <TextView
                 style="@style/CardInfoText"
+                android:id="@+id/tvPostVotes"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:drawableLeft="@mipmap/ic_thumb_up"

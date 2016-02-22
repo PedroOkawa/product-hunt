@@ -23,4 +23,8 @@
 
     <dimen name="card_style_text_padding">4dp</dimen>
 
+    <!-- DETAILS STYLE -->
+
+    <dimen name="details_style_text_padding">6dp</dimen>
+
 </resources>

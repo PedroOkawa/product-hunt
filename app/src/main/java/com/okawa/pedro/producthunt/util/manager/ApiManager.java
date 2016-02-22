@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
+import com.okawa.pedro.producthunt.model.response.CommentResponse;
 import com.okawa.pedro.producthunt.model.response.PostResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import greendao.Category;
+import greendao.Comment;
 import greendao.Post;
 import greendao.Session;
 import rx.Observable;
@@ -34,6 +36,7 @@ public class ApiManager {
     public static final int PROCESS_SESSION_ID = 0x0000;
     public static final int PROCESS_CATEGORIES_ID = 0x0001;
     public static final int PROCESS_POSTS_ID = 0x0002;
+    public static final int PROCESS_COMMENTS_ID = 0x0003;
 
     private static final String API_PROPERTIES = "api.properties";
     private static final String API_ID = "api_id";
@@ -54,6 +57,8 @@ public class ApiManager {
         this.configHelper = configHelper;
         this.databaseRepository = databaseRepository;
     }
+
+    /* SESSION */
 
     public void validateSession(final ApiListener apiListener) {
         if(!configHelper.isConnected(context)) {
@@ -96,6 +101,8 @@ public class ApiManager {
                 });
     }
 
+    /* CATEGORY */
+
     public void requestCategories(final ApiListener apiListener) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_CATEGORIES_ID);
@@ -130,7 +137,9 @@ public class ApiManager {
                 });
     }
 
-    public void requestPostsByDate(final ApiListener apiListener, Date date) {
+    /* POST */
+
+    public void requestPostsByDate(ApiListener apiListener, Date date) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_POSTS_ID);
             return;
@@ -145,16 +154,14 @@ public class ApiManager {
         requestPostsByCategory(apiListener, parameters);
     }
 
-    public void requestPostsByDaysAgo(final ApiListener apiListener) {
+    public void requestPostsByDaysAgo(ApiListener apiListener) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_POSTS_ID);
             return;
         }
 
         Map<String, String> parameters = new HashMap<>();
-
         parameters.put(ApiInterface.FIELD_DAYS_AGO, databaseRepository.getDaysAgo());
-
         requestPostsByCategory(apiListener, parameters);
     }
 
@@ -184,17 +191,17 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        new PersistenceTask(apiListener, posts).execute();
+                        new PersistencePost(apiListener, posts).execute();
                     }
                 });
     }
 
-    protected class PersistenceTask extends AsyncTask<Void, Void, Void> {
+    protected class PersistencePost extends AsyncTask<Void, Void, Void> {
 
         private ApiListener apiListener;
         private List<Post> posts;
 
-        protected PersistenceTask(ApiListener apiListener, List<Post> posts) {
+        protected PersistencePost(ApiListener apiListener, List<Post> posts) {
             this.apiListener = apiListener;
             this.posts = posts;
         }
@@ -204,7 +211,6 @@ public class ApiManager {
 
             for(Post post : posts) {
                 post.sync();
-                post.getUser().sync();
 
                 databaseRepository.updateScreenshot(post.getScreenshot());
                 databaseRepository.updateThumbnail(post.getThumbnail());
@@ -221,6 +227,77 @@ public class ApiManager {
         protected void onPostExecute(Void aVoid) {
             apiListener.onDataLoaded(PROCESS_POSTS_ID);
             super.onPostExecute(aVoid);
+        }
+    }
+
+    /* COMMENTS */
+
+    public void requestCommentsByPost(final ApiListener apiListener, long postId) {
+        apiInterface
+                .commentsByPost(databaseRepository.selectSession().getToken(), postId, null)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Func1<CommentResponse, Observable<List<Comment>>>() {
+                    @Override
+                    public Observable<List<Comment>> call(CommentResponse commentResponse) {
+                        return Observable.just(commentResponse.getComments());
+                    }
+                })
+                .subscribe(new Observer<List<Comment>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        apiListener.onError(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<Comment> comments) {
+                        new PersistenceComment(apiListener, comments).execute();
+                    }
+                });
+    }
+
+    protected class PersistenceComment extends AsyncTask<Void, Void, Void> {
+
+        private ApiListener apiListener;
+        private List<Comment> comments;
+
+        protected PersistenceComment(ApiListener apiListener, List<Comment> comments) {
+            this.apiListener = apiListener;
+            this.comments = comments;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            for(Comment comment : comments) {
+                comment.sync();
+                syncChildren(comment);
+            }
+
+            databaseRepository.updateComments(comments);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            super.onPostExecute(aVoid);
+        }
+
+        private void syncChildren(Comment comment) {
+            comment.sync();
+
+            databaseRepository.updateUser(comment.getUser());
+            databaseRepository.updateAvatar(comment.getUser().getAvatar());
+            for(Comment child : comment.getChildren()) {
+                syncChildren(child);
+            }
         }
     }
 

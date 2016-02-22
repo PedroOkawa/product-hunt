@@ -32,7 +32,7 @@ public class PostDao extends AbstractDao<Post, Long> {
         public final static Property UserIdFK = new Property(1, Long.class, "userIdFK", false, "USER_ID_FK");
         public final static Property ThumbnailIdFK = new Property(2, Long.class, "thumbnailIdFK", false, "THUMBNAIL_ID_FK");
         public final static Property CategoryId = new Property(3, Long.class, "categoryId", false, "CATEGORY_ID");
-        public final static Property Date = new Property(4, String.class, "date", false, "DATE");
+        public final static Property CreatedAt = new Property(4, java.util.Date.class, "createdAt", false, "CREATED_AT");
         public final static Property Name = new Property(5, String.class, "name", false, "NAME");
         public final static Property Tagline = new Property(6, String.class, "tagline", false, "TAGLINE");
         public final static Property VotesCount = new Property(7, Long.class, "votesCount", false, "VOTES_COUNT");
@@ -60,7 +60,7 @@ public class PostDao extends AbstractDao<Post, Long> {
                 "\"USER_ID_FK\" INTEGER," + // 1: userIdFK
                 "\"THUMBNAIL_ID_FK\" INTEGER," + // 2: thumbnailIdFK
                 "\"CATEGORY_ID\" INTEGER," + // 3: categoryId
-                "\"DATE\" TEXT," + // 4: date
+                "\"CREATED_AT\" INTEGER," + // 4: createdAt
                 "\"NAME\" TEXT," + // 5: name
                 "\"TAGLINE\" TEXT," + // 6: tagline
                 "\"VOTES_COUNT\" INTEGER," + // 7: votesCount
@@ -98,9 +98,9 @@ public class PostDao extends AbstractDao<Post, Long> {
             stmt.bindLong(4, categoryId);
         }
  
-        String date = entity.getDate();
-        if (date != null) {
-            stmt.bindString(5, date);
+        java.util.Date createdAt = entity.getCreatedAt();
+        if (createdAt != null) {
+            stmt.bindLong(5, createdAt.getTime());
         }
  
         String name = entity.getName();
@@ -144,7 +144,7 @@ public class PostDao extends AbstractDao<Post, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userIdFK
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // thumbnailIdFK
             cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // categoryId
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // date
+            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // createdAt
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // tagline
             cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // votesCount
@@ -160,7 +160,7 @@ public class PostDao extends AbstractDao<Post, Long> {
         entity.setUserIdFK(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setThumbnailIdFK(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
         entity.setCategoryId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
-        entity.setDate(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setCreatedAt(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
         entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setTagline(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setVotesCount(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));

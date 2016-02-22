@@ -41,7 +41,7 @@ public class GreenDaoManager {
     private static final String FIELD_POST_CATEGORY_ID = "categoryId";
     private static final String FIELD_POST_USER_ID = "userIdFK";
     private static final String FIELD_POST_THUMBNAIL_ID = "thumbnailIdFK";
-    private static final String FIELD_POST_DATE = "date";
+    private static final String FIELD_POST_CREATED_AT = "createdAt";
     private static final String FIELD_POST_NAME = "name";
     private static final String FIELD_POST_TAGLINE = "tagline";
     private static final String FIELD_POST_VOTES_COUNT = "votesCount";
@@ -58,6 +58,16 @@ public class GreenDaoManager {
     private static final String FIELD_SCREENSHOT_ID = "id";
     private static final String FIELD_SCREENSHOT_BIG = "small";
     private static final String FIELD_SCREENSHOT_SMALL = "big";
+
+    private static final String ENTITY_COMMENT = "Comment";
+    private static final String FIELD_COMMENT_ID = "id";
+    private static final String FIELD_COMMENT_BODY = "body";
+    private static final String FIELD_COMMENT_CREATED_AT = "createdAt";
+    private static final String FIELD_COMMENT_PARENT_ID = "parentCommentId";
+    private static final String FIELD_COMMENT_USER_ID = "userId";
+    private static final String FIELD_COMMENT_POST_ID = "postId";
+    private static final String FIELD_COMMENT_USER = "user";
+    private static final String FIELD_COMMENT_CHILDREN = "children";
 
     public static void main(String[] args) throws Exception {
         Schema schema = new Schema(DATABASE_VERSION, PACKAGE_NAME);
@@ -92,7 +102,7 @@ public class GreenDaoManager {
         Entity user = schema.addEntity(ENTITY_USER);
 
         Property userIdPK = user.addLongProperty(FIELD_USER_ID).primaryKey().getProperty();
-        user.addStringProperty(FIELD_USER_CREATED_AT);
+        user.addDateProperty(FIELD_USER_CREATED_AT);
         user.addStringProperty(FIELD_USER_NAME);
         user.addStringProperty(FIELD_USER_USERNAME);
         user.addStringProperty(FIELD_USER_HEADLINE);
@@ -115,10 +125,10 @@ public class GreenDaoManager {
         Entity post = schema.addEntity(ENTITY_POST);
 
         Property postIdPK = post.addLongProperty(FIELD_POST_ID).primaryKey().getProperty();
-        Property userIdFK = post.addLongProperty(FIELD_POST_USER_ID).getProperty();
-        Property thumbnailIdFK = post.addLongProperty(FIELD_POST_THUMBNAIL_ID).getProperty();
+        Property postUserIdFK = post.addLongProperty(FIELD_POST_USER_ID).getProperty();
+        Property postThumbnailIdFK = post.addLongProperty(FIELD_POST_THUMBNAIL_ID).getProperty();
         post.addLongProperty(FIELD_POST_CATEGORY_ID);
-        post.addStringProperty(FIELD_POST_DATE);
+        post.addDateProperty(FIELD_POST_CREATED_AT);
         post.addStringProperty(FIELD_POST_NAME);
         post.addStringProperty(FIELD_POST_TAGLINE);
         post.addLongProperty(FIELD_POST_VOTES_COUNT);
@@ -145,6 +155,19 @@ public class GreenDaoManager {
 
         screenshot.setHasKeepSections(true);
 
+        /* COMMENTS */
+
+        Entity comment = schema.addEntity(ENTITY_COMMENT);
+
+        Property commentIdPK = comment.addLongProperty(FIELD_COMMENT_ID).primaryKey().getProperty();
+        Property commentUserIdFK = comment.addLongProperty(FIELD_COMMENT_USER_ID).getProperty();
+        comment.addStringProperty(FIELD_COMMENT_BODY);
+        comment.addDateProperty(FIELD_COMMENT_CREATED_AT);
+        comment.addLongProperty(FIELD_COMMENT_PARENT_ID);
+        comment.addLongProperty(FIELD_COMMENT_POST_ID);
+
+        comment.setHasKeepSections(true);
+
         /* RELATIONSHIP USER 1 > AVATAR 1 */
 
         user.addToOne(avatar, userIdPK, FIELD_USER_AVATAR);
@@ -155,15 +178,23 @@ public class GreenDaoManager {
 
         /* RELATIONSHIP POST 1 > USER 1 */
 
-        post.addToOne(user, userIdFK, FIELD_POST_USER);
+        post.addToOne(user, postUserIdFK, FIELD_POST_USER);
 
         /* RELATIONSHIP POST 1 > THUMBNAIL 1 */
 
-        post.addToOne(thumbnail, thumbnailIdFK, FIELD_POST_THUMBNAIL);
+        post.addToOne(thumbnail, postThumbnailIdFK, FIELD_POST_THUMBNAIL);
 
         /* RELATIONSHIP POST 1 > SCREENSHOT 1 */
 
         post.addToOne(screenshot, postIdPK, FIELD_POST_SCREENSHOT);
+
+        /* RELATIONSHIP COMMENT 1 > COMMENT 1 */
+
+        comment.addToMany(comment, commentIdPK, FIELD_COMMENT_CHILDREN);
+
+        /* RELATIONSHIP COMMENT 1 > USER 1 */
+
+        comment.addToOne(user, commentUserIdFK, FIELD_COMMENT_USER);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.network;
 
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
+import com.okawa.pedro.producthunt.model.response.CommentResponse;
 import com.okawa.pedro.producthunt.model.response.PostResponse;
 
 import java.util.Map;
@@ -44,6 +45,9 @@ public interface ApiInterface {
     String FIELD_NEWER = "newer";
     String FIELD_PER_PAGE = "per_page";
 
+    String PATH_POST_COMMENTS = "posts/{postId}/comments";
+    String PATH_POST_ID = "postId";
+
     @FormUrlEncoded
     @POST(PATH_TOKEN)
     Observable<Session> grantAccess(@Field(FIELD_CLIENT_ID) String clientId,
@@ -61,4 +65,9 @@ public interface ApiInterface {
     Observable<PostResponse> postsByCategory(@Header(FIELD_AUTHORIZATION) String authorization,
                                              @Path(PATH_CATEGORY_ID) String categoryId,
                                              @QueryMap Map<String, String> parameters);
+
+    @GET(PATH_POST_COMMENTS)
+    Observable<CommentResponse> commentsByPost(@Header(FIELD_AUTHORIZATION) String authorization,
+                                               @Path(PATH_POST_ID) long postId,
+                                               @QueryMap Map<String, String> parameters);
 }

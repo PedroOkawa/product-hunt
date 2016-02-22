@@ -11,57 +11,55 @@ import de.greenrobot.dao.DaoException;
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
 /**
- * Entity mapped to table "USER".
+ * Entity mapped to table "COMMENT".
  */
-public class User {
+public class Comment {
 
     // KEEP FIELDS - put your custom fields here
 
     private Long id;
+    private String body;
     @SerializedName("created_at")
     private java.util.Date createdAt;
-    private String name;
-    private String username;
-    private String headline;
-    @SerializedName("twitter_username")
-    private String twitterUser;
-    @SerializedName("profile_url")
-    private String profileUrl;
-
+    @SerializedName("parent_comment_id")
+    private Long parentCommentId;
+    @SerializedName("user_id")
+    private Long userId;
+    @SerializedName("post_id")
+    private Long postId;
     /** Used to resolve relations */
     private transient DaoSession daoSession;
 
     /** Used for active entity operations. */
-    private transient UserDao myDao;
+    private transient CommentDao myDao;
 
-    @SerializedName("image_url")
-    private Avatar avatar;
-    private Long avatar__resolvedKey;
+    private User user;
+    private Long user__resolvedKey;
 
-    private List<Post> posts;
+    @SerializedName("child_comments")
+    private List<Comment> children;
     // KEEP FIELDS END
 
-    public User() {
+    public Comment() {
     }
 
-    public User(Long id) {
+    public Comment(Long id) {
         this.id = id;
     }
 
-    public User(Long id, java.util.Date createdAt, String name, String username, String headline, String twitterUser, String profileUrl) {
+    public Comment(Long id, Long userId, String body, java.util.Date createdAt, Long parentCommentId, Long postId) {
         this.id = id;
+        this.userId = userId;
+        this.body = body;
         this.createdAt = createdAt;
-        this.name = name;
-        this.username = username;
-        this.headline = headline;
-        this.twitterUser = twitterUser;
-        this.profileUrl = profileUrl;
+        this.parentCommentId = parentCommentId;
+        this.postId = postId;
     }
 
     /** called by internal mechanisms, do not call yourself. */
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getUserDao() : null;
+        myDao = daoSession != null ? daoSession.getCommentDao() : null;
     }
 
     public Long getId() {
@@ -72,6 +70,22 @@ public class User {
         this.id = id;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
     public java.util.Date getCreatedAt() {
         return createdAt;
     }
@@ -80,91 +94,67 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public String getName() {
-        return name;
+    public Long getParentCommentId() {
+        return parentCommentId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setParentCommentId(Long parentCommentId) {
+        this.parentCommentId = parentCommentId;
     }
 
-    public String getUsername() {
-        return username;
+    public Long getPostId() {
+        return postId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getHeadline() {
-        return headline;
-    }
-
-    public void setHeadline(String headline) {
-        this.headline = headline;
-    }
-
-    public String getTwitterUser() {
-        return twitterUser;
-    }
-
-    public void setTwitterUser(String twitterUser) {
-        this.twitterUser = twitterUser;
-    }
-
-    public String getProfileUrl() {
-        return profileUrl;
-    }
-
-    public void setProfileUrl(String profileUrl) {
-        this.profileUrl = profileUrl;
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 
     /** To-one relationship, resolved on first access. */
-    public Avatar getAvatar() {
-        Long __key = this.id;
-        if (avatar__resolvedKey == null || !avatar__resolvedKey.equals(__key)) {
+    public User getUser() {
+        Long __key = this.userId;
+        if (user__resolvedKey == null || !user__resolvedKey.equals(__key)) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            AvatarDao targetDao = daoSession.getAvatarDao();
-            Avatar avatarNew = targetDao.load(__key);
+            UserDao targetDao = daoSession.getUserDao();
+            User userNew = targetDao.load(__key);
             synchronized (this) {
-                avatar = avatarNew;
-            	avatar__resolvedKey = __key;
+                user = userNew;
+            	user__resolvedKey = __key;
             }
         }
-        return avatar;
+        return user;
     }
 
-    public void setAvatar(Avatar avatar) {
+    public void setUser(User user) {
         synchronized (this) {
-            this.avatar = avatar;
-            id = avatar == null ? null : avatar.getId();
-            avatar__resolvedKey = id;
+            this.user = user;
+            userId = user == null ? null : user.getId();
+            user__resolvedKey = userId;
         }
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */
-    public List<Post> getPosts() {
-        if (posts == null) {
+    public List<Comment> getChildren() {
+        if (children == null) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            PostDao targetDao = daoSession.getPostDao();
-            List<Post> postsNew = targetDao._queryUser_Posts(id);
+            CommentDao targetDao = daoSession.getCommentDao();
+            List<Comment> childrenNew = targetDao._queryComment_Children(id);
             synchronized (this) {
-                if(posts == null) {
-                    posts = postsNew;
+                if(children == null) {
+                    children = childrenNew;
                 }
             }
         }
-        return posts;
+        return children;
     }
 
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    public synchronized void resetPosts() {
-        posts = null;
+    public synchronized void resetChildren() {
+        children = null;
     }
 
     /** Convenient call for {@link AbstractDao#delete(Object)}. Entity must attached to an entity context. */
@@ -194,8 +184,8 @@ public class User {
     // KEEP METHODS - put your custom methods here
 
     public void sync() {
-        avatar.setId(id);
-        setAvatar(avatar);
+        setUser(user);
+        getUser().sync();
     }
     // KEEP METHODS END
 
