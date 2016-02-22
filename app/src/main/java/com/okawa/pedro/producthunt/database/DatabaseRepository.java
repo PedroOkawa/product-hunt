@@ -1,9 +1,11 @@
 package com.okawa.pedro.producthunt.database;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
+import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -40,6 +42,8 @@ public class DatabaseRepository {
     private Category currentCategory;
     private int daysAgo;
 
+    private Date lastDate;
+
     private AvatarDao avatarDao;
     private CategoryDao categoryDao;
     private CommentDao commentDao;
@@ -50,7 +54,9 @@ public class DatabaseRepository {
     private UserDao userDao;
     private VoteDao voteDao;
 
-    public DatabaseRepository(DaoSession daoSession) {
+    private ConfigHelper configHelper;
+
+    public DatabaseRepository(DaoSession daoSession, ConfigHelper configHelper) {
         this.avatarDao = daoSession.getAvatarDao();
         this.categoryDao = daoSession.getCategoryDao();
         this.commentDao = daoSession.getCommentDao();
@@ -60,6 +66,11 @@ public class DatabaseRepository {
         this.thumbnailDao = daoSession.getThumbnailDao();
         this.userDao = daoSession.getUserDao();
         this.voteDao = daoSession.getVoteDao();
+
+        this.configHelper = configHelper;
+
+        resetDaysAgo();
+        resetLastDate();
     }
 
     /* AVATAR */
@@ -120,7 +131,7 @@ public class DatabaseRepository {
     public List<Post> selectPostByDate(Date date) {
         return postDao
                 .queryBuilder()
-                .where(PostDao.Properties.CreatedAt.eq(convertDateToString(date)))
+                .where(PostDao.Properties.CreatedAt.eq(date))
                 .list();
     }
 
@@ -133,14 +144,15 @@ public class DatabaseRepository {
                 .list();
     }
 
-    public List<Post> selectPostsByCategoryPaged(int offset) {
-        return postDao
+    public List<PostContent> selectPostsByCategoryPaged(int offset) {
+        List<Post> posts = postDao
                 .queryBuilder()
                 .orderDesc(PostDao.Properties.CreatedAt)
                 .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset)
                 .list();
+        return defineHeaders(posts, offset);
     }
 
     public Post selectPostById(long id) {
@@ -200,11 +212,7 @@ public class DatabaseRepository {
                 .list();
     }
 
-    /* DATE FORMAT */
-
-    public String convertDateToString(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
-    }
+    /* DAYS AGO */
 
     public void addDayAgo() {
         daysAgo++;
@@ -218,20 +226,32 @@ public class DatabaseRepository {
         return String.valueOf(daysAgo);
     }
 
-    public boolean checkIsToday(Date date) {
-        return removeTime(new Date()).compareTo(removeTime(date)) == 0;
+    /* POST CONTENT */
+
+    private List<PostContent> defineHeaders(List<Post> posts, int offset) {
+        List<PostContent> postContents = new ArrayList<>();
+
+        for(Post post : posts) {
+            PostContent postContent = new PostContent();
+
+            if((posts.indexOf(post) == 0 && offset == 0 && configHelper.checkIsToday(lastDate)) ||
+                    !(configHelper.checkSameDate(post.getCreatedAt(), lastDate))) {
+                postContent.setIsHeader(true);
+                postContent.setHeader(configHelper.getDateString(post.getCreatedAt()));
+                lastDate = post.getCreatedAt();
+            } else {
+                postContent.setIsHeader(false);
+                postContent.setPost(post);
+            }
+
+            postContents.add(postContent);
+        }
+
+        return postContents;
     }
 
-    private Date removeTime(Date date) {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTime();
+    public void resetLastDate() {
+        this.lastDate = new Date();
     }
 
 }

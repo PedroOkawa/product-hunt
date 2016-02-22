@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.util.adapter;
+package com.okawa.pedro.producthunt.util.adapter.common;
 
 import android.support.v7.widget.RecyclerView;
 

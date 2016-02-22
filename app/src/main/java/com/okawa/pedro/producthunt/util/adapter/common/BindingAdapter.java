@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.util.adapter;
+package com.okawa.pedro.producthunt.util.adapter.common;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -19,13 +19,13 @@ public abstract class BindingAdapter<T, K extends ViewDataBinding> extends BaseA
         super(data);
     }
 
-    protected abstract @LayoutRes int layoutToInflate();
+    protected abstract @LayoutRes int layoutToInflate(int viewType);
 
     protected abstract void doOnBindViewHolder(BindViewHolder bindViewHolder, K binding, T item, int position);
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(layoutToInflate(), parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutToInflate(viewType), parent, false);
         return new BindViewHolder(view);
     }
 
@@ -36,7 +36,7 @@ public abstract class BindingAdapter<T, K extends ViewDataBinding> extends BaseA
         bindViewHolder.getBinding().executePendingBindings();
     }
 
-    public class BindViewHolder extends RecyclerView.ViewHolder {
+    protected class BindViewHolder extends RecyclerView.ViewHolder {
         private K mBinding;
 
         public BindViewHolder(View view) {

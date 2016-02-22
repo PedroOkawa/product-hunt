@@ -12,12 +12,14 @@ import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
+import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
+import com.okawa.pedro.producthunt.util.manager.HeaderGridLayoutManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -25,7 +27,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import greendao.Category;
-import greendao.Post;
 
 /**
  * Created by pokawa on 19/02/16.
@@ -41,7 +42,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private Context context;
 
     private AdapterPost adapterPost;
-    private GridLayoutManager gridLayoutManager;
+    private HeaderGridLayoutManager headerGridLayoutManager;
     private OnPostsRecyclerViewListener onPostsRecyclerViewListener;
 
     private OnMenuItemSelectedListener onMenuItemSelectedListener;
@@ -73,12 +74,12 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* RECYCLER VIEW */
 
-        adapterPost = new AdapterPost(new ArrayList<Post>());
-        gridLayoutManager = new GridLayoutManager(context, configHelper.defineSpanCount(context));
-        onPostsRecyclerViewListener = new OnPostsRecyclerViewListener(gridLayoutManager);
+        adapterPost = new AdapterPost(new ArrayList<PostContent>());
+        headerGridLayoutManager = new HeaderGridLayoutManager(context, configHelper, adapterPost);
+        onPostsRecyclerViewListener = new OnPostsRecyclerViewListener(headerGridLayoutManager);
 
         binding.rvActivityMainPosts.setAdapter(adapterPost);
-        binding.rvActivityMainPosts.setLayoutManager(gridLayoutManager);
+        binding.rvActivityMainPosts.setLayoutManager(headerGridLayoutManager);
         binding.rvActivityMainPosts.addOnScrollListener(onPostsRecyclerViewListener);
         binding.srlActivityMainPosts.setOnRefreshListener(new OnPostsRefreshListener());
 
@@ -98,7 +99,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     @Override
     public void updateGridLayoutSpan() {
-        gridLayoutManager.setSpanCount(configHelper.defineSpanCount(context));
+//        headerGridLayoutManager.setSpanCount(configHelper.defineSpanCount(context));
     }
 
     @Override
@@ -164,6 +165,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         adapterPost.reset();
         onPostsRecyclerViewListener.reset();
         databaseRepository.resetDaysAgo();
+        databaseRepository.resetLastDate();
         requestData();
     }
 

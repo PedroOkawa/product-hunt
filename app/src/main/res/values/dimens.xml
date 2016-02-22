@@ -24,6 +24,10 @@
     <dimen name="adapter_comment_card_margin">4dp</dimen>
     <dimen name="adapter_comment_card_radius">2dp</dimen>
 
+    <!-- POST HEADER STYLE  -->
+
+    <dimen name="post_header_style_text_padding">16dp</dimen>
+
     <!-- CARD STYLE -->
 
     <dimen name="card_style_text_padding">4dp</dimen>

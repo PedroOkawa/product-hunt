@@ -150,8 +150,8 @@ public class ApiManager {
 
         Map<String, String> parameters = new HashMap<>();
 
-        if(!databaseRepository.checkIsToday(date)) {
-            parameters.put(ApiInterface.FIELD_DAY, databaseRepository.convertDateToString(date));
+        if(!configHelper.checkIsToday(date)) {
+            parameters.put(ApiInterface.FIELD_DAY, configHelper.convertDateToString(date));
         }
     }
 

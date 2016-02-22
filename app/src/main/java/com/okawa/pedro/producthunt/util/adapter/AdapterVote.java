@@ -3,6 +3,7 @@ package com.okawa.pedro.producthunt.util.adapter;
 import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterVoteBinding;
+import com.okawa.pedro.producthunt.util.adapter.common.BindingAdapter;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class AdapterVote extends BindingAdapter<Vote, AdapterVoteBinding> {
     }
 
     @Override
-    protected int layoutToInflate() {
+    protected int layoutToInflate(int viewType) {
         return R.layout.adapter_vote;
     }
 
