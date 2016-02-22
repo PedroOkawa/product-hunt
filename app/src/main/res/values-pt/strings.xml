@@ -12,6 +12,7 @@
 
     <!-- POST DETAILS ACTIVITY -->
 
+    <string name="post_details_activity_description_title">Descrição</string>
     <string name="post_details_activity_votes_title">Votos</string>
     <string name="post_details_activity_comments_title">Commentarios</string>
 

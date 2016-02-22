@@ -5,12 +5,6 @@
 
     <dimen name="activity_main_navigation_header_height">128dp</dimen>
 
-    <!-- MAIN ACTIVITY (ADAPTER POST) -->
-
-    <dimen name="adapter_post_card_elevation">4dp</dimen>
-    <dimen name="adapter_post_card_margin">4dp</dimen>
-    <dimen name="adapter_post_card_radius">2dp</dimen>
-
     <!-- VIEW POST DETAILS -->
 
     <dimen name="view_post_details_preview_height">300dp</dimen>
@@ -18,11 +12,12 @@
     <dimen name="view_post_details_user_name_margin">4dp</dimen>
     <dimen name="view_post_details_vote_margin">4dp</dimen>
 
-    <!-- POST DETAILS ACTIVITY (ADAPTER COMMENT) -->
+    <!-- CARD STYLE -->
 
-    <dimen name="adapter_comment_card_elevation">4dp</dimen>
-    <dimen name="adapter_comment_card_margin">4dp</dimen>
-    <dimen name="adapter_comment_card_radius">2dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="card_radius">2dp</dimen>
+    <dimen name="card_padding">6dp</dimen>
 
     <!-- POST HEADER STYLE  -->
 

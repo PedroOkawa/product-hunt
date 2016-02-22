@@ -202,8 +202,10 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         binding.llActivityPostDetailsComments.addView(commentBinding.getRoot());
 
+        int cardMargin = context.getResources().getDimensionPixelSize(R.dimen.card_margin);
+
         ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) commentBinding.getRoot().getLayoutParams();
-        p.setMargins(indentation, 0, 0, 0);
+        p.setMargins(indentation + cardMargin, cardMargin, cardMargin, cardMargin);
         commentBinding.getRoot().requestLayout();
     }
 
