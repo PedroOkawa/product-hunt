@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.database;
 
+import android.content.Context;
+
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
@@ -135,16 +137,7 @@ public class DatabaseRepository {
                 .list();
     }
 
-    public List<Post> selectAllPostsPaged(int offset) {
-        return postDao
-                .queryBuilder()
-                .orderDesc(PostDao.Properties.CreatedAt)
-                .limit(DatabaseModule.SELECT_LIMIT)
-                .offset(offset)
-                .list();
-    }
-
-    public List<PostContent> selectPostsByCategoryPaged(int offset) {
+    public List<PostContent> selectPostsByCategoryPaged(Context context, int offset) {
         List<Post> posts = postDao
                 .queryBuilder()
                 .orderDesc(PostDao.Properties.CreatedAt)
@@ -152,7 +145,8 @@ public class DatabaseRepository {
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset)
                 .list();
-        return defineHeaders(posts, offset);
+
+        return defineHeaders(context, posts, offset);
     }
 
     public Post selectPostById(long id) {
@@ -228,7 +222,7 @@ public class DatabaseRepository {
 
     /* POST CONTENT */
 
-    private List<PostContent> defineHeaders(List<Post> posts, int offset) {
+    private List<PostContent> defineHeaders(Context context, List<Post> posts, int offset) {
         List<PostContent> postContents = new ArrayList<>();
 
         for(Post post : posts) {
@@ -237,7 +231,7 @@ public class DatabaseRepository {
             if((posts.indexOf(post) == 0 && offset == 0 && configHelper.checkIsToday(lastDate)) ||
                     !(configHelper.checkSameDate(post.getCreatedAt(), lastDate))) {
                 postContent.setIsHeader(true);
-                postContent.setHeader(configHelper.getDateString(post.getCreatedAt()));
+                postContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
                 lastDate = post.getCreatedAt();
             } else {
                 postContent.setIsHeader(false);

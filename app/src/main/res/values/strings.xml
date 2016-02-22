@@ -8,6 +8,10 @@
 
     <string name="navigation_menu_collections">Collections</string>
     <string name="navigation_menu_categories">Categories</string>
+
+    <!-- MAIN ACTIVITY (TODAY) -->
+
+    <string name="main_activity_today">Today</string>
     
     <!-- POST DETAILS ACTIVITY -->
 

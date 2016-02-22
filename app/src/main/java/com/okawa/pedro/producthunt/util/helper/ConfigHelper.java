@@ -64,9 +64,9 @@ public class ConfigHelper {
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
-    public String getDateString(Date date) {
+    public String getDateString(Context context, Date date) {
         if(checkIsToday(date)) {
-            return "Today";
+            return context.getString(R.string.main_activity_today);
         } else {
             return new SimpleDateFormat("dd/MM/yyyy").format(date);
         }

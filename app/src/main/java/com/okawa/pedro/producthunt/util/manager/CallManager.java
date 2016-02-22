@@ -20,7 +20,7 @@ public class CallManager {
     }
 
     public static final String BUNDLE_POST_DETAILS_ID = "BUNDLE_POST_DETAILS_ID";
-    private static final String TRANSITION_POST_VIEW = "TRANSITION_POST_VIEW";
+    public static final String TRANSITION_POST_VIEW = "TRANSITION_POST_VIEW";
     public void postDetails(AppCompatActivity activity, long postId, View view) {
         Intent intent = new Intent(activity, PostDetailsActivity.class);
         intent.putExtra(BUNDLE_POST_DETAILS_ID, postId);

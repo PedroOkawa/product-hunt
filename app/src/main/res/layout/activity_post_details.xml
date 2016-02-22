@@ -12,14 +12,13 @@
         android:layout_height="match_parent">
 
         <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
-            android:id="@+id/svActivityDetails"
+            android:id="@+id/svActivityPostDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"
             android:scrollbars="none">
 
-            <LinearLayout
-                android:orientation="vertical"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -30,28 +29,33 @@
                 <TextView
                     android:id="@+id/tvActivityPostDetailsBody"
                     style="@style/PostDetailsBody"
-                    android:text="@{post.tagline}"/>
+                    android:text="@{post.tagline}"
+                    android:layout_below="@+id/viewPostDetails"/>
 
                 <TextView
                     style="@style/DetailsTitle"
                     android:id="@+id/tvActivityPostDetailsVotesTitle"
-                    android:text="@string/post_details_activity_votes_title"/>
+                    android:text="@string/post_details_activity_votes_title"
+                    android:layout_below="@+id/tvActivityPostDetailsBody"/>
 
                 <android.support.v7.widget.RecyclerView
                     style="@style/VoteList"
                     android:id="@+id/rvActivityPostDetailsVotes"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    android:layout_below="@+id/tvActivityPostDetailsVotesTitle"/>
 
                 <TextView
                     style="@style/DetailsTitle"
                     android:id="@+id/tvActivityPostDetailsCommentsTitle"
-                    android:text="@string/post_details_activity_comments_title"/>
+                    android:text="@string/post_details_activity_comments_title"
+                    android:layout_below="@+id/rvActivityPostDetailsVotes"/>
 
                 <LinearLayout
                     android:id="@+id/llActivityPostDetailsComments"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvActivityPostDetailsCommentsTitle">
 
                     <android.support.v4.widget.ContentLoadingProgressBar
                         android:id="@+id/pbActivityPostDetails"
@@ -59,7 +63,12 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_post_details_preview_height"
+                    android:background="@drawable/background_overlay_down"/>
+
+            </RelativeLayout>
 
         </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
 

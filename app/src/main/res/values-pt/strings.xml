@@ -6,6 +6,10 @@
     <string name="navigation_menu_collections">Coleções</string>
     <string name="navigation_menu_categories">Categorias</string>
 
+    <!-- MAIN ACTIVITY (TODAY) -->
+
+    <string name="main_activity_today">Hoje</string>
+
     <!-- POST DETAILS ACTIVITY -->
 
     <string name="post_details_activity_votes_title">Votos</string>

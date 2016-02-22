@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.util.adapter;
+package com.okawa.pedro.producthunt.util.adapter.post;
 
 import android.databinding.ViewDataBinding;
 import android.view.View;

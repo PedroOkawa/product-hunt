@@ -1,4 +1,4 @@
-package com.okawa.pedro.producthunt.util.adapter;
+package com.okawa.pedro.producthunt.util.adapter.vote;
 
 import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;

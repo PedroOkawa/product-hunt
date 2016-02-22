@@ -2,6 +2,8 @@ package com.okawa.pedro.producthunt.ui.main;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,8 +56,10 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public void initializeToolbar() {
         setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle(R.string.app_name);
     }
 
     @Override
@@ -84,13 +88,21 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        mainPresenter.updateGridLayoutSpan();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mainPresenter.dispose();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            binding.dlActivityMain.openDrawer(GravityCompat.START);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

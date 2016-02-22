@@ -14,7 +14,7 @@ import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.ui.main.MainView;
-import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
+import com.okawa.pedro.producthunt.util.adapter.post.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
@@ -98,11 +98,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     @Override
-    public void updateGridLayoutSpan() {
-//        headerGridLayoutManager.setSpanCount(configHelper.defineSpanCount(context));
-    }
-
-    @Override
     public void dispose() {
 
         /* UNREGISTER ON EVENT BUS */
@@ -113,7 +108,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     @Override
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(adapterPost.getItemCount()));
+            adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(context, adapterPost.getItemCount()));
             mainView.onComplete();
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
             initializeNavigationMenu();

@@ -2,21 +2,28 @@ package com.okawa.pedro.producthunt.presenter.post;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
-import com.okawa.pedro.producthunt.util.adapter.AdapterVote;
+import com.okawa.pedro.producthunt.util.adapter.vote.AdapterVote;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
+import com.okawa.pedro.producthunt.util.manager.CallManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -45,6 +52,11 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private LinearLayoutManager linearLayoutManager;
 
     private Post post;
+
+    private int flexibleSpaceHeight;
+    private int statusBarColor;
+    private int toolbarColor;
+    private int titleColor;
 
     public PostDetailsPresenterImpl(PostDetailsView postDetailsView,
                                     ApiManager apiManager,
@@ -99,21 +111,70 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
         binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
 
+        /* TOOLBAR */
+
+        postDetailsView.initializeToolbar(post.getName());
+
+        binding.svActivityPostDetails.setScrollViewCallbacks(new ObservableScrollListener());
+        ScrollUtils.addOnGlobalLayoutListener(binding.getRoot(), new GlobalLayoutListener());
+
+        flexibleSpaceHeight = context.getResources().getDimensionPixelSize(R.dimen.activity_main_navigation_header_height);
+        toolbarColor = ContextCompat.getColor(context, R.color.color_primary_dark);
+        titleColor = ContextCompat.getColor(context, R.color.white);
+        statusBarColor = ContextCompat.getColor(context, R.color.black);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            /* CREATES THE LINK TO THE TRANSITION ANIMATION */
+
+            ViewCompat.setTransitionName(binding.viewPostDetails.llViewPostDetails, CallManager.TRANSITION_POST_VIEW);
+
+            /* MAKES STATUS BAR TRANSPARENT */
+
+            postDetailsView.initializeStatusBar();
+        }
+
         /* REQUEST DATA  */
 
         requestVotes();
         requestComments();
     }
 
+    @Subscribe
+    public void onEvent(ConnectionEvent event) {
+
+    }
+
+    @Override
+    public void onDataLoaded(int process) {
+        if(process == ApiManager.PROCESS_COMMENTS_ID) {
+            for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
+                printComment(comment, 0);
+            }
+            postDetailsView.onComplete();
+        } else if (process == ApiManager.PROCESS_VOTES_ID) {
+            adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
+        }
+    }
+
+    @Override
+    public void onError(String error) {
+        postDetailsView.onErrorComments(error);
+    }
+
+    /* REQUESTS */
+
     private void requestVotes() {
-        postDetailsView.onRequestComments();
+        postDetailsView.onRequest();
         apiManager.requestVotesByPost(this, post.getId());
     }
 
     private void requestComments() {
-        postDetailsView.onRequestComments();
+        postDetailsView.onRequest();
         apiManager.requestCommentsByPost(this, post.getId());
     }
+
+    /* COMMENTS */
 
     private void printComment(Comment comment, int indentation) {
         addCommentView(comment, indentation);
@@ -146,25 +207,39 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         commentBinding.getRoot().requestLayout();
     }
 
-    @Subscribe
-    public void onEvent(ConnectionEvent event) {
+    /* TOOLBAR ANIMATIONS */
 
+    private void updateScroll(int scrollY) {
+        float alpha = Math.min(1, (float) scrollY / (flexibleSpaceHeight - binding.viewPostDetails.llViewPostDetailsCardInfo.getHeight() - 25));
+        binding.toolbar.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, toolbarColor));
+        binding.toolbar.setTitleTextColor(ScrollUtils.getColorWithAlpha(alpha, titleColor));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postDetailsView.changeStatusBarColor(ScrollUtils.getColorWithAlpha(alpha / 4, statusBarColor));
+        }
+
+        binding.viewPostDetails.llViewPostDetailsCardInfo.setAlpha(1 - ((float) scrollY / (flexibleSpaceHeight / 3)));
     }
 
-    @Override
-    public void onDataLoaded(int process) {
-        if(process == ApiManager.PROCESS_COMMENTS_ID) {
-            for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
-                printComment(comment, 0);
-            }
-            postDetailsView.onCompleteComments();
-        } else if (process == ApiManager.PROCESS_VOTES_ID) {
-            adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
+    public class GlobalLayoutListener implements Runnable {
+        @Override
+        public void run() {
+            updateScroll(binding.svActivityPostDetails.getCurrentScrollY());
         }
     }
 
-    @Override
-    public void onError(String error) {
-        postDetailsView.onErrorComments(error);
+    public class ObservableScrollListener implements ObservableScrollViewCallbacks {
+        @Override
+        public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+            updateScroll(scrollY);
+        }
+
+        @Override
+        public void onDownMotionEvent() {
+        }
+
+        @Override
+        public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        }
     }
 }

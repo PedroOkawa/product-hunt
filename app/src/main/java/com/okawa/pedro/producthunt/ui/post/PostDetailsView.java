@@ -5,11 +5,12 @@ package com.okawa.pedro.producthunt.ui.post;
  */
 public interface PostDetailsView {
 
-    void onRequestVotes();
-    void onCompleteVotes();
-    void onErrorVotes(String error);
-    void onRequestComments();
-    void onCompleteComments();
+    void initializeToolbar(String title);
+    void initializeStatusBar();
+    void changeStatusBarColor(int color);
+    void onRequest();
+    void onComplete();
     void onErrorComments(String error);
+    void onErrorVotes(String error);
 
 }
