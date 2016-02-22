@@ -1,8 +1,8 @@
 package com.okawa.pedro.producthunt.presenter.post;
 
 import android.databinding.DataBindingUtil;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
@@ -21,6 +21,8 @@ import greendao.Post;
  * Created by pokawa on 21/02/16.
  */
 public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListener {
+
+    private static final int INDENTATION_RATE = 32;
 
     private PostDetailsView postDetailsView;
     private ApiManager apiManager;
@@ -77,21 +79,15 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         apiManager.requestCommentsByPost(this, postId);
     }
 
-    @Override
-    public void onDataLoaded(int process) {
-        for(Comment comment : databaseRepository.selectCommentsFromPost(0, post.getId())) {
-            printComment(comment);
-        }
-    }
-
-    private void printComment(Comment comment) {
-        addCommentView(comment);
+    private void printComment(Comment comment, int indentation) {
+        addCommentView(comment, indentation);
+        indentation += INDENTATION_RATE;
         for(Comment child : comment.getChildren()) {
-            printComment(child);
+            printComment(child, indentation);
         }
     }
 
-    private void addCommentView(Comment comment) {
+    private void addCommentView(Comment comment, int indentation) {
         AdapterCommentBinding commentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.adapter_comment, null, false);
 
         commentBinding.setComment(comment);
@@ -106,6 +102,17 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .into(commentBinding.ivAdapterCommentUser);
 
         binding.llActivityPostDetailsComments.addView(commentBinding.getRoot());
+
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) commentBinding.getRoot().getLayoutParams();
+        p.setMargins(indentation, 0, 0, 0);
+        commentBinding.getRoot().requestLayout();
+    }
+
+    @Override
+    public void onDataLoaded(int process) {
+        for(Comment comment : databaseRepository.selectCommentsFromPost(0, post.getId())) {
+            printComment(comment, 0);
+        }
     }
 
     @Override

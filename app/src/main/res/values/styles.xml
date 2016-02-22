@@ -47,4 +47,17 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="DetailsCommentBody" parent="DetailsBody">
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="DetailsCommentUsername" parent="DetailsBody">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

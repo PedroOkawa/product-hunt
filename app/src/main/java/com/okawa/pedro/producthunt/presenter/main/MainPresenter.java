@@ -9,5 +9,6 @@ public interface MainPresenter {
 
     void initialize(ActivityMainBinding binding);
     void updateGridLayoutSpan();
+    void dispose();
 
 }

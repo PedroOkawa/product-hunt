@@ -87,4 +87,10 @@ public class MainActivity extends BaseActivity implements MainView {
 
         mainPresenter.updateGridLayoutSpan();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mainPresenter.dispose();
+    }
 }

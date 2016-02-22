@@ -101,6 +101,14 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     }
 
     @Override
+    public void dispose() {
+
+        /* UNREGISTER ON EVENT BUS */
+
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
             adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(adapterPost.getItemCount()));

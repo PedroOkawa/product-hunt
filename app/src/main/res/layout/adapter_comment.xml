@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -7,20 +8,48 @@
             type="greendao.Comment"/>
     </data>
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/adapter_post_card_margin"
+        android:clipToPadding="false"
+        android:foreground="?android:attr/selectableItemBackground"
+        card_view:cardPreventCornerOverlap="false"
+        card_view:cardElevation="@dimen/adapter_post_card_elevation"
+        card_view:cardCornerRadius="@dimen/adapter_post_card_radius"
+        android:layout_gravity="end">
 
-        <ImageView
-            android:id="@+id/ivAdapterCommentUser"
-            android:layout_width="@dimen/view_post_details_user_avatar_size"
-            android:layout_height="@dimen/view_post_details_user_avatar_size"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{comment.body}"/>
+            <ImageView
+                android:id="@+id/ivAdapterCommentUser"
+                android:layout_width="@dimen/view_post_details_user_avatar_size"
+                android:layout_height="@dimen/view_post_details_user_avatar_size"
+                android:layout_alignParentTop="true"
+                android:layout_margin="@dimen/adapter_comment_avatar_margin"/>
 
-    </LinearLayout>
+            <TextView
+                style="@style/DetailsCommentUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/ivAdapterCommentBody"
+                android:layout_toStartOf="@id/ivAdapterCommentBody"
+                android:layout_below="@id/ivAdapterCommentUser"
+                android:text="@{comment.user.name}"/>
+
+            <TextView
+                android:id="@id/ivAdapterCommentBody"
+                style="@style/DetailsCommentBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/ivAdapterCommentUser"
+                android:layout_toEndOf="@id/ivAdapterCommentUser"
+                android:text="@{comment.body}"/>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
 </layout>

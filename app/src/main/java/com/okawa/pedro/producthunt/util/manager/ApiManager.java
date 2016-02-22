@@ -233,6 +233,11 @@ public class ApiManager {
     /* COMMENTS */
 
     public void requestCommentsByPost(final ApiListener apiListener, long postId) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
+            return;
+        }
+
         apiInterface
                 .commentsByPost(databaseRepository.selectSession().getToken(), postId, null)
                 .subscribeOn(Schedulers.newThread())
