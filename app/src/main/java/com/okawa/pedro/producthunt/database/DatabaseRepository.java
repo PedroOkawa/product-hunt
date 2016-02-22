@@ -26,6 +26,8 @@ import greendao.Thumbnail;
 import greendao.ThumbnailDao;
 import greendao.User;
 import greendao.UserDao;
+import greendao.Vote;
+import greendao.VoteDao;
 
 /**
  * Created by pokawa on 19/02/16.
@@ -46,6 +48,7 @@ public class DatabaseRepository {
     private SessionDao sessionDao;
     private ThumbnailDao thumbnailDao;
     private UserDao userDao;
+    private VoteDao voteDao;
 
     public DatabaseRepository(DaoSession daoSession) {
         this.avatarDao = daoSession.getAvatarDao();
@@ -56,6 +59,7 @@ public class DatabaseRepository {
         this.sessionDao = daoSession.getSessionDao();
         this.thumbnailDao = daoSession.getThumbnailDao();
         this.userDao = daoSession.getUserDao();
+        this.voteDao = daoSession.getVoteDao();
     }
 
     /* AVATAR */
@@ -182,10 +186,28 @@ public class DatabaseRepository {
         userDao.insertOrReplace(user);
     }
 
+    /* VOTE */
+
+    public void updateVotes(Collection<Vote> votes) {
+        voteDao.insertOrReplaceInTx(votes);
+    }
+
+    public List<Vote> selectVotes(long postId) {
+        return voteDao
+                .queryBuilder()
+                .orderDesc(VoteDao.Properties.CreatedAt)
+                .where(VoteDao.Properties.PostId.eq(postId))
+                .list();
+    }
+
     /* DATE FORMAT */
 
     public String convertDateToString(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    public void addDayAgo() {
+        daysAgo++;
     }
 
     public void resetDaysAgo() {
@@ -193,7 +215,7 @@ public class DatabaseRepository {
     }
 
     public String getDaysAgo() {
-        return String.valueOf(daysAgo++);
+        return String.valueOf(daysAgo);
     }
 
     public boolean checkIsToday(Date date) {

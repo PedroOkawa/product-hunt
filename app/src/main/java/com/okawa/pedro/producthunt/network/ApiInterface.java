@@ -3,6 +3,7 @@ package com.okawa.pedro.producthunt.network;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
 import com.okawa.pedro.producthunt.model.response.CommentResponse;
 import com.okawa.pedro.producthunt.model.response.PostResponse;
+import com.okawa.pedro.producthunt.model.response.VoteResponse;
 
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public interface ApiInterface {
                                                @QueryMap Map<String, String> parameters);
 
     @GET(PATH_POST_VOTES)
-    Observable<CommentResponse> votesByPost(@Header(FIELD_AUTHORIZATION) String authorization,
-                                            @Path(PATH_POST_ID) long postId,
-                                            @QueryMap Map<String, String> parameters);
+    Observable<VoteResponse> votesByPost(@Header(FIELD_AUTHORIZATION) String authorization,
+                                         @Path(PATH_POST_ID) long postId,
+                                         @QueryMap Map<String, String> parameters);
 }

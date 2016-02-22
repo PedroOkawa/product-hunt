@@ -69,6 +69,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/title</item>
     </style>
@@ -84,6 +85,18 @@
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- VOTE -->
+
+    <style name="VoteList">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/vote_style_list_height</item>
+    </style>
+
+    <style name="VoteItem">
+        <item name="android:layout_width">@dimen/vote_style_item_width</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

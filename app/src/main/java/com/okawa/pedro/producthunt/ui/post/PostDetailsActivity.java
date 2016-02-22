@@ -50,17 +50,32 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
     }
 
     @Override
-    public void onRequest() {
+    public void onRequestVotes() {
+
+    }
+
+    @Override
+    public void onCompleteVotes() {
+
+    }
+
+    @Override
+    public void onErrorVotes(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestComments() {
         binding.pbActivityPostDetails.show();
     }
 
     @Override
-    public void onComplete() {
+    public void onCompleteComments() {
         binding.pbActivityPostDetails.hide();
     }
 
     @Override
-    public void onError(String error) {
+    public void onErrorComments(String error) {
         binding.pbActivityPostDetails.hide();
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }

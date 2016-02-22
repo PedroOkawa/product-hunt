@@ -10,6 +10,7 @@ import android.view.SubMenu;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
+import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterPost;
@@ -169,6 +170,11 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     @Subscribe
     public void onEvent(PostSelectEvent event) {
         mainView.openPostDetails(event.getPostId(), event.getView());
+    }
+
+    @Subscribe
+    public void onEvent(ConnectionEvent event) {
+        requestData();
     }
 
     protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {

@@ -2,12 +2,12 @@ package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
 import com.okawa.pedro.producthunt.model.response.CommentResponse;
 import com.okawa.pedro.producthunt.model.response.PostResponse;
+import com.okawa.pedro.producthunt.model.response.VoteResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
@@ -39,6 +39,7 @@ public class ApiManager {
     public static final int PROCESS_CATEGORIES_ID = 0x0001;
     public static final int PROCESS_POSTS_ID = 0x0002;
     public static final int PROCESS_COMMENTS_ID = 0x0003;
+    public static final int PROCESS_VOTES_ID = 0x0004;
 
     private static final String API_PROPERTIES = "api.properties";
     private static final String API_ID = "api_id";
@@ -152,11 +153,9 @@ public class ApiManager {
         if(!databaseRepository.checkIsToday(date)) {
             parameters.put(ApiInterface.FIELD_DAY, databaseRepository.convertDateToString(date));
         }
-
-        requestPostsByCategory(apiListener, parameters);
     }
 
-    public void requestPostsByDaysAgo(ApiListener apiListener) {
+    public void requestPostsByDaysAgo(final ApiListener apiListener) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_POSTS_ID);
             return;
@@ -164,10 +163,6 @@ public class ApiManager {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(ApiInterface.FIELD_DAYS_AGO, databaseRepository.getDaysAgo());
-        requestPostsByCategory(apiListener, parameters);
-    }
-
-    private void requestPostsByCategory(final ApiListener apiListener, Map<String, String> parameters) {
         apiInterface
                 .postsByCategory(
                         databaseRepository.selectSession().getToken(),
@@ -184,6 +179,7 @@ public class ApiManager {
                 .subscribe(new Observer<List<Post>>() {
                     @Override
                     public void onCompleted() {
+                        databaseRepository.addDayAgo();
                     }
 
                     @Override
@@ -293,7 +289,7 @@ public class ApiManager {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
             super.onPostExecute(aVoid);
         }
 
@@ -315,21 +311,21 @@ public class ApiManager {
 
     public void requestVotesByPost(final ApiListener apiListener, long postId) {
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
+            apiListener.onDataLoaded(PROCESS_VOTES_ID);
             return;
         }
 
         apiInterface
-                .commentsByPost(databaseRepository.selectSession().getToken(), postId, null)
+                .votesByPost(databaseRepository.selectSession().getToken(), postId, null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(new Func1<CommentResponse, Observable<List<Comment>>>() {
+                .flatMap(new Func1<VoteResponse, Observable<List<Vote>>>() {
                     @Override
-                    public Observable<List<Comment>> call(CommentResponse commentResponse) {
-                        return Observable.just(commentResponse.getComments());
+                    public Observable<List<Vote>> call(VoteResponse voteResponse) {
+                        return Observable.just(voteResponse.getVotes());
                     }
                 })
-                .subscribe(new Observer<List<Comment>>() {
+                .subscribe(new Observer<List<Vote>>() {
                     @Override
                     public void onCompleted() {
 
@@ -341,8 +337,8 @@ public class ApiManager {
                     }
 
                     @Override
-                    public void onNext(List<Comment> comments) {
-                        new PersistenceComment(apiListener, comments).execute();
+                    public void onNext(List<Vote> votes) {
+                        new PersistenceVote(apiListener, votes).execute();
                     }
                 });
     }
@@ -367,14 +363,14 @@ public class ApiManager {
                 databaseRepository.updateAvatar(vote.getUser().getAvatar());
             }
 
-//            databaseRepository.updateComments(votes);
+            databaseRepository.updateVotes(votes);
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            apiListener.onDataLoaded(PROCESS_VOTES_ID);
             super.onPostExecute(aVoid);
         }
     }

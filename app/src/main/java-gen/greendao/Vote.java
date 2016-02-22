@@ -139,6 +139,7 @@ public class Vote {
 
     public void sync() {
         setUser(user);
+        getUser().sync();
     }
     // KEEP METHODS END
 

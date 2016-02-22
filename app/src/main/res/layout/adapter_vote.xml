@@ -8,17 +8,19 @@
     </data>
 
     <LinearLayout
+        style="@style/VoteItem"
         android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_margin="@dimen/avatar_style_margin">
 
         <ImageView
             style="@style/Avatar"
-            android:id="@+id/ivAdapterCommentUser"/>
+            android:id="@+id/ivAdapterCommentUser"
+            android:layout_gravity="center_horizontal"/>
 
         <TextView
             style="@style/DetailsCommentUsername"
-            android:text="@{vote.user.name}"/>
+            android:text="@{vote.user.name}"
+            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 

@@ -11,6 +11,7 @@ import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
+import com.okawa.pedro.producthunt.util.receiver.NetworkReceiver;
 
 import javax.inject.Singleton;
 
@@ -26,6 +27,7 @@ import okhttp3.OkHttpClient;
 public interface AppComponent {
 
     void inject(ProductHuntApp productHuntApp);
+    void inject(NetworkReceiver networkReceiver);
 
     /* APP */
 

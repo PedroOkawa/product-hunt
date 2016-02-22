@@ -2,10 +2,7 @@ package com.okawa.pedro.producthunt.presenter.post;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ViewStubCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,17 +11,19 @@ import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
+import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
 import com.okawa.pedro.producthunt.util.adapter.AdapterVote;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
 import greendao.Comment;
 import greendao.Post;
-import greendao.User;
 import greendao.Vote;
 
 /**
@@ -100,11 +99,19 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
         binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
 
+        /* REQUEST DATA  */
+
+        requestVotes();
         requestComments();
     }
 
+    private void requestVotes() {
+        postDetailsView.onRequestComments();
+        apiManager.requestVotesByPost(this, post.getId());
+    }
+
     private void requestComments() {
-        postDetailsView.onRequest();
+        postDetailsView.onRequestComments();
         apiManager.requestCommentsByPost(this, post.getId());
     }
 
@@ -139,16 +146,25 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         commentBinding.getRoot().requestLayout();
     }
 
+    @Subscribe
+    public void onEvent(ConnectionEvent event) {
+
+    }
+
     @Override
     public void onDataLoaded(int process) {
-        for(Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
-            printComment(comment, 0);
+        if(process == ApiManager.PROCESS_COMMENTS_ID) {
+            for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
+                printComment(comment, 0);
+            }
+            postDetailsView.onCompleteComments();
+        } else if (process == ApiManager.PROCESS_VOTES_ID) {
+            adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
         }
-        postDetailsView.onComplete();
     }
 
     @Override
     public void onError(String error) {
-        postDetailsView.onError(error);
+        postDetailsView.onErrorComments(error);
     }
 }
