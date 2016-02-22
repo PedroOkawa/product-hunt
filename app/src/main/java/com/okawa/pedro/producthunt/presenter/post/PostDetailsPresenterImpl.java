@@ -1,10 +1,14 @@
 package com.okawa.pedro.producthunt.presenter.post;
 
+import android.databinding.DataBindingUtil;
 import android.util.Log;
+import android.view.LayoutInflater;
 
 import com.bumptech.glide.Glide;
+import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
+import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
@@ -23,6 +27,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private DatabaseRepository databaseRepository;
 
     private ActivityPostDetailsBinding binding;
+    private LayoutInflater layoutInflater;
 
     private Post post;
 
@@ -35,11 +40,15 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     }
 
     @Override
-    public void initialize(ActivityPostDetailsBinding binding, long postId) {
+    public void initialize(ActivityPostDetailsBinding binding, long postId, LayoutInflater layoutInflater) {
 
         /* STORES BINDING */
 
         this.binding = binding;
+
+        /* STORES LAYOUT INFLATER */
+
+        this.layoutInflater = layoutInflater;
 
         /* INITIALIZES VIEWS */
 
@@ -71,16 +80,32 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     @Override
     public void onDataLoaded(int process) {
         for(Comment comment : databaseRepository.selectCommentsFromPost(0, post.getId())) {
-            printComment(comment, "");
+            printComment(comment);
         }
     }
 
-    private void printComment(Comment comment, String indentation) {
-        indentation = indentation.concat("#");
-        Log.wtf("COMMENTS", indentation + comment.getBody());
+    private void printComment(Comment comment) {
+        addCommentView(comment);
         for(Comment child : comment.getChildren()) {
-            printComment(child, indentation);
+            printComment(child);
         }
+    }
+
+    private void addCommentView(Comment comment) {
+        AdapterCommentBinding commentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.adapter_comment, null, false);
+
+        commentBinding.setComment(comment);
+
+        /* USER AVATAR */
+
+        Glide.with(binding.getRoot().getContext())
+                .load(comment.getUser().getAvatar().getOriginal())
+                .asBitmap()
+                .centerCrop()
+                .transform(new GlideCircleTransform(commentBinding.getRoot().getContext()))
+                .into(commentBinding.ivAdapterCommentUser);
+
+        binding.llActivityPostDetailsComments.addView(commentBinding.getRoot());
     }
 
     @Override

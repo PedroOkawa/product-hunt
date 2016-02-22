@@ -45,6 +45,6 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
         long postId = getIntent()
                 .getLongExtra(CallManager.BUNDLE_POST_DETAILS_ID, Long.MIN_VALUE);
 
-        postDetailsPresenter.initialize(binding, postId);
+        postDetailsPresenter.initialize(binding, postId, getLayoutInflater());
     }
 }

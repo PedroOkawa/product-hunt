@@ -27,6 +27,7 @@
                     layout="@layout/view_post_details"/>
 
                 <LinearLayout
+                    android:id="@+id/llActivityPostDetailsBody"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -39,6 +40,13 @@
                         android:text="@{post.tagline}"/>
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llActivityPostDetailsComments"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/llActivityPostDetailsBody"/>
 
             </RelativeLayout>
 

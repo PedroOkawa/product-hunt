@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.presenter.post;
 
+import android.view.LayoutInflater;
+
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 
 /**
@@ -7,6 +9,6 @@ import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
  */
 public interface PostDetailsPresenter {
 
-    void initialize(ActivityPostDetailsBinding binding, long postId);
+    void initialize(ActivityPostDetailsBinding binding, long postId, LayoutInflater layoutInflater);
 
 }
