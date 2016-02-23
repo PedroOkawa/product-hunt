@@ -123,4 +123,13 @@ public class MainActivity extends BaseActivity implements MainView {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        if(mainPresenter.isFilterOpen()) {
+            mainPresenter.closeFilter();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

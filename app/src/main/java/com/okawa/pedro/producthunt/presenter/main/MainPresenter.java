@@ -9,6 +9,8 @@ public interface MainPresenter {
 
     void initialize(ActivityMainBinding binding);
     void openDatePicker();
+    boolean isFilterOpen();
+    void closeFilter();
     void dispose();
 
 }

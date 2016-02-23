@@ -1,5 +1,7 @@
 package com.okawa.pedro.producthunt.util.builder;
 
+import com.okawa.pedro.producthunt.di.module.DatabaseModule;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ public class ParametersBuilder {
     private String PARAMETER_OLDER = "older";
     private String PARAMETER_NEWER = "newer";
     private String PARAMETER_ORDER = "order";
+    private String PARAMETER_PER_PAGE = "per_page";
     private String PARAMETER_CATEGORY = "search[category]";
     private String VALUE_ASC = "ASC";
     private String VALUE_DESC = "DESC";
@@ -54,6 +57,12 @@ public class ParametersBuilder {
     public ParametersBuilder setCategory(String category) {
         checkInit();
         parameters.put(PARAMETER_CATEGORY, category);
+        return this;
+    }
+
+    public ParametersBuilder setPagination() {
+        checkInit();
+        parameters.put(PARAMETER_PER_PAGE, String.valueOf(DatabaseModule.SELECT_LIMIT));
         return this;
     }
 

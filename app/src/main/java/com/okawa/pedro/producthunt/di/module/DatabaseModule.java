@@ -19,7 +19,7 @@ import greendao.DaoSession;
 @Module
 public class DatabaseModule {
 
-    public static final int SELECT_LIMIT = 50;
+    public static final int SELECT_LIMIT = 20;
 
     private static final String DATABASE_NAME = "ProductHuntDB";
 

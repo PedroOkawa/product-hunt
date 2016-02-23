@@ -40,7 +40,7 @@ public class ConfigHelper {
             if(orientation == Configuration.ORIENTATION_PORTRAIT) {
                 return 3;
             }
-            return 1;
+            return 2;
         } else {
             if(orientation == Configuration.ORIENTATION_PORTRAIT) {
                 return 2;
@@ -53,7 +53,7 @@ public class ConfigHelper {
         boolean isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
         if(isTablet) {
-            return 3;
+            return 6;
         } else {
             return 2;
         }

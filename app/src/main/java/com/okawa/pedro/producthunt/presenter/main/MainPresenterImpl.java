@@ -128,8 +128,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
         /* PARAMETERS BUILDER */
 
-        parametersBuilder
-                .init();
+        parametersBuilder.init().setPagination();
 
         /* DATE PICKER */
 
@@ -161,6 +160,16 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
     @Override
     public void openDatePicker() {
         datePickerDialog.show();
+    }
+
+    @Override
+    public boolean isFilterOpen() {
+        return (binding.llActivityMainFilterOptions.getVisibility() == View.VISIBLE);
+    }
+
+    @Override
+    public void closeFilter() {
+        resetFilters();
     }
 
     @Override
@@ -227,6 +236,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
             Map<String, String> parameters = parametersBuilder
                     .init()
                     .setDay(configHelper.convertDateToString(currentDate))
+                    .setPagination()
                     .generateParameters();
 
             apiManager.requestPostsByCategory(this, parameters);
@@ -236,6 +246,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                     .init()
                     .setOlder(databaseRepository.getLastPostId())
                     .setCategory(databaseRepository.getCurrentCategorySlug())
+                    .setPagination()
                     .generateParameters();
 
             apiManager.requestPosts(this, parameters);
@@ -246,6 +257,20 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
         adapterPost.reset();
         onPostsRecyclerViewListener.reset();
         requestData();
+    }
+
+    private void resetFilters() {
+        dateSelected = false;
+        binding.spActivityMainSort.setSelection(DatabaseRepository.ORDER_BY_VOTE);
+        binding.llActivityMainFilterOptions.setVisibility(View.GONE);
+
+        databaseRepository.resetLastPostSession();
+        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
+        databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
+
+        parametersBuilder.init().setPagination();
+
+        resetData();
     }
 
     @Subscribe
@@ -261,17 +286,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
     @Override
     public void onViewTouched(View view) {
         if(view.getId() == R.id.tvActivityMainFilterBody) {
-            dateSelected = false;
-            binding.llActivityMainFilterOptions.setVisibility(View.GONE);
-
-            databaseRepository.resetLastPostSession();
-            databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
-            databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
-
-            parametersBuilder
-                    .init();
-
-            resetData();
+            resetFilters();
         }
     }
 
@@ -299,7 +314,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
                 parametersBuilder
                         .init()
-                        .setDay(configHelper.convertDateToString(currentDate));
+                        .setDay(configHelper.convertDateToString(currentDate))
+                        .setPagination();
 
                 resetData();
             }
@@ -337,7 +353,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
                     parametersBuilder
                             .init()
-                            .setDay(configHelper.convertDateToString(currentDate));
+                            .setDay(configHelper.convertDateToString(currentDate))
+                            .setPagination();
 
                     resetData();
                     break;
@@ -347,7 +364,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
                     parametersBuilder
                             .init()
-                            .setDay(configHelper.convertDateToString(currentDate));
+                            .setDay(configHelper.convertDateToString(currentDate))
+                            .setPagination();
 
                     resetData();
                     break;
@@ -357,7 +375,8 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
                     parametersBuilder
                             .init()
-                            .setDay(configHelper.convertDateToString(currentDate));
+                            .setDay(configHelper.convertDateToString(currentDate))
+                            .setPagination();
 
                     resetData();
                     break;

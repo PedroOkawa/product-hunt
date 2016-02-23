@@ -19,7 +19,6 @@ import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
-import com.okawa.pedro.producthunt.databinding.PlaceholderCommentBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
@@ -71,8 +70,6 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private int titleColor;
 
     private int totalCommentsAdded;
-
-    private PlaceholderCommentBinding placeholderCommentBinding;
 
     public PostDetailsPresenterImpl(PostDetailsView postDetailsView,
                                     ApiManager apiManager,
@@ -172,7 +169,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         /* COMMENTS */
 
-        addPlaceholderView();
+        binding.setTouchListener(this);
+        binding.setMessage(getCommentsButtonMessage());
 
         /* REQUEST DATA  */
 
@@ -198,7 +196,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                     showComment(comment, 0);
                 }
 
-                placeholderCommentBinding.setMessage(getCommentsButtonMessage());
+                binding.setMessage(getCommentsButtonMessage());
 
                 postDetailsView.onComplete();
             } else if (process == ApiManager.PROCESS_VOTES_ID) {
@@ -231,6 +229,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .init()
                 .setNewer(databaseRepository.getLastVoteId())
                 .setAscending()
+                .setPagination()
                 .generateParameters();
 
         apiManager.requestVotesByPost(this, post.getId(), parameters);
@@ -244,7 +243,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         Map<String, String> parameters = parametersBuilder
                 .init()
                 .setOlder(databaseRepository.getLastCommentId())
-                .setAscending()
+                .setDescending()
+                .setPagination()
                 .generateParameters();
 
         apiManager.requestCommentsByPost(this, post.getId(), parameters);
@@ -280,17 +280,6 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .into(commentBinding.ivAdapterCommentUser);
 
         addViewOnCommentLayout(commentBinding.getRoot(), totalCommentsAdded++, indentation);
-    }
-
-    private void addPlaceholderView() {
-        String message = getCommentsButtonMessage();
-
-        placeholderCommentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.placeholder_comment, null, false);
-
-        placeholderCommentBinding.setMessage(message);
-        placeholderCommentBinding.setTouchListener(this);
-
-        addViewOnCommentLayout(placeholderCommentBinding.getRoot(), 1, 0);
     }
 
     private String getCommentsButtonMessage() {
@@ -330,7 +319,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     @Override
     public void onViewTouched(View view) {
-        if(view.getId() == R.id.tvPlaceholderComment) {
+        if(view.getId() == R.id.tvActivityPostDetailsCommentsButton) {
             requestComments();
         }
     }

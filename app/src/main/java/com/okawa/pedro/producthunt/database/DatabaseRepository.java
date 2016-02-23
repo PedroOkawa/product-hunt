@@ -272,6 +272,7 @@ public class DatabaseRepository {
 
     public void resetLastPostSession() {
         Session session = selectSession();
+        session.setLastPostId((long)(Integer.MAX_VALUE));
         session.setLastPostDate(new Date());
         sessionDao.update(session);
     }

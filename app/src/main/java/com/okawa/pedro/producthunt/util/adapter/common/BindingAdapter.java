@@ -47,5 +47,21 @@ public abstract class BindingAdapter<T, K extends ViewDataBinding> extends BaseA
         public K getBinding() {
             return mBinding;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            BindViewHolder that = (BindViewHolder) o;
+
+            return !(mBinding != null ? !mBinding.equals(that.mBinding) : that.mBinding != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return mBinding != null ? mBinding.hashCode() : 0;
+        }
     }
 }
