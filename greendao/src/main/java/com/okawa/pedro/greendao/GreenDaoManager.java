@@ -14,6 +14,9 @@ public class GreenDaoManager {
     private static final String ENTITY_SESSION = "Session";
     private static final String FIELD_SESSION_ACCESS_TOKEN = "accessToken";
     private static final String FILED_SESSION_EXPIRES_IN = "expiresIn";
+    private static final String FIELD_SESSION_LAST_POST_DATE = "lastPostDate";
+    private static final String FIELD_SESSION_LAST_COMMENT_ID = "lastCommentId";
+    private static final String FIELD_SESSION_LAST_VOTE_ID = "lastVoteId";
 
     private static final String ENTITY_CATEGORY = "Category";
     private static final String FIELD_CATEGORY_ID = "id";
@@ -43,9 +46,11 @@ public class GreenDaoManager {
     private static final String FIELD_POST_USER_NAME = "userName";
     private static final String FIELD_POST_THUMBNAIL_ID = "thumbnailIdFK";
     private static final String FIELD_POST_CREATED_AT = "createdAt";
+    private static final String FIELD_POST_UPDATE_DATE = "updateDate";
     private static final String FIELD_POST_NAME = "name";
     private static final String FIELD_POST_TAGLINE = "tagline";
     private static final String FIELD_POST_VOTES_COUNT = "votesCount";
+    private static final String FIELD_POST_COMMENTS_COUNT = "commentsCount";
     private static final String FIELD_POST_REDIRECT_URL = "redirectUrl";
     private static final String FIELD_POST_USER = "user";
     private static final String FIELD_POST_THUMBNAIL = "thumbnail";
@@ -64,6 +69,7 @@ public class GreenDaoManager {
     private static final String FIELD_COMMENT_ID = "id";
     private static final String FIELD_COMMENT_BODY = "body";
     private static final String FIELD_COMMENT_CREATED_AT = "createdAt";
+    private static final String FIELD_COMMENT_UPDATE_DATE = "updateDate";
     private static final String FIELD_COMMENT_CHILDREN_COUNT = "childCommentsCount";
     private static final String FIELD_COMMENT_PARENT_ID = "parentCommentId";
     private static final String FIELD_COMMENT_USER_ID = "userId";
@@ -74,6 +80,7 @@ public class GreenDaoManager {
     private static final String ENTITY_VOTE = "Vote";
     private static final String FIELD_VOTE_ID = "id";
     private static final String FIELD_VOTE_CREATED_AT = "createdAt";
+    private static final String FIELD_VOTE_UPDATE_DATE = "updateDate";
     private static final String FIELD_VOTE_USER_ID = "userId";
     private static final String FIELD_VOTE_POST_ID = "postId";
     private static final String FIELD_VOTE_USER = "user";
@@ -92,6 +99,9 @@ public class GreenDaoManager {
         session.addIdProperty().primaryKey();
         session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
         session.addLongProperty(FILED_SESSION_EXPIRES_IN);
+        session.addDateProperty(FIELD_SESSION_LAST_POST_DATE);
+        session.addLongProperty(FIELD_SESSION_LAST_COMMENT_ID);
+        session.addLongProperty(FIELD_SESSION_LAST_VOTE_ID);
 
         session.setHasKeepSections(true);
 
@@ -139,9 +149,11 @@ public class GreenDaoManager {
         post.addStringProperty(FIELD_POST_USER_NAME);
         post.addLongProperty(FIELD_POST_CATEGORY_ID);
         post.addDateProperty(FIELD_POST_CREATED_AT);
+        post.addDateProperty(FIELD_POST_UPDATE_DATE);
         post.addStringProperty(FIELD_POST_NAME);
         post.addStringProperty(FIELD_POST_TAGLINE);
         post.addLongProperty(FIELD_POST_VOTES_COUNT);
+        post.addLongProperty(FIELD_POST_COMMENTS_COUNT);
         post.addStringProperty(FIELD_POST_REDIRECT_URL);
 
         post.setHasKeepSections(true);
@@ -174,6 +186,7 @@ public class GreenDaoManager {
         Property commentIdFK = comment.addLongProperty(FIELD_COMMENT_PARENT_ID).getProperty();
         comment.addStringProperty(FIELD_COMMENT_BODY);
         comment.addDateProperty(FIELD_COMMENT_CREATED_AT);
+        comment.addDateProperty(FIELD_COMMENT_UPDATE_DATE);
         comment.addLongProperty(FIELD_COMMENT_CHILDREN_COUNT);
         comment.addLongProperty(FIELD_COMMENT_POST_ID);
 
@@ -186,6 +199,7 @@ public class GreenDaoManager {
         vote.addLongProperty(FIELD_VOTE_ID).primaryKey();
         Property voteUserIdFK = vote.addLongProperty(FIELD_VOTE_USER_ID).getProperty();
         vote.addDateProperty(FIELD_VOTE_CREATED_AT);
+        vote.addDateProperty(FIELD_VOTE_UPDATE_DATE);
         vote.addLongProperty(FIELD_VOTE_POST_ID);
         
         vote.setHasKeepSections(true);

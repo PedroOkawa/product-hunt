@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.util.adapter.post;
 
 import android.databinding.ViewDataBinding;
-import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -10,7 +9,6 @@ import com.okawa.pedro.producthunt.databinding.AdapterHeaderPostBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.model.list.PostContent;
-import com.okawa.pedro.producthunt.util.adapter.common.BindingAdapter;
 import com.okawa.pedro.producthunt.util.adapter.common.HeaderAdapter;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 

@@ -5,9 +5,11 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
@@ -18,11 +20,14 @@ import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
+import com.okawa.pedro.producthunt.databinding.PlaceholderCommentBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
 import com.okawa.pedro.producthunt.util.adapter.vote.AdapterVote;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
+import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
+import com.okawa.pedro.producthunt.util.listener.OnTouchListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
 
@@ -37,7 +42,7 @@ import greendao.Vote;
 /**
  * Created by pokawa on 21/02/16.
  */
-public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListener {
+public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListener, OnTouchListener {
 
     private static final int INDENTATION_RATE = 64;
 
@@ -53,6 +58,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     private AdapterVote adapterVote;
     private LinearLayoutManager linearLayoutManager;
+    private OnVotesRecyclerViewListener onVotesRecyclerViewListener;
 
     private Post post;
 
@@ -60,6 +66,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private int statusBarColor;
     private int toolbarColor;
     private int titleColor;
+
+    private int totalCommentsAdded;
 
     public PostDetailsPresenterImpl(PostDetailsView postDetailsView,
                                     ApiManager apiManager,
@@ -71,6 +79,10 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     @Override
     public void initialize(ActivityPostDetailsBinding binding, long postId, LayoutInflater layoutInflater) {
+
+        /* ACTIVATE */
+
+        active = true;
 
         /* STORES BINDING */
 
@@ -108,8 +120,12 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .transform(new GlideCircleTransform(binding.getRoot().getContext()))
                 .into(binding.viewPostDetails.ivViewPostDetailsUser);
 
+        /* VOTES */
+
         adapterVote = new AdapterVote(new ArrayList<Vote>());
         linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        onVotesRecyclerViewListener = new OnVotesRecyclerViewListener(linearLayoutManager);
+
 
         binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
         binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
@@ -137,6 +153,15 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
             postDetailsView.initializeStatusBar();
         }
 
+        /* COMMENTS */
+
+        addPlaceholderView();
+
+        /* RESET LAST COMMENT AND VOTE ID */
+
+        databaseRepository.resetLastCommentId();
+        databaseRepository.resetLastVoteId();
+
         /* REQUEST DATA  */
 
         requestVotes();
@@ -157,13 +182,13 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     public void onDataLoaded(int process) {
         if(active) {
             if (process == ApiManager.PROCESS_COMMENTS_ID) {
-                for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId(), 0)) {
-                    printComment(comment, 0);
+                for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId(), totalCommentsAdded)) {
+                    showComment(comment, 0);
                 }
 
                 postDetailsView.onComplete();
             } else if (process == ApiManager.PROCESS_VOTES_ID) {
-                adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
+                adapterVote.addDataSet(databaseRepository.selectVotesFromPost(post.getId(), adapterVote.getItemCount()));
             }
         }
     }
@@ -187,12 +212,12 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     /* COMMENTS */
 
-    private void printComment(Comment comment, int indentation) {
+    private void showComment(Comment comment, int indentation) {
         addCommentView(comment, indentation);
         indentation += INDENTATION_RATE;
         if(comment.containsChildren()) {
             for (Comment child : comment.getChildren()) {
-                printComment(child, indentation);
+                showComment(child, indentation);
             }
         }
     }
@@ -211,13 +236,38 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .transform(new GlideCircleTransform(commentBinding.getRoot().getContext()))
                 .into(commentBinding.ivAdapterCommentUser);
 
-        binding.llActivityPostDetailsComments.addView(commentBinding.getRoot());
+        binding.llActivityPostDetailsComments.addView(commentBinding.getRoot(), totalCommentsAdded++);
 
         int cardMargin = context.getResources().getDimensionPixelSize(R.dimen.card_margin);
 
         ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) commentBinding.getRoot().getLayoutParams();
         p.setMargins(indentation + cardMargin, cardMargin, cardMargin, cardMargin);
         commentBinding.getRoot().requestLayout();
+    }
+
+    private void addPlaceholderView() {
+        String message;
+
+        if(post.getCommentsCount() == 0) {
+            message = context.getString(R.string.post_details_activity_comments_empty);
+        } else if(post.getCommentsCount() > totalCommentsAdded) {
+            message = context.getString(R.string.post_details_activity_comments_load);
+        } else {
+            return;
+        }
+
+        PlaceholderCommentBinding placeholderCommentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.placeholder_comment, null, false);
+
+        placeholderCommentBinding.setMessage(message);
+        placeholderCommentBinding.setTouchListener(this);
+
+        binding.llActivityPostDetailsComments.addView(placeholderCommentBinding.getRoot());
+
+        int cardMargin = context.getResources().getDimensionPixelSize(R.dimen.card_margin);
+
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) placeholderCommentBinding.getRoot().getLayoutParams();
+        p.setMargins(cardMargin, cardMargin, cardMargin, cardMargin);
+        placeholderCommentBinding.getRoot().requestLayout();
     }
 
     /* TOOLBAR ANIMATIONS */
@@ -232,6 +282,13 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         }
 
         binding.viewPostDetails.llViewPostDetailsCardInfo.setAlpha(1 - ((float) scrollY / (flexibleSpaceHeight / 3)));
+    }
+
+    @Override
+    public void onViewTouched(View view) {
+        if(view.getId() == R.id.tvPlaceholderComment) {
+            requestComments();
+        }
     }
 
     public class GlobalLayoutListener implements Runnable {
@@ -253,6 +310,18 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         @Override
         public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        }
+    }
+
+    protected class OnVotesRecyclerViewListener extends OnRecyclerViewListener {
+
+        public OnVotesRecyclerViewListener(LinearLayoutManager linearLayoutManager) {
+            super(linearLayoutManager);
+        }
+
+        @Override
+        public void onVisibleThreshold() {
+            requestVotes();
         }
     }
 }

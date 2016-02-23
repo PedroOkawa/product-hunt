@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.ui.post;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,15 +44,8 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        postDetailsPresenter.setActive(true);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
 
         postDetailsPresenter.setActive(false);
     }

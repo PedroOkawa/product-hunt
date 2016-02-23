@@ -35,7 +35,7 @@
                 android:text="@{comment.user.name}"/>
 
             <TextView
-                android:id="@id/ivAdapterCommentBody"
+                android:id="@+id/ivAdapterCommentBody"
                 style="@style/DetailsCommentBody"
                 android:layout_toRightOf="@id/ivAdapterCommentUser"
                 android:layout_toEndOf="@id/ivAdapterCommentUser"

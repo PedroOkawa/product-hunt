@@ -1,6 +1,6 @@
 package com.okawa.pedro.producthunt.util.listener;
 
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 /**
@@ -18,12 +18,12 @@ public abstract class OnRecyclerViewListener extends RecyclerView.OnScrollListen
     private int firstVisibleItem;
 
     private boolean loading = true;
-    private GridLayoutManager gridLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
 
     public abstract void onVisibleThreshold();
 
-    public OnRecyclerViewListener(GridLayoutManager gridLayoutManager) {
-        this.gridLayoutManager = gridLayoutManager;
+    public OnRecyclerViewListener(LinearLayoutManager linearLayoutManager) {
+        this.linearLayoutManager = linearLayoutManager;
         onVisibleThreshold();
     }
 
@@ -32,8 +32,8 @@ public abstract class OnRecyclerViewListener extends RecyclerView.OnScrollListen
         super.onScrolled(recyclerView, dx, dy);
 
         visibleItemCount = recyclerView.getChildCount();
-        totalItemCount = gridLayoutManager.getItemCount();
-        firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition();
+        totalItemCount = linearLayoutManager.getItemCount();
+        firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
 
         if (loading) {
             if (totalItemCount > previousTotal) {

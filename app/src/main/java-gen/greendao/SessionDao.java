@@ -26,6 +26,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property AccessToken = new Property(1, String.class, "accessToken", false, "ACCESS_TOKEN");
         public final static Property ExpiresIn = new Property(2, Long.class, "expiresIn", false, "EXPIRES_IN");
+        public final static Property LastPostDate = new Property(3, java.util.Date.class, "lastPostDate", false, "LAST_POST_DATE");
+        public final static Property LastCommentId = new Property(4, Long.class, "lastCommentId", false, "LAST_COMMENT_ID");
+        public final static Property LastVoteId = new Property(5, Long.class, "lastVoteId", false, "LAST_VOTE_ID");
     };
 
 
@@ -43,7 +46,10 @@ public class SessionDao extends AbstractDao<Session, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"SESSION\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"ACCESS_TOKEN\" TEXT," + // 1: accessToken
-                "\"EXPIRES_IN\" INTEGER);"); // 2: expiresIn
+                "\"EXPIRES_IN\" INTEGER," + // 2: expiresIn
+                "\"LAST_POST_DATE\" INTEGER," + // 3: lastPostDate
+                "\"LAST_COMMENT_ID\" INTEGER," + // 4: lastCommentId
+                "\"LAST_VOTE_ID\" INTEGER);"); // 5: lastVoteId
     }
 
     /** Drops the underlying database table. */
@@ -71,6 +77,21 @@ public class SessionDao extends AbstractDao<Session, Long> {
         if (expiresIn != null) {
             stmt.bindLong(3, expiresIn);
         }
+ 
+        java.util.Date lastPostDate = entity.getLastPostDate();
+        if (lastPostDate != null) {
+            stmt.bindLong(4, lastPostDate.getTime());
+        }
+ 
+        Long lastCommentId = entity.getLastCommentId();
+        if (lastCommentId != null) {
+            stmt.bindLong(5, lastCommentId);
+        }
+ 
+        Long lastVoteId = entity.getLastVoteId();
+        if (lastVoteId != null) {
+            stmt.bindLong(6, lastVoteId);
+        }
     }
 
     /** @inheritdoc */
@@ -85,7 +106,10 @@ public class SessionDao extends AbstractDao<Session, Long> {
         Session entity = new Session( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // accessToken
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2) // expiresIn
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // expiresIn
+            cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)), // lastPostDate
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // lastCommentId
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5) // lastVoteId
         );
         return entity;
     }
@@ -96,6 +120,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setAccessToken(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setExpiresIn(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setLastPostDate(cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)));
+        entity.setLastCommentId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setLastVoteId(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
      }
     
     /** @inheritdoc */

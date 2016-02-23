@@ -34,10 +34,12 @@ public class PostDao extends AbstractDao<Post, Long> {
         public final static Property UserName = new Property(3, String.class, "userName", false, "USER_NAME");
         public final static Property CategoryId = new Property(4, Long.class, "categoryId", false, "CATEGORY_ID");
         public final static Property CreatedAt = new Property(5, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property Name = new Property(6, String.class, "name", false, "NAME");
-        public final static Property Tagline = new Property(7, String.class, "tagline", false, "TAGLINE");
-        public final static Property VotesCount = new Property(8, Long.class, "votesCount", false, "VOTES_COUNT");
-        public final static Property RedirectUrl = new Property(9, String.class, "redirectUrl", false, "REDIRECT_URL");
+        public final static Property UpdateDate = new Property(6, java.util.Date.class, "updateDate", false, "UPDATE_DATE");
+        public final static Property Name = new Property(7, String.class, "name", false, "NAME");
+        public final static Property Tagline = new Property(8, String.class, "tagline", false, "TAGLINE");
+        public final static Property VotesCount = new Property(9, Long.class, "votesCount", false, "VOTES_COUNT");
+        public final static Property CommentsCount = new Property(10, Long.class, "commentsCount", false, "COMMENTS_COUNT");
+        public final static Property RedirectUrl = new Property(11, String.class, "redirectUrl", false, "REDIRECT_URL");
     };
 
     private DaoSession daoSession;
@@ -63,10 +65,12 @@ public class PostDao extends AbstractDao<Post, Long> {
                 "\"USER_NAME\" TEXT," + // 3: userName
                 "\"CATEGORY_ID\" INTEGER," + // 4: categoryId
                 "\"CREATED_AT\" INTEGER," + // 5: createdAt
-                "\"NAME\" TEXT," + // 6: name
-                "\"TAGLINE\" TEXT," + // 7: tagline
-                "\"VOTES_COUNT\" INTEGER," + // 8: votesCount
-                "\"REDIRECT_URL\" TEXT);"); // 9: redirectUrl
+                "\"UPDATE_DATE\" INTEGER," + // 6: updateDate
+                "\"NAME\" TEXT," + // 7: name
+                "\"TAGLINE\" TEXT," + // 8: tagline
+                "\"VOTES_COUNT\" INTEGER," + // 9: votesCount
+                "\"COMMENTS_COUNT\" INTEGER," + // 10: commentsCount
+                "\"REDIRECT_URL\" TEXT);"); // 11: redirectUrl
     }
 
     /** Drops the underlying database table. */
@@ -110,24 +114,34 @@ public class PostDao extends AbstractDao<Post, Long> {
             stmt.bindLong(6, createdAt.getTime());
         }
  
+        java.util.Date updateDate = entity.getUpdateDate();
+        if (updateDate != null) {
+            stmt.bindLong(7, updateDate.getTime());
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(7, name);
+            stmt.bindString(8, name);
         }
  
         String tagline = entity.getTagline();
         if (tagline != null) {
-            stmt.bindString(8, tagline);
+            stmt.bindString(9, tagline);
         }
  
         Long votesCount = entity.getVotesCount();
         if (votesCount != null) {
-            stmt.bindLong(9, votesCount);
+            stmt.bindLong(10, votesCount);
+        }
+ 
+        Long commentsCount = entity.getCommentsCount();
+        if (commentsCount != null) {
+            stmt.bindLong(11, commentsCount);
         }
  
         String redirectUrl = entity.getRedirectUrl();
         if (redirectUrl != null) {
-            stmt.bindString(10, redirectUrl);
+            stmt.bindString(12, redirectUrl);
         }
     }
 
@@ -153,10 +167,12 @@ public class PostDao extends AbstractDao<Post, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // userName
             cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // categoryId
             cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)), // createdAt
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // name
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // tagline
-            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // votesCount
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // redirectUrl
+            cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)), // updateDate
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // name
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // tagline
+            cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9), // votesCount
+            cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10), // commentsCount
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // redirectUrl
         );
         return entity;
     }
@@ -170,10 +186,12 @@ public class PostDao extends AbstractDao<Post, Long> {
         entity.setUserName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setCategoryId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
         entity.setCreatedAt(cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)));
-        entity.setName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setTagline(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setVotesCount(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
-        entity.setRedirectUrl(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setUpdateDate(cursor.isNull(offset + 6) ? null : new java.util.Date(cursor.getLong(offset + 6)));
+        entity.setName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setTagline(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setVotesCount(cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9));
+        entity.setCommentsCount(cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10));
+        entity.setRedirectUrl(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     /** @inheritdoc */

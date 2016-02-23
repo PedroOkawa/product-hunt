@@ -211,6 +211,7 @@ public class ApiManager {
         protected Void doInBackground(Void... params) {
 
             for(Post post : posts) {
+                post.setUpdateDate(new Date());
                 post.sync();
 
                 databaseRepository.updateScreenshot(post.getScreenshot());
@@ -239,8 +240,12 @@ public class ApiManager {
             return;
         }
 
+        Map<String, String> parameters = new HashMap<>();
+
+        parameters.put(ApiInterface.FIELD_OLDER, databaseRepository.getLastCommentId());
+
         apiInterface
-                .commentsByPost(databaseRepository.selectSession().getToken(), postId, null)
+                .commentsByPost(databaseRepository.selectSession().getToken(), postId, parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<CommentResponse, Observable<List<Comment>>>() {
@@ -281,6 +286,7 @@ public class ApiManager {
         protected Void doInBackground(Void... params) {
 
             for(Comment comment : comments) {
+                comment.setUpdateDate(new Date());
                 comment.sync();
                 syncChildren(comment);
             }
@@ -310,7 +316,7 @@ public class ApiManager {
         }
     }
 
-    /* COMMENTS */
+    /* VOTES */
 
     public void requestVotesByPost(final ApiListener apiListener, long postId) {
         if(!configHelper.isConnected(context)) {
@@ -318,8 +324,12 @@ public class ApiManager {
             return;
         }
 
+        Map<String, String> parameters = new HashMap<>();
+
+        parameters.put(ApiInterface.FIELD_OLDER, databaseRepository.getLastVoteId());
+
         apiInterface
-                .votesByPost(databaseRepository.selectSession().getToken(), postId, null)
+                .votesByPost(databaseRepository.selectSession().getToken(), postId, parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<VoteResponse, Observable<List<Vote>>>() {
@@ -360,6 +370,7 @@ public class ApiManager {
         protected Void doInBackground(Void... params) {
 
             for(Vote vote : votes) {
+                vote.setUpdateDate(new Date());
                 vote.sync();
 
                 databaseRepository.updateUser(vote.getUser());

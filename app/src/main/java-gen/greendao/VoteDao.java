@@ -29,7 +29,8 @@ public class VoteDao extends AbstractDao<Vote, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property UserId = new Property(1, Long.class, "userId", false, "USER_ID");
         public final static Property CreatedAt = new Property(2, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property PostId = new Property(3, Long.class, "postId", false, "POST_ID");
+        public final static Property UpdateDate = new Property(3, java.util.Date.class, "updateDate", false, "UPDATE_DATE");
+        public final static Property PostId = new Property(4, Long.class, "postId", false, "POST_ID");
     };
 
     private DaoSession daoSession;
@@ -51,7 +52,8 @@ public class VoteDao extends AbstractDao<Vote, Long> {
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"USER_ID\" INTEGER," + // 1: userId
                 "\"CREATED_AT\" INTEGER," + // 2: createdAt
-                "\"POST_ID\" INTEGER);"); // 3: postId
+                "\"UPDATE_DATE\" INTEGER," + // 3: updateDate
+                "\"POST_ID\" INTEGER);"); // 4: postId
     }
 
     /** Drops the underlying database table. */
@@ -80,9 +82,14 @@ public class VoteDao extends AbstractDao<Vote, Long> {
             stmt.bindLong(3, createdAt.getTime());
         }
  
+        java.util.Date updateDate = entity.getUpdateDate();
+        if (updateDate != null) {
+            stmt.bindLong(4, updateDate.getTime());
+        }
+ 
         Long postId = entity.getPostId();
         if (postId != null) {
-            stmt.bindLong(4, postId);
+            stmt.bindLong(5, postId);
         }
     }
 
@@ -105,7 +112,8 @@ public class VoteDao extends AbstractDao<Vote, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userId
             cursor.isNull(offset + 2) ? null : new java.util.Date(cursor.getLong(offset + 2)), // createdAt
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3) // postId
+            cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)), // updateDate
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4) // postId
         );
         return entity;
     }
@@ -116,7 +124,8 @@ public class VoteDao extends AbstractDao<Vote, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setCreatedAt(cursor.isNull(offset + 2) ? null : new java.util.Date(cursor.getLong(offset + 2)));
-        entity.setPostId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setUpdateDate(cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)));
+        entity.setPostId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
      }
     
     /** @inheritdoc */

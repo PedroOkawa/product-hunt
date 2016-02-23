@@ -19,6 +19,8 @@
     <string name="post_details_activity_description_title">Descrição</string>
     <string name="post_details_activity_votes_title">Votos</string>
     <string name="post_details_activity_comments_title">Commentarios</string>
+    <string name="post_details_activity_comments_empty">Não há comentários</string>
+    <string name="post_details_activity_comments_load">Carregar mais</string>
 
     <!-- FILTER ACTIVITY -->
 

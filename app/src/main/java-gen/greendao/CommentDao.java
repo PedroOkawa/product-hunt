@@ -33,8 +33,9 @@ public class CommentDao extends AbstractDao<Comment, Long> {
         public final static Property ParentCommentId = new Property(2, Long.class, "parentCommentId", false, "PARENT_COMMENT_ID");
         public final static Property Body = new Property(3, String.class, "body", false, "BODY");
         public final static Property CreatedAt = new Property(4, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property ChildCommentsCount = new Property(5, Long.class, "childCommentsCount", false, "CHILD_COMMENTS_COUNT");
-        public final static Property PostId = new Property(6, Long.class, "postId", false, "POST_ID");
+        public final static Property UpdateDate = new Property(5, java.util.Date.class, "updateDate", false, "UPDATE_DATE");
+        public final static Property ChildCommentsCount = new Property(6, Long.class, "childCommentsCount", false, "CHILD_COMMENTS_COUNT");
+        public final static Property PostId = new Property(7, Long.class, "postId", false, "POST_ID");
     };
 
     private DaoSession daoSession;
@@ -59,8 +60,9 @@ public class CommentDao extends AbstractDao<Comment, Long> {
                 "\"PARENT_COMMENT_ID\" INTEGER," + // 2: parentCommentId
                 "\"BODY\" TEXT," + // 3: body
                 "\"CREATED_AT\" INTEGER," + // 4: createdAt
-                "\"CHILD_COMMENTS_COUNT\" INTEGER," + // 5: childCommentsCount
-                "\"POST_ID\" INTEGER);"); // 6: postId
+                "\"UPDATE_DATE\" INTEGER," + // 5: updateDate
+                "\"CHILD_COMMENTS_COUNT\" INTEGER," + // 6: childCommentsCount
+                "\"POST_ID\" INTEGER);"); // 7: postId
     }
 
     /** Drops the underlying database table. */
@@ -99,14 +101,19 @@ public class CommentDao extends AbstractDao<Comment, Long> {
             stmt.bindLong(5, createdAt.getTime());
         }
  
+        java.util.Date updateDate = entity.getUpdateDate();
+        if (updateDate != null) {
+            stmt.bindLong(6, updateDate.getTime());
+        }
+ 
         Long childCommentsCount = entity.getChildCommentsCount();
         if (childCommentsCount != null) {
-            stmt.bindLong(6, childCommentsCount);
+            stmt.bindLong(7, childCommentsCount);
         }
  
         Long postId = entity.getPostId();
         if (postId != null) {
-            stmt.bindLong(7, postId);
+            stmt.bindLong(8, postId);
         }
     }
 
@@ -131,8 +138,9 @@ public class CommentDao extends AbstractDao<Comment, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // parentCommentId
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // body
             cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // createdAt
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // childCommentsCount
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // postId
+            cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)), // updateDate
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // childCommentsCount
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // postId
         );
         return entity;
     }
@@ -145,8 +153,9 @@ public class CommentDao extends AbstractDao<Comment, Long> {
         entity.setParentCommentId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
         entity.setBody(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setCreatedAt(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
-        entity.setChildCommentsCount(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
-        entity.setPostId(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
+        entity.setUpdateDate(cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)));
+        entity.setChildCommentsCount(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
+        entity.setPostId(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
      }
     
     /** @inheritdoc */

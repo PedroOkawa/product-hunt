@@ -164,6 +164,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private void resetData() {
         adapterPost.reset();
         onPostsRecyclerViewListener.reset();
+        databaseRepository.resetLastPostDate();
         requestData();
     }
 

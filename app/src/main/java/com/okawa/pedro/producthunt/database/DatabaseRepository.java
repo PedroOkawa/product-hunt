@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.database;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
@@ -9,6 +8,7 @@ import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +43,6 @@ public class DatabaseRepository {
     private static final String CURRENT_CATEGORY_SLUG = "tech";
 
     private Category currentCategory;
-    private Date lastDate;
 
     private AvatarDao avatarDao;
     private CategoryDao categoryDao;
@@ -97,7 +96,7 @@ public class DatabaseRepository {
                 .where(CategoryDao.Properties.Name.eq(name))
                 .unique();
 
-        lastDate = new Date();
+        resetLastPostDate();
     }
 
     public long getCurrentCategoryId() {
@@ -114,18 +113,32 @@ public class DatabaseRepository {
 
     /* COMMENT */
 
-    public void updateComments(Collection<Comment> comments) {
+    public void updateComments(List<Comment> comments) {
         commentDao.insertOrReplaceInTx(comments);
+
+        Session session = selectSession();
+        session.setLastCommentId(getLastUpdatedCommentId());
+        sessionDao.update(session);
     }
 
     public List<Comment> selectCommentsFromPost(long postId, int offset) {
         return commentDao
                 .queryBuilder()
                 .orderDesc(CommentDao.Properties.CreatedAt)
-                .where(CommentDao.Properties.PostId.eq(postId))
+                .where(CommentDao.Properties.PostId.eq(postId), CommentDao.Properties.ParentCommentId.isNull())
                 .offset(offset)
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .list();
+    }
+
+    public long getLastUpdatedCommentId() {
+        Comment comment = commentDao
+                .queryBuilder()
+                .orderDesc(CommentDao.Properties.UpdateDate)
+                .limit(1)
+                .unique();
+
+        return comment != null ? comment.getId() : (long)(Integer.MAX_VALUE);
     }
 
     /* POST */
@@ -149,9 +162,7 @@ public class DatabaseRepository {
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset);
 
-        List<Post> posts = queryBuilder.list();
-
-        return defineHeaders(context, posts, offset);
+        return defineHeaders(context, queryBuilder.list(), offset);
     }
 
     public Post selectPostById(long id) {
@@ -171,6 +182,9 @@ public class DatabaseRepository {
 
     public void updateSession(Session session) {
         session.setId(SESSION_ID);
+        session.setLastPostDate(new Date());
+        session.setLastCommentId((long)(Integer.MAX_VALUE));
+        session.setLastVoteId((long)(Integer.MAX_VALUE));
         sessionDao.insertOrReplace(session);
     }
 
@@ -183,6 +197,34 @@ public class DatabaseRepository {
 
     public boolean containsSession() {
         return sessionDao.count() > 0;
+    }
+
+    public void resetLastPostDate() {
+        Session session = selectSession();
+        session.setLastPostDate(new Date());
+        sessionDao.update(session);
+    }
+
+    public String getLastCommentId() {
+        Session session = selectSession();
+        return String.valueOf(session.getLastCommentId());
+    }
+
+    public void resetLastCommentId() {
+        Session session = selectSession();
+        session.setLastCommentId((long)(Integer.MAX_VALUE));
+        sessionDao.update(session);
+    }
+
+    public String getLastVoteId() {
+        Session session = selectSession();
+        return String.valueOf(session.getLastVoteId());
+    }
+
+    public void resetLastVoteId() {
+        Session session = selectSession();
+        session.setLastVoteId((long)(Integer.MAX_VALUE));
+        sessionDao.update(session);
     }
 
     /* THUMBNAIL */
@@ -201,29 +243,38 @@ public class DatabaseRepository {
 
     public void updateVotes(Collection<Vote> votes) {
         voteDao.insertOrReplaceInTx(votes);
+
+        Session session = selectSession();
+        session.setLastVoteId(getLastUpdatedVoteId());
+        sessionDao.update(session);
     }
 
-    public List<Vote> selectVotes(long postId) {
+    public List<Vote> selectVotesFromPost(long postId, int offset) {
         return voteDao
                 .queryBuilder()
                 .orderDesc(VoteDao.Properties.CreatedAt)
                 .where(VoteDao.Properties.PostId.eq(postId))
+                .limit(DatabaseModule.SELECT_LIMIT)
+                .offset(offset)
                 .list();
+    }
+
+    public long getLastUpdatedVoteId() {
+        Vote vote = voteDao
+                .queryBuilder()
+                .orderDesc(VoteDao.Properties.UpdateDate)
+                .limit(1)
+                .unique();
+
+        return vote != null ? vote.getId() : (long)(Integer.MAX_VALUE);
     }
 
     /* DAYS AGO */
 
     public String getDaysAgo() {
-        Post post = postDao
-                .queryBuilder()
-                .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
-                .orderAsc(PostDao.Properties.CreatedAt)
-                .limit(1)
-                .unique();
+        Session session = selectSession();
 
-        Date date = post != null ? post.getCreatedAt() : new Date();
-
-        return String.valueOf(configHelper.calculateDifferenceDays(date));
+        return String.valueOf(configHelper.calculateDifferenceDays(session.getLastPostDate()));
     }
 
     /* POST CONTENT */
@@ -231,16 +282,19 @@ public class DatabaseRepository {
     private List<PostContent> defineHeaders(Context context, List<Post> posts, int offset) {
         List<PostContent> postContents = new ArrayList<>();
 
+        Session session = selectSession();
+
         for(Post post : posts) {
 
             if((posts.indexOf(post) == 0 && offset == 0) ||
-                    !(configHelper.checkSameDate(post.getCreatedAt(), lastDate))) {
+                    !(configHelper.checkSameDate(post.getCreatedAt(), session.getLastPostDate()))) {
                 PostContent headerContent = new PostContent();
 
                 headerContent.setIsHeader(true);
                 headerContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
 
-                lastDate = post.getCreatedAt();
+                session.setLastPostDate(post.getCreatedAt());
+                sessionDao.update(session);
 
                 postContents.add(headerContent);
             }
