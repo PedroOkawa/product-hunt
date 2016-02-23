@@ -119,4 +119,13 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- BUTTON -->
+
+    <style name="Button">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/background_button</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>

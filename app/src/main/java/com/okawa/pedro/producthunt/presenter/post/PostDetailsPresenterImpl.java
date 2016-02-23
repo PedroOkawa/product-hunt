@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -43,6 +44,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private PostDetailsView postDetailsView;
     private ApiManager apiManager;
     private DatabaseRepository databaseRepository;
+
+    private boolean active;
 
     private ActivityPostDetailsBinding binding;
     private Context context;
@@ -140,6 +143,11 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         requestComments();
     }
 
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Subscribe
     public void onEvent(ConnectionEvent event) {
 
@@ -147,13 +155,16 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     @Override
     public void onDataLoaded(int process) {
-        if(process == ApiManager.PROCESS_COMMENTS_ID) {
-            for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId())) {
-                printComment(comment, 0);
+        if(active) {
+            if (process == ApiManager.PROCESS_COMMENTS_ID) {
+                for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId(), 0)) {
+                    printComment(comment, 0);
+                }
+
+                postDetailsView.onComplete();
+            } else if (process == ApiManager.PROCESS_VOTES_ID) {
+                adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
             }
-            postDetailsView.onComplete();
-        } else if (process == ApiManager.PROCESS_VOTES_ID) {
-            adapterVote.addDataSet(databaseRepository.selectVotes(post.getId()));
         }
     }
 

@@ -7,7 +7,8 @@ import android.view.View;
  */
 public interface MainView {
 
-    void initializeToolbar();
+    void initializeToolbar(String title);
+    void setToolbarName(String title);
     void onRequest();
     void onComplete();
     void onError(String error);

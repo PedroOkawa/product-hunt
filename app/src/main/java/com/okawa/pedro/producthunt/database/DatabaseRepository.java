@@ -1,18 +1,18 @@
 package com.okawa.pedro.producthunt.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import de.greenrobot.dao.query.QueryBuilder;
 import greendao.Avatar;
 import greendao.AvatarDao;
 import greendao.Category;
@@ -39,11 +39,10 @@ import greendao.VoteDao;
 public class DatabaseRepository {
     private static final long SESSION_ID = Long.MAX_VALUE;
     private static final long CURRENT_CATEGORY_ID = 1;
-    private static final String CURRENT_CATEGORY_NAME = "tech";
+    private static final String CURRENT_CATEGORY_NAME = "Tech";
+    private static final String CURRENT_CATEGORY_SLUG = "tech";
 
     private Category currentCategory;
-    private int daysAgo;
-
     private Date lastDate;
 
     private AvatarDao avatarDao;
@@ -70,9 +69,6 @@ public class DatabaseRepository {
         this.voteDao = daoSession.getVoteDao();
 
         this.configHelper = configHelper;
-
-        resetDaysAgo();
-        resetLastDate();
     }
 
     /* AVATAR */
@@ -100,6 +96,8 @@ public class DatabaseRepository {
                 .queryBuilder()
                 .where(CategoryDao.Properties.Name.eq(name))
                 .unique();
+
+        lastDate = new Date();
     }
 
     public long getCurrentCategoryId() {
@@ -107,7 +105,11 @@ public class DatabaseRepository {
     }
 
     public String getCurrentCategoryName() {
-        return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getSlug();
+        return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getName();
+    }
+
+    public String getCurrentCategorySlug() {
+        return currentCategory == null ? CURRENT_CATEGORY_SLUG : currentCategory.getSlug();
     }
 
     /* COMMENT */
@@ -116,11 +118,13 @@ public class DatabaseRepository {
         commentDao.insertOrReplaceInTx(comments);
     }
 
-    public List<Comment> selectCommentsFromPost(long postId) {
+    public List<Comment> selectCommentsFromPost(long postId, int offset) {
         return commentDao
                 .queryBuilder()
                 .orderDesc(CommentDao.Properties.CreatedAt)
                 .where(CommentDao.Properties.PostId.eq(postId))
+                .offset(offset)
+                .limit(DatabaseModule.SELECT_LIMIT)
                 .list();
     }
 
@@ -138,13 +142,14 @@ public class DatabaseRepository {
     }
 
     public List<PostContent> selectPostsByCategoryPaged(Context context, int offset) {
-        List<Post> posts = postDao
+        QueryBuilder queryBuilder = postDao
                 .queryBuilder()
-                .orderDesc(PostDao.Properties.CreatedAt)
                 .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
+                .orderDesc(PostDao.Properties.CreatedAt)
                 .limit(DatabaseModule.SELECT_LIMIT)
-                .offset(offset)
-                .list();
+                .offset(offset);
+
+        List<Post> posts = queryBuilder.list();
 
         return defineHeaders(context, posts, offset);
     }
@@ -208,16 +213,17 @@ public class DatabaseRepository {
 
     /* DAYS AGO */
 
-    public void addDayAgo() {
-        daysAgo++;
-    }
-
-    public void resetDaysAgo() {
-        daysAgo = 0;
-    }
-
     public String getDaysAgo() {
-        return String.valueOf(daysAgo);
+        Post post = postDao
+                .queryBuilder()
+                .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
+                .orderAsc(PostDao.Properties.CreatedAt)
+                .limit(1)
+                .unique();
+
+        Date date = post != null ? post.getCreatedAt() : new Date();
+
+        return String.valueOf(configHelper.calculateDifferenceDays(date));
     }
 
     /* POST CONTENT */
@@ -226,26 +232,28 @@ public class DatabaseRepository {
         List<PostContent> postContents = new ArrayList<>();
 
         for(Post post : posts) {
+
+            if((posts.indexOf(post) == 0 && offset == 0) ||
+                    !(configHelper.checkSameDate(post.getCreatedAt(), lastDate))) {
+                PostContent headerContent = new PostContent();
+
+                headerContent.setIsHeader(true);
+                headerContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
+
+                lastDate = post.getCreatedAt();
+
+                postContents.add(headerContent);
+            }
+
             PostContent postContent = new PostContent();
 
-            if((posts.indexOf(post) == 0 && offset == 0 && configHelper.checkIsToday(lastDate)) ||
-                    !(configHelper.checkSameDate(post.getCreatedAt(), lastDate))) {
-                postContent.setIsHeader(true);
-                postContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
-                lastDate = post.getCreatedAt();
-            } else {
-                postContent.setIsHeader(false);
-                postContent.setPost(post);
-            }
+            postContent.setIsHeader(false);
+            postContent.setPost(post);
 
             postContents.add(postContent);
         }
 
         return postContents;
-    }
-
-    public void resetLastDate() {
-        this.lastDate = new Date();
     }
 
 }

@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.okawa.pedro.producthunt.ui.filter.FilterActivity;
 import com.okawa.pedro.producthunt.ui.main.MainActivity;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsActivity;
 
@@ -17,6 +18,12 @@ public class CallManager {
     public void main(AppCompatActivity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
+    }
+
+    public static final int FILTER_RESULT = 0x00aa;
+    public void filter(AppCompatActivity activity) {
+        Intent intent = new Intent(activity, FilterActivity.class);
+        activity.startActivityForResult(intent, FILTER_RESULT);
     }
 
     public static final String BUNDLE_POST_DETAILS_ID = "BUNDLE_POST_DETAILS_ID";

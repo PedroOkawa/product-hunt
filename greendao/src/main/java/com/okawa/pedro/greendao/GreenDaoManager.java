@@ -40,6 +40,7 @@ public class GreenDaoManager {
     private static final String FIELD_POST_ID = "id";
     private static final String FIELD_POST_CATEGORY_ID = "categoryId";
     private static final String FIELD_POST_USER_ID = "userIdFK";
+    private static final String FIELD_POST_USER_NAME = "userName";
     private static final String FIELD_POST_THUMBNAIL_ID = "thumbnailIdFK";
     private static final String FIELD_POST_CREATED_AT = "createdAt";
     private static final String FIELD_POST_NAME = "name";
@@ -135,6 +136,7 @@ public class GreenDaoManager {
         Property postIdPK = post.addLongProperty(FIELD_POST_ID).primaryKey().getProperty();
         Property postUserIdFK = post.addLongProperty(FIELD_POST_USER_ID).getProperty();
         Property postThumbnailIdFK = post.addLongProperty(FIELD_POST_THUMBNAIL_ID).getProperty();
+        post.addStringProperty(FIELD_POST_USER_NAME);
         post.addLongProperty(FIELD_POST_CATEGORY_ID);
         post.addDateProperty(FIELD_POST_CREATED_AT);
         post.addStringProperty(FIELD_POST_NAME);

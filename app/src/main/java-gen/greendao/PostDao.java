@@ -31,12 +31,13 @@ public class PostDao extends AbstractDao<Post, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "ID");
         public final static Property UserIdFK = new Property(1, Long.class, "userIdFK", false, "USER_ID_FK");
         public final static Property ThumbnailIdFK = new Property(2, Long.class, "thumbnailIdFK", false, "THUMBNAIL_ID_FK");
-        public final static Property CategoryId = new Property(3, Long.class, "categoryId", false, "CATEGORY_ID");
-        public final static Property CreatedAt = new Property(4, java.util.Date.class, "createdAt", false, "CREATED_AT");
-        public final static Property Name = new Property(5, String.class, "name", false, "NAME");
-        public final static Property Tagline = new Property(6, String.class, "tagline", false, "TAGLINE");
-        public final static Property VotesCount = new Property(7, Long.class, "votesCount", false, "VOTES_COUNT");
-        public final static Property RedirectUrl = new Property(8, String.class, "redirectUrl", false, "REDIRECT_URL");
+        public final static Property UserName = new Property(3, String.class, "userName", false, "USER_NAME");
+        public final static Property CategoryId = new Property(4, Long.class, "categoryId", false, "CATEGORY_ID");
+        public final static Property CreatedAt = new Property(5, java.util.Date.class, "createdAt", false, "CREATED_AT");
+        public final static Property Name = new Property(6, String.class, "name", false, "NAME");
+        public final static Property Tagline = new Property(7, String.class, "tagline", false, "TAGLINE");
+        public final static Property VotesCount = new Property(8, Long.class, "votesCount", false, "VOTES_COUNT");
+        public final static Property RedirectUrl = new Property(9, String.class, "redirectUrl", false, "REDIRECT_URL");
     };
 
     private DaoSession daoSession;
@@ -59,12 +60,13 @@ public class PostDao extends AbstractDao<Post, Long> {
                 "\"ID\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"USER_ID_FK\" INTEGER," + // 1: userIdFK
                 "\"THUMBNAIL_ID_FK\" INTEGER," + // 2: thumbnailIdFK
-                "\"CATEGORY_ID\" INTEGER," + // 3: categoryId
-                "\"CREATED_AT\" INTEGER," + // 4: createdAt
-                "\"NAME\" TEXT," + // 5: name
-                "\"TAGLINE\" TEXT," + // 6: tagline
-                "\"VOTES_COUNT\" INTEGER," + // 7: votesCount
-                "\"REDIRECT_URL\" TEXT);"); // 8: redirectUrl
+                "\"USER_NAME\" TEXT," + // 3: userName
+                "\"CATEGORY_ID\" INTEGER," + // 4: categoryId
+                "\"CREATED_AT\" INTEGER," + // 5: createdAt
+                "\"NAME\" TEXT," + // 6: name
+                "\"TAGLINE\" TEXT," + // 7: tagline
+                "\"VOTES_COUNT\" INTEGER," + // 8: votesCount
+                "\"REDIRECT_URL\" TEXT);"); // 9: redirectUrl
     }
 
     /** Drops the underlying database table. */
@@ -93,34 +95,39 @@ public class PostDao extends AbstractDao<Post, Long> {
             stmt.bindLong(3, thumbnailIdFK);
         }
  
+        String userName = entity.getUserName();
+        if (userName != null) {
+            stmt.bindString(4, userName);
+        }
+ 
         Long categoryId = entity.getCategoryId();
         if (categoryId != null) {
-            stmt.bindLong(4, categoryId);
+            stmt.bindLong(5, categoryId);
         }
  
         java.util.Date createdAt = entity.getCreatedAt();
         if (createdAt != null) {
-            stmt.bindLong(5, createdAt.getTime());
+            stmt.bindLong(6, createdAt.getTime());
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(6, name);
+            stmt.bindString(7, name);
         }
  
         String tagline = entity.getTagline();
         if (tagline != null) {
-            stmt.bindString(7, tagline);
+            stmt.bindString(8, tagline);
         }
  
         Long votesCount = entity.getVotesCount();
         if (votesCount != null) {
-            stmt.bindLong(8, votesCount);
+            stmt.bindLong(9, votesCount);
         }
  
         String redirectUrl = entity.getRedirectUrl();
         if (redirectUrl != null) {
-            stmt.bindString(9, redirectUrl);
+            stmt.bindString(10, redirectUrl);
         }
     }
 
@@ -143,12 +150,13 @@ public class PostDao extends AbstractDao<Post, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userIdFK
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // thumbnailIdFK
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // categoryId
-            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // createdAt
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // tagline
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // votesCount
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // redirectUrl
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // userName
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // categoryId
+            cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)), // createdAt
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // name
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // tagline
+            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // votesCount
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // redirectUrl
         );
         return entity;
     }
@@ -159,12 +167,13 @@ public class PostDao extends AbstractDao<Post, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserIdFK(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setThumbnailIdFK(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setCategoryId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
-        entity.setCreatedAt(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
-        entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setTagline(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setVotesCount(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
-        entity.setRedirectUrl(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setUserName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setCategoryId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setCreatedAt(cursor.isNull(offset + 5) ? null : new java.util.Date(cursor.getLong(offset + 5)));
+        entity.setName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setTagline(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setVotesCount(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setRedirectUrl(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
      }
     
     /** @inheritdoc */

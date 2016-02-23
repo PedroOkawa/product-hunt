@@ -2,6 +2,7 @@ package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
@@ -162,11 +163,13 @@ public class ApiManager {
         }
 
         Map<String, String> parameters = new HashMap<>();
+
         parameters.put(ApiInterface.FIELD_DAYS_AGO, databaseRepository.getDaysAgo());
+
         apiInterface
                 .postsByCategory(
                         databaseRepository.selectSession().getToken(),
-                        databaseRepository.getCurrentCategoryName(),
+                        databaseRepository.getCurrentCategorySlug(),
                         parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -179,7 +182,7 @@ public class ApiManager {
                 .subscribe(new Observer<List<Post>>() {
                     @Override
                     public void onCompleted() {
-                        databaseRepository.addDayAgo();
+
                     }
 
                     @Override

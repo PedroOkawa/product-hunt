@@ -18,6 +18,7 @@ public class Post {
 
     private Long id;
     private Long userIdFK;
+    private String userName;
     private Long thumbnailIdFK;
     @SerializedName("category_id")
     private Long categoryId;
@@ -54,10 +55,11 @@ public class Post {
         this.id = id;
     }
 
-    public Post(Long id, Long userIdFK, Long thumbnailIdFK, Long categoryId, java.util.Date createdAt, String name, String tagline, Long votesCount, String redirectUrl) {
+    public Post(Long id, Long userIdFK, Long thumbnailIdFK, String userName, Long categoryId, java.util.Date createdAt, String name, String tagline, Long votesCount, String redirectUrl) {
         this.id = id;
         this.userIdFK = userIdFK;
         this.thumbnailIdFK = thumbnailIdFK;
+        this.userName = userName;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.name = name;
@@ -94,6 +96,14 @@ public class Post {
 
     public void setThumbnailIdFK(Long thumbnailIdFK) {
         this.thumbnailIdFK = thumbnailIdFK;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Long getCategoryId() {
@@ -248,11 +258,76 @@ public class Post {
     public void sync() {
         setUser(user);
         getUser().sync();
+        this.userName = user.getName();
         thumbnail.setId(id);
         setThumbnail(thumbnail);
         screenshot.setId(id);
         setScreenshot(screenshot);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Post post = (Post) o;
+
+        if (id != null ? !id.equals(post.id) : post.id != null) return false;
+        if (userIdFK != null ? !userIdFK.equals(post.userIdFK) : post.userIdFK != null)
+            return false;
+        if (userName != null ? !userName.equals(post.userName) : post.userName != null)
+            return false;
+        if (thumbnailIdFK != null ? !thumbnailIdFK.equals(post.thumbnailIdFK) : post.thumbnailIdFK != null)
+            return false;
+        if (categoryId != null ? !categoryId.equals(post.categoryId) : post.categoryId != null)
+            return false;
+        if (createdAt != null ? !createdAt.equals(post.createdAt) : post.createdAt != null)
+            return false;
+        if (name != null ? !name.equals(post.name) : post.name != null) return false;
+        if (tagline != null ? !tagline.equals(post.tagline) : post.tagline != null) return false;
+        if (votesCount != null ? !votesCount.equals(post.votesCount) : post.votesCount != null)
+            return false;
+        if (redirectUrl != null ? !redirectUrl.equals(post.redirectUrl) : post.redirectUrl != null)
+            return false;
+        if (daoSession != null ? !daoSession.equals(post.daoSession) : post.daoSession != null)
+            return false;
+        if (myDao != null ? !myDao.equals(post.myDao) : post.myDao != null) return false;
+        if (user != null ? !user.equals(post.user) : post.user != null) return false;
+        if (user__resolvedKey != null ? !user__resolvedKey.equals(post.user__resolvedKey) : post.user__resolvedKey != null)
+            return false;
+        if (thumbnail != null ? !thumbnail.equals(post.thumbnail) : post.thumbnail != null)
+            return false;
+        if (thumbnail__resolvedKey != null ? !thumbnail__resolvedKey.equals(post.thumbnail__resolvedKey) : post.thumbnail__resolvedKey != null)
+            return false;
+        if (screenshot != null ? !screenshot.equals(post.screenshot) : post.screenshot != null)
+            return false;
+        return !(screenshot__resolvedKey != null ? !screenshot__resolvedKey.equals(post.screenshot__resolvedKey) : post.screenshot__resolvedKey != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (userIdFK != null ? userIdFK.hashCode() : 0);
+        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        result = 31 * result + (thumbnailIdFK != null ? thumbnailIdFK.hashCode() : 0);
+        result = 31 * result + (categoryId != null ? categoryId.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (tagline != null ? tagline.hashCode() : 0);
+        result = 31 * result + (votesCount != null ? votesCount.hashCode() : 0);
+        result = 31 * result + (redirectUrl != null ? redirectUrl.hashCode() : 0);
+        result = 31 * result + (daoSession != null ? daoSession.hashCode() : 0);
+        result = 31 * result + (myDao != null ? myDao.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (user__resolvedKey != null ? user__resolvedKey.hashCode() : 0);
+        result = 31 * result + (thumbnail != null ? thumbnail.hashCode() : 0);
+        result = 31 * result + (thumbnail__resolvedKey != null ? thumbnail__resolvedKey.hashCode() : 0);
+        result = 31 * result + (screenshot != null ? screenshot.hashCode() : 0);
+        result = 31 * result + (screenshot__resolvedKey != null ? screenshot__resolvedKey.hashCode() : 0);
+        return result;
+    }
+
     // KEEP METHODS END
 
 }

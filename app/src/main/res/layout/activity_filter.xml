@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="touchListener"
+            type="com.okawa.pedro.producthunt.util.listener.OnTouchListener"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="@dimen/abc_action_bar_default_height_material"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/color_primary_dark"
+            app:titleTextColor="@android:color/white"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
+            android:layout_above="@+id/tvActivityFilterButton">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvActivityFilterSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_activity_sort_title"/>
+
+                <Spinner
+                    android:id="@+id/spActivityFilterSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/tvActivityFilterSort"
+                    android:layout_toEndOf="@id/tvActivityFilterSort"/>
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <TextView
+            style="@style/Button"
+            android:id="@+id/tvActivityFilterButton"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentBottom="true"
+            android:text="@string/filter_activity_button"
+            android:onClick="@{touchListener.onViewTouched}"/>
+
+    </RelativeLayout>
+
+</layout>

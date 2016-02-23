@@ -43,6 +43,20 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        postDetailsPresenter.setActive(true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        postDetailsPresenter.setActive(false);
+    }
+
+    @Override
     protected void doOnCreated(Bundle savedInstanceState) {
         binding = (ActivityPostDetailsBinding) getDataBinding();
 

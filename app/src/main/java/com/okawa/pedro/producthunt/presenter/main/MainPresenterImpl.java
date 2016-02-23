@@ -90,11 +90,16 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         /* TOOLBAR */
 
-        mainView.initializeToolbar();
+        mainView.initializeToolbar(databaseRepository.getCurrentCategoryName());
 
         /* REQUEST INITIAL DATA */
 
         requestCategoryData();
+    }
+
+    @Override
+    public void applyFilter(int filter) {
+
     }
 
     @Override
@@ -159,8 +164,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     private void resetData() {
         adapterPost.reset();
         onPostsRecyclerViewListener.reset();
-        databaseRepository.resetDaysAgo();
-        databaseRepository.resetLastDate();
         requestData();
     }
 
@@ -200,7 +203,9 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            databaseRepository.setCurrentCategory(item.getTitle().toString());
+            String title = item.getTitle().toString();
+            databaseRepository.setCurrentCategory(title);
+            mainView.setToolbarName(title);
             binding.dlActivityMain.closeDrawers();
             resetData();
 

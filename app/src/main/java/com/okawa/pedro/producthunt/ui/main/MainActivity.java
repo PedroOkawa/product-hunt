@@ -1,8 +1,12 @@
 package com.okawa.pedro.producthunt.ui.main;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -54,12 +58,17 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
-    public void initializeToolbar() {
+    public void initializeToolbar(String title) {
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.app_name);
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public void setToolbarName(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -97,12 +106,34 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home) {
             binding.dlActivityMain.openDrawer(GravityCompat.START);
             return true;
         }
 
+        if(item.getItemId() == R.id.mainMenuFilter) {
+            callManager.filter(this);
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == CallManager.FILTER_RESULT) {
+            if (resultCode == Activity.RESULT_OK) {
+
+            }
+        }
     }
 }

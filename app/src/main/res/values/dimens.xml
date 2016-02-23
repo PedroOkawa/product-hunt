@@ -37,6 +37,7 @@
     <dimen name="avatar_style_margin">6dp</dimen>
     
     <!-- VOTE STYLE -->
+
     <dimen name="vote_style_list_height">136dp</dimen>
     <dimen name="vote_style_item_width">80dp</dimen>
 

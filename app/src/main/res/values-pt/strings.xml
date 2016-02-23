@@ -6,6 +6,10 @@
     <string name="navigation_menu_collections">Coleções</string>
     <string name="navigation_menu_categories">Categorias</string>
 
+    <!-- MAIN ACTIVITY (TOOLBAR) -->
+
+    <string name="main_menu_filter">Filtro</string>
+
     <!-- MAIN ACTIVITY (TODAY) -->
 
     <string name="main_activity_today">Hoje</string>
@@ -15,5 +19,16 @@
     <string name="post_details_activity_description_title">Descrição</string>
     <string name="post_details_activity_votes_title">Votos</string>
     <string name="post_details_activity_comments_title">Commentarios</string>
+
+    <!-- FILTER ACTIVITY -->
+
+    <string name="filter_activity_button">Aplicar filtros</string>
+    <string name="filter_activity_sort_title">Ordernar por: </string>
+    <string-array name="filter_activity_options">
+        <item>Data</item>
+        <item>Votos</item>
+        <item>Título</item>
+        <item>Usuário</item>
+    </string-array>
 
 </resources>
