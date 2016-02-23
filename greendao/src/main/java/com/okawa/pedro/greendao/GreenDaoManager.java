@@ -14,7 +14,9 @@ public class GreenDaoManager {
     private static final String ENTITY_SESSION = "Session";
     private static final String FIELD_SESSION_ACCESS_TOKEN = "accessToken";
     private static final String FILED_SESSION_EXPIRES_IN = "expiresIn";
+    private static final String FIELD_SESSION_LAST_POST_ID = "lastPostId";
     private static final String FIELD_SESSION_LAST_POST_DATE = "lastPostDate";
+    private static final String FIELD_SESSION_DAYS_AGO = "daysAgo";
     private static final String FIELD_SESSION_LAST_COMMENT_ID = "lastCommentId";
     private static final String FIELD_SESSION_LAST_VOTE_ID = "lastVoteId";
 
@@ -94,12 +96,15 @@ public class GreenDaoManager {
     private static void createTables(Schema schema) {
 
         /* SESSION */
+
         Entity session = schema.addEntity(ENTITY_SESSION);
 
         session.addIdProperty().primaryKey();
         session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
         session.addLongProperty(FILED_SESSION_EXPIRES_IN);
+        session.addLongProperty(FIELD_SESSION_LAST_POST_ID);
         session.addDateProperty(FIELD_SESSION_LAST_POST_DATE);
+        session.addLongProperty(FIELD_SESSION_DAYS_AGO);
         session.addLongProperty(FIELD_SESSION_LAST_COMMENT_ID);
         session.addLongProperty(FIELD_SESSION_LAST_VOTE_ID);
 

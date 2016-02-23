@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
@@ -8,7 +9,6 @@ import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -96,7 +96,7 @@ public class DatabaseRepository {
                 .where(CategoryDao.Properties.Name.eq(name))
                 .unique();
 
-        resetLastPostDate();
+        resetLastPostSession();
     }
 
     public long getCurrentCategoryId() {
@@ -138,7 +138,7 @@ public class DatabaseRepository {
                 .limit(1)
                 .unique();
 
-        return comment != null ? comment.getId() : (long)(Integer.MAX_VALUE);
+        return comment != null ? comment.getId() : 0;
     }
 
     /* POST */
@@ -166,6 +166,8 @@ public class DatabaseRepository {
     }
 
     public Post selectPostById(long id) {
+        setCurrentPostId(id);
+
         return postDao
                 .queryBuilder()
                 .where(PostDao.Properties.Id.eq(id))
@@ -183,8 +185,9 @@ public class DatabaseRepository {
     public void updateSession(Session session) {
         session.setId(SESSION_ID);
         session.setLastPostDate(new Date());
+        session.setDaysAgo(0L);
         session.setLastCommentId((long)(Integer.MAX_VALUE));
-        session.setLastVoteId((long)(Integer.MAX_VALUE));
+        session.setLastVoteId(0L);
         sessionDao.insertOrReplace(session);
     }
 
@@ -199,9 +202,28 @@ public class DatabaseRepository {
         return sessionDao.count() > 0;
     }
 
-    public void resetLastPostDate() {
+    private void resetLastPostSession() {
         Session session = selectSession();
+        session.setDaysAgo(0L);
         session.setLastPostDate(new Date());
+        sessionDao.update(session);
+    }
+
+    public void updateLastPostDate(Date date) {
+        Session session = selectSession();
+
+        long daysDiff = configHelper.calculateDifferenceDays(date);
+
+        if(configHelper.checkSameDate(date, session.getLastPostDate())) {
+            daysDiff++;
+        }
+
+        if(daysDiff == session.getDaysAgo()) {
+            daysDiff++;
+        }
+
+        session.setDaysAgo(daysDiff);
+        session.setLastPostDate(date);
         sessionDao.update(session);
     }
 
@@ -210,20 +232,28 @@ public class DatabaseRepository {
         return String.valueOf(session.getLastCommentId());
     }
 
-    public void resetLastCommentId() {
-        Session session = selectSession();
-        session.setLastCommentId((long)(Integer.MAX_VALUE));
-        sessionDao.update(session);
-    }
-
     public String getLastVoteId() {
         Session session = selectSession();
         return String.valueOf(session.getLastVoteId());
     }
 
-    public void resetLastVoteId() {
+    public String getDaysAgo() {
         Session session = selectSession();
-        session.setLastVoteId((long)(Integer.MAX_VALUE));
+        return String.valueOf(session.getDaysAgo());
+    }
+
+    private void setCurrentPostId(long postId) {
+        Session session = selectSession();
+        if(session.getLastVoteId() != postId) {
+            resetPostSession(postId);
+        }
+    }
+
+    private void resetPostSession(long postId) {
+        Session session = selectSession();
+        session.setLastPostId(postId);
+        session.setLastVoteId(0L);
+        session.setLastCommentId((long)(Integer.MAX_VALUE));
         sessionDao.update(session);
     }
 
@@ -241,40 +271,37 @@ public class DatabaseRepository {
 
     /* VOTE */
 
-    public void updateVotes(Collection<Vote> votes) {
+    public void updateVotes(long postId, Collection<Vote> votes) {
         voteDao.insertOrReplaceInTx(votes);
 
         Session session = selectSession();
-        session.setLastVoteId(getLastUpdatedVoteId());
+
+        session.setLastVoteId(getLastUpdatedVoteId(postId));
         sessionDao.update(session);
     }
 
     public List<Vote> selectVotesFromPost(long postId, int offset) {
+        Session session = selectSession();
+        session.setLastPostId(postId);
+        sessionDao.update(session);
+
         return voteDao
                 .queryBuilder()
-                .orderDesc(VoteDao.Properties.CreatedAt)
                 .where(VoteDao.Properties.PostId.eq(postId))
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset)
                 .list();
     }
 
-    public long getLastUpdatedVoteId() {
+    public long getLastUpdatedVoteId(long postId) {
         Vote vote = voteDao
                 .queryBuilder()
+                .where(VoteDao.Properties.PostId.eq(postId))
                 .orderDesc(VoteDao.Properties.UpdateDate)
                 .limit(1)
                 .unique();
 
-        return vote != null ? vote.getId() : (long)(Integer.MAX_VALUE);
-    }
-
-    /* DAYS AGO */
-
-    public String getDaysAgo() {
-        Session session = selectSession();
-
-        return String.valueOf(configHelper.calculateDifferenceDays(session.getLastPostDate()));
+        return vote != null ? vote.getId() : 0;
     }
 
     /* POST CONTENT */
@@ -293,8 +320,7 @@ public class DatabaseRepository {
                 headerContent.setIsHeader(true);
                 headerContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
 
-                session.setLastPostDate(post.getCreatedAt());
-                sessionDao.update(session);
+                updateLastPostDate(post.getCreatedAt());
 
                 postContents.add(headerContent);
             }

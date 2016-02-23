@@ -68,10 +68,20 @@
                     android:layout_below="@+id/tvActivityPostDetailsVotesTitle"/>
 
                 <TextView
+                    android:id="@+id/tvActivityPostDetailsVotesPlaceholder"
+                    style="@style/DetailsBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/post_details_activity_votes_placeholder"
+                    android:layout_below="@+id/rvActivityPostDetailsVotes"
+                    android:visibility="gone"/>
+
+                <TextView
                     style="@style/DetailsTitle"
                     android:id="@+id/tvActivityPostDetailsCommentsTitle"
                     android:text="@string/post_details_activity_comments_title"
-                    android:layout_below="@+id/rvActivityPostDetailsVotes"/>
+                    android:layout_below="@+id/tvActivityPostDetailsVotesPlaceholder"/>
 
                 <LinearLayout
                     android:id="@+id/llActivityPostDetailsComments"

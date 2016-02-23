@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.ui.loading;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.okawa.pedro.producthunt.R;

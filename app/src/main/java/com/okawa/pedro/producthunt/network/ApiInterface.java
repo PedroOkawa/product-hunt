@@ -45,6 +45,10 @@ public interface ApiInterface {
     String PATH_POST_VOTES = "posts/{postId}/votes";
     String PATH_POST_ID = "postId";
     String FIELD_OLDER = "older";
+    String FIELD_NEWER = "newer";
+    String FIELD_ORDER = "order";
+    String VALUE_ASC = "ASC";
+    String VALUE_DESC = "DESC";
 
     @FormUrlEncoded
     @POST(PATH_TOKEN)

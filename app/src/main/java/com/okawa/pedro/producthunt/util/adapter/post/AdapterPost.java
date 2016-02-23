@@ -4,6 +4,7 @@ import android.databinding.ViewDataBinding;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterHeaderPostBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;
@@ -64,6 +65,9 @@ public class AdapterPost extends HeaderAdapter<PostContent, ViewDataBinding> {
             Glide.with(binding.getRoot().getContext())
                     .load(post.getThumbnail().getImage())
                     .asBitmap()
+                    .placeholder(R.mipmap.ic_image_placeholder)
+                    .error(R.mipmap.ic_image_placeholder)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
                     .into(adapterPostBinding.viewPostDetails.ivViewPostDetailsPreview);
 
@@ -72,6 +76,9 @@ public class AdapterPost extends HeaderAdapter<PostContent, ViewDataBinding> {
             Glide.with(binding.getRoot().getContext())
                     .load(post.getUser().getAvatar().getOriginal())
                     .asBitmap()
+                    .placeholder(R.mipmap.ic_user_placeholder)
+                    .error(R.mipmap.ic_user_placeholder)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
                     .transform(new GlideCircleTransform(binding.getRoot().getContext()))
                     .into(adapterPostBinding.viewPostDetails.ivViewPostDetailsUser);

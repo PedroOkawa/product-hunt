@@ -5,14 +5,13 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
@@ -31,6 +30,7 @@ import com.okawa.pedro.producthunt.util.listener.OnTouchListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
@@ -80,6 +80,10 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     @Override
     public void initialize(ActivityPostDetailsBinding binding, long postId, LayoutInflater layoutInflater) {
 
+        /* REGISTER ON EVENT BUS */
+
+        EventBus.getDefault().register(this);
+
         /* ACTIVATE */
 
         active = true;
@@ -108,6 +112,9 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         Glide.with(binding.getRoot().getContext())
                 .load(post.getThumbnail().getImage())
                 .asBitmap()
+                .placeholder(R.mipmap.ic_image_placeholder)
+                .error(R.mipmap.ic_image_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .into(binding.viewPostDetails.ivViewPostDetailsPreview);
 
@@ -116,6 +123,9 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         Glide.with(binding.getRoot().getContext())
                 .load(post.getUser().getAvatar().getOriginal())
                 .asBitmap()
+                .placeholder(R.mipmap.ic_user_placeholder)
+                .error(R.mipmap.ic_user_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .transform(new GlideCircleTransform(binding.getRoot().getContext()))
                 .into(binding.viewPostDetails.ivViewPostDetailsUser);
@@ -126,9 +136,9 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         onVotesRecyclerViewListener = new OnVotesRecyclerViewListener(linearLayoutManager);
 
-
         binding.rvActivityPostDetailsVotes.setAdapter(adapterVote);
         binding.rvActivityPostDetailsVotes.setLayoutManager(linearLayoutManager);
+        binding.rvActivityPostDetailsVotes.addOnScrollListener(onVotesRecyclerViewListener);
 
         /* TOOLBAR */
 
@@ -157,14 +167,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         addPlaceholderView();
 
-        /* RESET LAST COMMENT AND VOTE ID */
-
-        databaseRepository.resetLastCommentId();
-        databaseRepository.resetLastVoteId();
-
         /* REQUEST DATA  */
 
-        requestVotes();
         requestComments();
     }
 
@@ -175,7 +179,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     @Subscribe
     public void onEvent(ConnectionEvent event) {
-
+        requestComments();
+        requestVotes();
     }
 
     @Override
@@ -189,6 +194,14 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 postDetailsView.onComplete();
             } else if (process == ApiManager.PROCESS_VOTES_ID) {
                 adapterVote.addDataSet(databaseRepository.selectVotesFromPost(post.getId(), adapterVote.getItemCount()));
+
+                if(adapterVote.getItemCount() == 0) {
+                    binding.rvActivityPostDetailsVotes.setVisibility(View.GONE);
+                    binding.tvActivityPostDetailsVotesPlaceholder.setVisibility(View.VISIBLE);
+                } else {
+                    binding.rvActivityPostDetailsVotes.setVisibility(View.VISIBLE);
+                    binding.tvActivityPostDetailsVotesPlaceholder.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -232,17 +245,14 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         Glide.with(binding.getRoot().getContext())
                 .load(comment.getUser().getAvatar().getOriginal())
                 .asBitmap()
+                .placeholder(R.mipmap.ic_user_placeholder)
+                .error(R.mipmap.ic_user_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .transform(new GlideCircleTransform(commentBinding.getRoot().getContext()))
                 .into(commentBinding.ivAdapterCommentUser);
 
-        binding.llActivityPostDetailsComments.addView(commentBinding.getRoot(), totalCommentsAdded++);
-
-        int cardMargin = context.getResources().getDimensionPixelSize(R.dimen.card_margin);
-
-        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) commentBinding.getRoot().getLayoutParams();
-        p.setMargins(indentation + cardMargin, cardMargin, cardMargin, cardMargin);
-        commentBinding.getRoot().requestLayout();
+        addViewOnCommentLayout(commentBinding.getRoot(), totalCommentsAdded++, indentation);
     }
 
     private void addPlaceholderView() {
@@ -261,13 +271,20 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         placeholderCommentBinding.setMessage(message);
         placeholderCommentBinding.setTouchListener(this);
 
-        binding.llActivityPostDetailsComments.addView(placeholderCommentBinding.getRoot());
+        addViewOnCommentLayout(placeholderCommentBinding.getRoot(), 1, 0);
+    }
+
+    /* DYNAMIC VIEW */
+
+    private void addViewOnCommentLayout(View view, int index, int indentation) {
+        binding.llActivityPostDetailsComments.addView(view, index);
 
         int cardMargin = context.getResources().getDimensionPixelSize(R.dimen.card_margin);
 
-        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) placeholderCommentBinding.getRoot().getLayoutParams();
-        p.setMargins(cardMargin, cardMargin, cardMargin, cardMargin);
-        placeholderCommentBinding.getRoot().requestLayout();
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        p.setMargins(cardMargin + indentation, cardMargin, cardMargin, cardMargin);
+        view.requestLayout();
+
     }
 
     /* TOOLBAR ANIMATIONS */

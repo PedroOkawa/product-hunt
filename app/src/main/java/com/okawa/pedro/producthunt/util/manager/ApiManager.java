@@ -243,6 +243,7 @@ public class ApiManager {
         Map<String, String> parameters = new HashMap<>();
 
         parameters.put(ApiInterface.FIELD_OLDER, databaseRepository.getLastCommentId());
+        parameters.put(ApiInterface.FIELD_ORDER, ApiInterface.VALUE_ASC);
 
         apiInterface
                 .commentsByPost(databaseRepository.selectSession().getToken(), postId, parameters)
@@ -318,7 +319,7 @@ public class ApiManager {
 
     /* VOTES */
 
-    public void requestVotesByPost(final ApiListener apiListener, long postId) {
+    public void requestVotesByPost(final ApiListener apiListener, final long postId) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_VOTES_ID);
             return;
@@ -326,7 +327,8 @@ public class ApiManager {
 
         Map<String, String> parameters = new HashMap<>();
 
-        parameters.put(ApiInterface.FIELD_OLDER, databaseRepository.getLastVoteId());
+        parameters.put(ApiInterface.FIELD_NEWER, databaseRepository.getLastVoteId());
+        parameters.put(ApiInterface.FIELD_ORDER, ApiInterface.VALUE_ASC);
 
         apiInterface
                 .votesByPost(databaseRepository.selectSession().getToken(), postId, parameters)
@@ -351,7 +353,7 @@ public class ApiManager {
 
                     @Override
                     public void onNext(List<Vote> votes) {
-                        new PersistenceVote(apiListener, votes).execute();
+                        new PersistenceVote(apiListener, votes, postId).execute();
                     }
                 });
     }
@@ -360,10 +362,12 @@ public class ApiManager {
 
         private ApiListener apiListener;
         private List<Vote> votes;
+        private long postId;
 
-        protected PersistenceVote(ApiListener apiListener, List<Vote> votes) {
+        protected PersistenceVote(ApiListener apiListener, List<Vote> votes, long postId) {
             this.apiListener = apiListener;
             this.votes = votes;
+            this.postId = postId;
         }
 
         @Override
@@ -377,7 +381,7 @@ public class ApiManager {
                 databaseRepository.updateAvatar(vote.getUser().getAvatar());
             }
 
-            databaseRepository.updateVotes(votes);
+            databaseRepository.updateVotes(postId, votes);
 
             return null;
         }
