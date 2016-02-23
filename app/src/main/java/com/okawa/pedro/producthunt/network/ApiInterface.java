@@ -35,20 +35,14 @@ public interface ApiInterface {
 
     String PATH_CATEGORY = "categories";
 
+    String PATH_POSTS_ALL = "posts/all";
+
     String PATH_POSTS_CATEGORY = "categories/{categoryId}/posts";
     String PATH_CATEGORY_ID = "categoryId";
-
-    String FIELD_DAY = "day";
-    String FIELD_DAYS_AGO = "days_ago";
 
     String PATH_POST_COMMENTS = "posts/{postId}/comments";
     String PATH_POST_VOTES = "posts/{postId}/votes";
     String PATH_POST_ID = "postId";
-    String FIELD_OLDER = "older";
-    String FIELD_NEWER = "newer";
-    String FIELD_ORDER = "order";
-    String VALUE_ASC = "ASC";
-    String VALUE_DESC = "DESC";
 
     @FormUrlEncoded
     @POST(PATH_TOKEN)
@@ -58,6 +52,10 @@ public interface ApiInterface {
 
     @GET(PATH_CATEGORY)
     Observable<CategoryResponse> categories(@Header(FIELD_AUTHORIZATION) String authorization);
+
+    @GET(PATH_POSTS_ALL)
+    Observable<PostResponse> postsAll(@Header(FIELD_AUTHORIZATION) String authorization,
+                                      @QueryMap Map<String, String> parameters);
 
     @GET(PATH_POSTS_CATEGORY)
     Observable<PostResponse> postsByCategory(@Header(FIELD_AUTHORIZATION) String authorization,

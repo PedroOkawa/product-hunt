@@ -151,6 +151,43 @@ public class Vote {
         setUser(user);
         getUser().sync();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vote vote = (Vote) o;
+
+        if (id != null ? !id.equals(vote.id) : vote.id != null) return false;
+        if (userId != null ? !userId.equals(vote.userId) : vote.userId != null) return false;
+        if (createdAt != null ? !createdAt.equals(vote.createdAt) : vote.createdAt != null)
+            return false;
+        if (updateDate != null ? !updateDate.equals(vote.updateDate) : vote.updateDate != null)
+            return false;
+        if (postId != null ? !postId.equals(vote.postId) : vote.postId != null) return false;
+        if (daoSession != null ? !daoSession.equals(vote.daoSession) : vote.daoSession != null)
+            return false;
+        if (myDao != null ? !myDao.equals(vote.myDao) : vote.myDao != null) return false;
+        if (user != null ? !user.equals(vote.user) : vote.user != null) return false;
+        return !(user__resolvedKey != null ? !user__resolvedKey.equals(vote.user__resolvedKey) : vote.user__resolvedKey != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
+        result = 31 * result + (postId != null ? postId.hashCode() : 0);
+        result = 31 * result + (daoSession != null ? daoSession.hashCode() : 0);
+        result = 31 * result + (myDao != null ? myDao.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (user__resolvedKey != null ? user__resolvedKey.hashCode() : 0);
+        return result;
+    }
+
     // KEEP METHODS END
 
 }

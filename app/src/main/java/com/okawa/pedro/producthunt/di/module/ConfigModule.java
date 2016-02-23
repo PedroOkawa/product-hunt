@@ -1,5 +1,6 @@
 package com.okawa.pedro.producthunt.di.module;
 
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import javax.inject.Singleton;
@@ -17,6 +18,12 @@ public class ConfigModule {
     @Provides
     public ConfigHelper providesConfigHelper() {
         return new ConfigHelper();
+    }
+
+    @Singleton
+    @Provides
+    public ParametersBuilder providesParameterBuilder() {
+        return new ParametersBuilder();
     }
 
 }

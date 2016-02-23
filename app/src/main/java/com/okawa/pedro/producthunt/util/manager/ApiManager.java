@@ -2,7 +2,6 @@ package com.okawa.pedro.producthunt.util.manager;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
@@ -15,7 +14,6 @@ import com.okawa.pedro.producthunt.util.listener.ApiListener;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -143,34 +141,48 @@ public class ApiManager {
 
     /* POST */
 
-    public void requestPostsByDate(ApiListener apiListener, Date date) {
+    public void requestPosts(final ApiListener apiListener, Map<String, String> parameters) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_POSTS_ID);
             return;
         }
-
-        Map<String, String> parameters = new HashMap<>();
-
-        if(!configHelper.checkIsToday(date)) {
-            parameters.put(ApiInterface.FIELD_DAY, configHelper.convertDateToString(date));
-        }
-    }
-
-    public void requestPostsByDaysAgo(final ApiListener apiListener) {
-        if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
-            return;
-        }
-
-        Map<String, String> parameters = new HashMap<>();
-
-        parameters.put(ApiInterface.FIELD_DAYS_AGO, databaseRepository.getDaysAgo());
 
         apiInterface
-                .postsByCategory(
-                        databaseRepository.selectSession().getToken(),
-                        databaseRepository.getCurrentCategorySlug(),
-                        parameters)
+                .postsAll(databaseRepository.selectSession().getToken(), parameters)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
+                    @Override
+                    public Observable<List<Post>> call(PostResponse postResponse) {
+                        return Observable.just(postResponse.getPosts());
+                    }
+                })
+                .subscribe(new Observer<List<Post>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        apiListener.onError(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<Post> posts) {
+                        new PersistencePost(apiListener, posts).execute();
+                    }
+                });
+    }
+
+    public void requestPostsByCategory(final ApiListener apiListener, Map<String, String> parameters) {
+        if(!configHelper.isConnected(context)) {
+            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            return;
+        }
+
+        apiInterface
+                .postsByCategory(databaseRepository.selectSession().getToken(), databaseRepository.getCurrentCategorySlug(), parameters)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -234,16 +246,11 @@ public class ApiManager {
 
     /* COMMENTS */
 
-    public void requestCommentsByPost(final ApiListener apiListener, long postId) {
+    public void requestCommentsByPost(final ApiListener apiListener, long postId, Map<String, String> parameters) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
             return;
         }
-
-        Map<String, String> parameters = new HashMap<>();
-
-        parameters.put(ApiInterface.FIELD_OLDER, databaseRepository.getLastCommentId());
-        parameters.put(ApiInterface.FIELD_ORDER, ApiInterface.VALUE_ASC);
 
         apiInterface
                 .commentsByPost(databaseRepository.selectSession().getToken(), postId, parameters)
@@ -319,16 +326,11 @@ public class ApiManager {
 
     /* VOTES */
 
-    public void requestVotesByPost(final ApiListener apiListener, final long postId) {
+    public void requestVotesByPost(final ApiListener apiListener, final long postId, Map<String, String > parameters) {
         if(!configHelper.isConnected(context)) {
             apiListener.onDataLoaded(PROCESS_VOTES_ID);
             return;
         }
-
-        Map<String, String> parameters = new HashMap<>();
-
-        parameters.put(ApiInterface.FIELD_NEWER, databaseRepository.getLastVoteId());
-        parameters.put(ApiInterface.FIELD_ORDER, ApiInterface.VALUE_ASC);
 
         apiInterface
                 .votesByPost(databaseRepository.selectSession().getToken(), postId, parameters)

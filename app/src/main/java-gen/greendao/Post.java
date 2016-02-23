@@ -22,6 +22,7 @@ public class Post {
     private Long thumbnailIdFK;
     @SerializedName("category_id")
     private Long categoryId;
+    private String day;
     @SerializedName("created_at")
     private java.util.Date createdAt;
     private java.util.Date updateDate;
@@ -58,13 +59,14 @@ public class Post {
         this.id = id;
     }
 
-    public Post(Long id, Long userIdFK, Long thumbnailIdFK, String userName, Long categoryId, java.util.Date createdAt, java.util.Date updateDate, String name, String tagline, Long votesCount, Long commentsCount, String redirectUrl) {
+    public Post(Long id, Long userIdFK, Long thumbnailIdFK, String userName, Long categoryId, java.util.Date createdAt, String day, java.util.Date updateDate, String name, String tagline, Long votesCount, Long commentsCount, String redirectUrl) {
         this.id = id;
         this.userIdFK = userIdFK;
         this.thumbnailIdFK = thumbnailIdFK;
         this.userName = userName;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
+        this.day = day;
         this.updateDate = updateDate;
         this.name = name;
         this.tagline = tagline;
@@ -125,6 +127,14 @@ public class Post {
 
     public void setCreatedAt(java.util.Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getDay() {
+        return day;
+    }
+
+    public void setDay(String day) {
+        this.day = day;
     }
 
     public java.util.Date getUpdateDate() {

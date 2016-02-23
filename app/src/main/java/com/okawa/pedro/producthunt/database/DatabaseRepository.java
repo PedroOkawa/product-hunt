@@ -1,7 +1,6 @@
 package com.okawa.pedro.producthunt.database;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
@@ -42,7 +41,17 @@ public class DatabaseRepository {
     private static final String CURRENT_CATEGORY_NAME = "Tech";
     private static final String CURRENT_CATEGORY_SLUG = "tech";
 
+    public static final int WHERE_DATE = 0x0000;
+    public static final int WHERE_ALL = 0x0001;
+
+    public static final int ORDER_BY_VOTE = 0x0000;
+    public static final int ORDER_BY_TITLE = 0x0001;
+    public static final int ORDER_BY_USER = 0x0002;
+    public static final int ORDER_BY_DATE = 0x0003;
+
     private Category currentCategory;
+    private int currentWhere;
+    private int currentOrder;
 
     private AvatarDao avatarDao;
     private CategoryDao categoryDao;
@@ -68,6 +77,21 @@ public class DatabaseRepository {
         this.voteDao = daoSession.getVoteDao();
 
         this.configHelper = configHelper;
+
+        this.currentOrder = ORDER_BY_DATE;
+        this.currentWhere = WHERE_ALL;
+    }
+
+    /* ORDER */
+
+    public void setOrderBy(int order) {
+        this.currentOrder = order;
+    }
+
+    /* WHERE */
+
+    public void setWhereType(int where) {
+        this.currentWhere = where;
     }
 
     /* AVATAR */
@@ -96,7 +120,7 @@ public class DatabaseRepository {
                 .where(CategoryDao.Properties.Name.eq(name))
                 .unique();
 
-        resetLastPostSession();
+        resetLastUpdatePostId();
     }
 
     public long getCurrentCategoryId() {
@@ -145,20 +169,48 @@ public class DatabaseRepository {
 
     public void updatePosts(Collection<Post> posts) {
         postDao.insertOrReplaceInTx(posts);
+
+        Session session = selectSession();
+        session.setLastPostId(getLastUpdatedPostId());
+        sessionDao.update(session);
     }
 
-    public List<Post> selectPostByDate(Date date) {
-        return postDao
-                .queryBuilder()
-                .where(PostDao.Properties.CreatedAt.eq(date))
-                .list();
-    }
+    public List<PostContent> selectPostsByCategory(Date date, Context context, int offset) {
 
-    public List<PostContent> selectPostsByCategoryPaged(Context context, int offset) {
-        QueryBuilder queryBuilder = postDao
-                .queryBuilder()
-                .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()))
-                .orderDesc(PostDao.Properties.CreatedAt)
+        QueryBuilder queryBuilder = postDao.queryBuilder();
+
+        switch(currentWhere) {
+            case WHERE_DATE:
+                queryBuilder
+                        .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()),
+                                PostDao.Properties.Day.eq(configHelper.convertDateToString(date)));
+                break;
+            case WHERE_ALL:
+                queryBuilder
+                        .where(PostDao.Properties.CategoryId.eq(getCurrentCategoryId()));
+                break;
+        }
+
+        switch(currentOrder) {
+            case ORDER_BY_DATE:
+                queryBuilder
+                        .orderDesc(PostDao.Properties.Day);
+                break;
+            case ORDER_BY_VOTE:
+                queryBuilder
+                        .orderDesc(PostDao.Properties.VotesCount);
+                break;
+            case ORDER_BY_TITLE:
+                queryBuilder
+                        .orderAsc(PostDao.Properties.Name);
+                break;
+            case ORDER_BY_USER:
+                queryBuilder
+                        .orderAsc(PostDao.Properties.UserName);
+                break;
+        }
+
+        queryBuilder
                 .limit(DatabaseModule.SELECT_LIMIT)
                 .offset(offset);
 
@@ -174,6 +226,22 @@ public class DatabaseRepository {
                 .unique();
     }
 
+    private void resetLastUpdatePostId() {
+        Session session = selectSession();
+        session.setLastPostId((long)(Integer.MAX_VALUE));
+        sessionDao.update(session);
+    }
+
+    public long getLastUpdatedPostId() {
+        Post post = postDao
+                .queryBuilder()
+                .orderDesc(PostDao.Properties.UpdateDate)
+                .limit(1)
+                .unique();
+
+        return post != null ? post.getId() : Integer.MAX_VALUE;
+    }
+
     /* SCREENSHOT */
 
     public void updateScreenshot(Screenshot screenshot) {
@@ -184,8 +252,8 @@ public class DatabaseRepository {
 
     public void updateSession(Session session) {
         session.setId(SESSION_ID);
+        session.setLastPostId((long)(Integer.MAX_VALUE));
         session.setLastPostDate(new Date());
-        session.setDaysAgo(0L);
         session.setLastCommentId((long)(Integer.MAX_VALUE));
         session.setLastVoteId(0L);
         sessionDao.insertOrReplace(session);
@@ -202,29 +270,21 @@ public class DatabaseRepository {
         return sessionDao.count() > 0;
     }
 
-    private void resetLastPostSession() {
+    public void resetLastPostSession() {
         Session session = selectSession();
-        session.setDaysAgo(0L);
         session.setLastPostDate(new Date());
         sessionDao.update(session);
     }
 
     public void updateLastPostDate(Date date) {
         Session session = selectSession();
-
-        long daysDiff = configHelper.calculateDifferenceDays(date);
-
-        if(configHelper.checkSameDate(date, session.getLastPostDate())) {
-            daysDiff++;
-        }
-
-        if(daysDiff == session.getDaysAgo()) {
-            daysDiff++;
-        }
-
-        session.setDaysAgo(daysDiff);
         session.setLastPostDate(date);
         sessionDao.update(session);
+    }
+
+    public String getLastPostId() {
+        Session session = selectSession();
+        return String.valueOf(session.getLastPostId());
     }
 
     public String getLastCommentId() {
@@ -235,11 +295,6 @@ public class DatabaseRepository {
     public String getLastVoteId() {
         Session session = selectSession();
         return String.valueOf(session.getLastVoteId());
-    }
-
-    public String getDaysAgo() {
-        Session session = selectSession();
-        return String.valueOf(session.getDaysAgo());
     }
 
     private void setCurrentPostId(long postId) {

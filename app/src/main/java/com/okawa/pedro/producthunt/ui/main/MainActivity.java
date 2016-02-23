@@ -1,7 +1,5 @@
 package com.okawa.pedro.producthunt.ui.main;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -120,20 +118,9 @@ public class MainActivity extends BaseActivity implements MainView {
         }
 
         if(item.getItemId() == R.id.mainMenuFilter) {
-            callManager.filter(this);
+            mainPresenter.openDatePicker();
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == CallManager.FILTER_RESULT) {
-            if (resultCode == Activity.RESULT_OK) {
-
-            }
-        }
     }
 }

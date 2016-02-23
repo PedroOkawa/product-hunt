@@ -3,6 +3,12 @@
     xmlns:bind="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="touchListener"
+            type="com.okawa.pedro.producthunt.util.listener.OnTouchListener"/>
+    </data>
+
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/dlActivityMain"
         android:layout_width="match_parent"
@@ -10,7 +16,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -20,6 +27,44 @@
                 android:background="@color/color_primary_dark"
                 app:titleTextColor="@android:color/white"/>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@+id/llActivityMainFilterOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_primary_dark"
+                android:layout_below="@id/toolbar"
+                android:visibility="gone"
+                android:weightSum="4">
+
+                <TextView
+                    android:id="@+id/tvActivityMainSort"
+                    style="@style/FilterBody"
+                    android:layout_margin="@dimen/filter_options_item_margin"
+                    android:text="@string/filter_activity_sort_title"
+                    android:layout_weight="1"/>
+
+                <Spinner
+                    android:id="@+id/spActivityMainSort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/filter_options_item_margin"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/tvActivityMainFilterBody"
+                    style="@style/FilterBody"
+                    android:layout_margin="@dimen/filter_options_item_margin"
+                    android:drawableRight="@mipmap/ic_cancel"
+                    android:drawableEnd="@mipmap/ic_cancel"
+                    android:layout_weight="2"
+                    android:background="@drawable/background_button"
+                    android:onClick="@{touchListener.onViewTouched}"/>
+
+            </LinearLayout>
+
             <android.support.v4.widget.ContentLoadingProgressBar
                 android:id="@+id/pbActivityMain"
                 style="@style/ContentLoading"/>
@@ -28,7 +73,7 @@
                 android:id="@+id/srlActivityMainPosts"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/toolbar">
+                android:layout_below="@+id/llActivityMainFilterOptions">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rvActivityMainPosts"

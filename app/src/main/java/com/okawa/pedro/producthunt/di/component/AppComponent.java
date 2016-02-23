@@ -8,6 +8,7 @@ import com.okawa.pedro.producthunt.di.module.CallModule;
 import com.okawa.pedro.producthunt.di.module.ConfigModule;
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.network.ApiInterface;
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
@@ -46,6 +47,7 @@ public interface AppComponent {
     /* CONFIG HELPER */
 
     ConfigHelper providesConfigHelper();
+    ParametersBuilder providesParameterBuilder();
 
     /* DATABASE */
 

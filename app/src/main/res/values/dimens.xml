@@ -5,6 +5,10 @@
 
     <dimen name="activity_main_navigation_header_height">128dp</dimen>
 
+    <!-- MAIN ACTIVITY (FILTER OPTIONS) -->
+
+    <dimen name="filter_options_item_margin">8dp</dimen>
+
     <!-- VIEW POST DETAILS -->
 
     <dimen name="view_post_details_preview_height">300dp</dimen>

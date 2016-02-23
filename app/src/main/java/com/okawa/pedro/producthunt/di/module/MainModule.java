@@ -5,6 +5,7 @@ import com.okawa.pedro.producthunt.di.scope.Activity;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenter;
 import com.okawa.pedro.producthunt.presenter.main.MainPresenterImpl;
 import com.okawa.pedro.producthunt.ui.main.MainView;
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
@@ -34,8 +35,9 @@ public class MainModule {
     public MainPresenter providesPresenter(MainView mainView,
                                            ApiManager apiManager,
                                            ConfigHelper configHelper,
+                                           ParametersBuilder parametersBuilder,
                                            DatabaseRepository databaseRepository) {
-        return new MainPresenterImpl(mainView, apiManager, configHelper, databaseRepository);
+        return new MainPresenterImpl(mainView, apiManager, configHelper, parametersBuilder, databaseRepository);
     }
 
 }

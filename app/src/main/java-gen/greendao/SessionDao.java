@@ -28,9 +28,8 @@ public class SessionDao extends AbstractDao<Session, Long> {
         public final static Property ExpiresIn = new Property(2, Long.class, "expiresIn", false, "EXPIRES_IN");
         public final static Property LastPostId = new Property(3, Long.class, "lastPostId", false, "LAST_POST_ID");
         public final static Property LastPostDate = new Property(4, java.util.Date.class, "lastPostDate", false, "LAST_POST_DATE");
-        public final static Property DaysAgo = new Property(5, Long.class, "daysAgo", false, "DAYS_AGO");
-        public final static Property LastCommentId = new Property(6, Long.class, "lastCommentId", false, "LAST_COMMENT_ID");
-        public final static Property LastVoteId = new Property(7, Long.class, "lastVoteId", false, "LAST_VOTE_ID");
+        public final static Property LastCommentId = new Property(5, Long.class, "lastCommentId", false, "LAST_COMMENT_ID");
+        public final static Property LastVoteId = new Property(6, Long.class, "lastVoteId", false, "LAST_VOTE_ID");
     };
 
 
@@ -51,9 +50,8 @@ public class SessionDao extends AbstractDao<Session, Long> {
                 "\"EXPIRES_IN\" INTEGER," + // 2: expiresIn
                 "\"LAST_POST_ID\" INTEGER," + // 3: lastPostId
                 "\"LAST_POST_DATE\" INTEGER," + // 4: lastPostDate
-                "\"DAYS_AGO\" INTEGER," + // 5: daysAgo
-                "\"LAST_COMMENT_ID\" INTEGER," + // 6: lastCommentId
-                "\"LAST_VOTE_ID\" INTEGER);"); // 7: lastVoteId
+                "\"LAST_COMMENT_ID\" INTEGER," + // 5: lastCommentId
+                "\"LAST_VOTE_ID\" INTEGER);"); // 6: lastVoteId
     }
 
     /** Drops the underlying database table. */
@@ -92,19 +90,14 @@ public class SessionDao extends AbstractDao<Session, Long> {
             stmt.bindLong(5, lastPostDate.getTime());
         }
  
-        Long daysAgo = entity.getDaysAgo();
-        if (daysAgo != null) {
-            stmt.bindLong(6, daysAgo);
-        }
- 
         Long lastCommentId = entity.getLastCommentId();
         if (lastCommentId != null) {
-            stmt.bindLong(7, lastCommentId);
+            stmt.bindLong(6, lastCommentId);
         }
  
         Long lastVoteId = entity.getLastVoteId();
         if (lastVoteId != null) {
-            stmt.bindLong(8, lastVoteId);
+            stmt.bindLong(7, lastVoteId);
         }
     }
 
@@ -123,9 +116,8 @@ public class SessionDao extends AbstractDao<Session, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // expiresIn
             cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // lastPostId
             cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // lastPostDate
-            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // daysAgo
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // lastCommentId
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // lastVoteId
+            cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // lastCommentId
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // lastVoteId
         );
         return entity;
     }
@@ -138,9 +130,8 @@ public class SessionDao extends AbstractDao<Session, Long> {
         entity.setExpiresIn(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
         entity.setLastPostId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
         entity.setLastPostDate(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
-        entity.setDaysAgo(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
-        entity.setLastCommentId(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
-        entity.setLastVoteId(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
+        entity.setLastCommentId(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
+        entity.setLastVoteId(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }
     
     /** @inheritdoc */

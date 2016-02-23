@@ -21,6 +21,7 @@ import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
 import com.okawa.pedro.producthunt.databinding.PlaceholderCommentBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
 import com.okawa.pedro.producthunt.util.adapter.vote.AdapterVote;
 import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
@@ -34,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import greendao.Comment;
 import greendao.Post;
@@ -48,6 +50,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     private PostDetailsView postDetailsView;
     private ApiManager apiManager;
+    private ParametersBuilder parametersBuilder;
     private DatabaseRepository databaseRepository;
 
     private boolean active;
@@ -69,11 +72,15 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     private int totalCommentsAdded;
 
+    private PlaceholderCommentBinding placeholderCommentBinding;
+
     public PostDetailsPresenterImpl(PostDetailsView postDetailsView,
                                     ApiManager apiManager,
+                                    ParametersBuilder parametersBuilder,
                                     DatabaseRepository databaseRepository) {
         this.postDetailsView = postDetailsView;
         this.apiManager = apiManager;
+        this.parametersBuilder = parametersBuilder;
         this.databaseRepository = databaseRepository;
     }
 
@@ -191,6 +198,8 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                     showComment(comment, 0);
                 }
 
+                placeholderCommentBinding.setMessage(getCommentsButtonMessage());
+
                 postDetailsView.onComplete();
             } else if (process == ApiManager.PROCESS_VOTES_ID) {
                 adapterVote.addDataSet(databaseRepository.selectVotesFromPost(post.getId(), adapterVote.getItemCount()));
@@ -215,12 +224,30 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     private void requestVotes() {
         postDetailsView.onRequest();
-        apiManager.requestVotesByPost(this, post.getId());
+
+        /* GENERATE PARAMETERS */
+
+        Map<String, String> parameters = parametersBuilder
+                .init()
+                .setNewer(databaseRepository.getLastVoteId())
+                .setAscending()
+                .generateParameters();
+
+        apiManager.requestVotesByPost(this, post.getId(), parameters);
     }
 
     private void requestComments() {
         postDetailsView.onRequest();
-        apiManager.requestCommentsByPost(this, post.getId());
+
+        /* GENERATE PARAMETERS */
+
+        Map<String, String> parameters = parametersBuilder
+                .init()
+                .setOlder(databaseRepository.getLastCommentId())
+                .setAscending()
+                .generateParameters();
+
+        apiManager.requestCommentsByPost(this, post.getId(), parameters);
     }
 
     /* COMMENTS */
@@ -256,22 +283,22 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     }
 
     private void addPlaceholderView() {
-        String message;
+        String message = getCommentsButtonMessage();
 
-        if(post.getCommentsCount() == 0) {
-            message = context.getString(R.string.post_details_activity_comments_empty);
-        } else if(post.getCommentsCount() > totalCommentsAdded) {
-            message = context.getString(R.string.post_details_activity_comments_load);
-        } else {
-            return;
-        }
-
-        PlaceholderCommentBinding placeholderCommentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.placeholder_comment, null, false);
+        placeholderCommentBinding = DataBindingUtil.inflate(layoutInflater, R.layout.placeholder_comment, null, false);
 
         placeholderCommentBinding.setMessage(message);
         placeholderCommentBinding.setTouchListener(this);
 
         addViewOnCommentLayout(placeholderCommentBinding.getRoot(), 1, 0);
+    }
+
+    private String getCommentsButtonMessage() {
+        if(post.getCommentsCount() == 0) {
+            return context.getString(R.string.post_details_activity_comments_empty);
+        } else {
+            return context.getString(R.string.post_details_activity_comments_load);
+        }
     }
 
     /* DYNAMIC VIEW */

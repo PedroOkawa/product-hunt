@@ -16,7 +16,6 @@ public class GreenDaoManager {
     private static final String FILED_SESSION_EXPIRES_IN = "expiresIn";
     private static final String FIELD_SESSION_LAST_POST_ID = "lastPostId";
     private static final String FIELD_SESSION_LAST_POST_DATE = "lastPostDate";
-    private static final String FIELD_SESSION_DAYS_AGO = "daysAgo";
     private static final String FIELD_SESSION_LAST_COMMENT_ID = "lastCommentId";
     private static final String FIELD_SESSION_LAST_VOTE_ID = "lastVoteId";
 
@@ -48,6 +47,7 @@ public class GreenDaoManager {
     private static final String FIELD_POST_USER_NAME = "userName";
     private static final String FIELD_POST_THUMBNAIL_ID = "thumbnailIdFK";
     private static final String FIELD_POST_CREATED_AT = "createdAt";
+    private static final String FIELD_POST_DAY = "day";
     private static final String FIELD_POST_UPDATE_DATE = "updateDate";
     private static final String FIELD_POST_NAME = "name";
     private static final String FIELD_POST_TAGLINE = "tagline";
@@ -104,7 +104,6 @@ public class GreenDaoManager {
         session.addLongProperty(FILED_SESSION_EXPIRES_IN);
         session.addLongProperty(FIELD_SESSION_LAST_POST_ID);
         session.addDateProperty(FIELD_SESSION_LAST_POST_DATE);
-        session.addLongProperty(FIELD_SESSION_DAYS_AGO);
         session.addLongProperty(FIELD_SESSION_LAST_COMMENT_ID);
         session.addLongProperty(FIELD_SESSION_LAST_VOTE_ID);
 
@@ -154,6 +153,7 @@ public class GreenDaoManager {
         post.addStringProperty(FIELD_POST_USER_NAME);
         post.addLongProperty(FIELD_POST_CATEGORY_ID);
         post.addDateProperty(FIELD_POST_CREATED_AT);
+        post.addStringProperty(FIELD_POST_DAY);
         post.addDateProperty(FIELD_POST_UPDATE_DATE);
         post.addStringProperty(FIELD_POST_NAME);
         post.addStringProperty(FIELD_POST_TAGLINE);

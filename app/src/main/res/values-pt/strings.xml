@@ -14,6 +14,11 @@
 
     <string name="main_activity_today">Hoje</string>
 
+    <!-- MAIN ACTIVITY (DATE PICKER) -->
+
+    <string name="date_picker_cancel">Cancelar</string>
+    <string name="date_picker_select">Ok</string>
+
     <!-- POST DETAILS ACTIVITY -->
 
     <string name="post_details_activity_description_title">Descrição</string>
@@ -28,7 +33,6 @@
     <string name="filter_activity_button">Aplicar filtros</string>
     <string name="filter_activity_sort_title">Ordernar por: </string>
     <string-array name="filter_activity_options">
-        <item>Data</item>
         <item>Votos</item>
         <item>Título</item>
         <item>Usuário</item>

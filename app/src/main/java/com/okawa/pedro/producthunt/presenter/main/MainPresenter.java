@@ -8,7 +8,7 @@ import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 public interface MainPresenter {
 
     void initialize(ActivityMainBinding binding);
-    void applyFilter(int filter);
+    void openDatePicker();
     void dispose();
 
 }

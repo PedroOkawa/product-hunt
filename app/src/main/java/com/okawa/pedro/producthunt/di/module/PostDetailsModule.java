@@ -5,6 +5,7 @@ import com.okawa.pedro.producthunt.di.scope.Activity;
 import com.okawa.pedro.producthunt.presenter.post.PostDetailsPresenter;
 import com.okawa.pedro.producthunt.presenter.post.PostDetailsPresenterImpl;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
 import dagger.Module;
@@ -32,8 +33,9 @@ public class PostDetailsModule {
     @Provides
     public PostDetailsPresenter providesPostDetailsPresenter(PostDetailsView postDetailsView,
                                                              ApiManager apiManager,
+                                                             ParametersBuilder parametersBuilder,
                                                              DatabaseRepository databaseRepository) {
-        return new PostDetailsPresenterImpl(postDetailsView, apiManager, databaseRepository);
+        return new PostDetailsPresenterImpl(postDetailsView, apiManager, parametersBuilder, databaseRepository);
     }
 
 }

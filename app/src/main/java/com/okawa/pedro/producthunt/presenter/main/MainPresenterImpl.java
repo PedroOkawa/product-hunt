@@ -1,11 +1,17 @@
 package com.okawa.pedro.producthunt.presenter.main;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
@@ -13,11 +19,13 @@ import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.model.list.PostContent;
+import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.post.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
+import com.okawa.pedro.producthunt.util.listener.OnTouchListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.HeaderGridLayoutManager;
 
@@ -25,17 +33,21 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 
 import greendao.Category;
 
 /**
  * Created by pokawa on 19/02/16.
  */
-public class MainPresenterImpl implements MainPresenter, ApiListener {
+public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchListener, DatePickerDialog.OnDateSetListener {
 
     private MainView mainView;
     private ApiManager apiManager;
     private ConfigHelper configHelper;
+    private ParametersBuilder parametersBuilder;
     private DatabaseRepository databaseRepository;
 
     private ActivityMainBinding binding;
@@ -47,13 +59,19 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     private OnMenuItemSelectedListener onMenuItemSelectedListener;
 
+    private DatePickerDialog datePickerDialog;
+    private Date currentDate;
+    private boolean dateSelected;
+
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
                              ConfigHelper configHelper,
+                             ParametersBuilder parametersBuilder,
                              DatabaseRepository databaseRepository) {
         this.mainView = mainView;
         this.apiManager = apiManager;
         this.configHelper = configHelper;
+        this.parametersBuilder = parametersBuilder;
         this.databaseRepository = databaseRepository;
     }
 
@@ -92,14 +110,57 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
         mainView.initializeToolbar(databaseRepository.getCurrentCategoryName());
 
+        /* FILTER LAYOUT */
+
+        binding.setTouchListener(this);
+
+        /* SPINNER FILTER */
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.filter_activity_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spActivityMainSort.setAdapter(adapter);
+        binding.spActivityMainSort.setOnItemSelectedListener(new OnOrderItemSelectedListener());
+
+        /* SORT CONDITIONS */
+
+        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
+        databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
+
+        /* PARAMETERS BUILDER */
+
+        parametersBuilder
+                .init();
+
+        /* DATE PICKER */
+
+        dateSelected = false;
+        Calendar calendar = Calendar.getInstance();
+        currentDate = calendar.getTime();
+
+        datePickerDialog = new DatePickerDialog(context,
+                this,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                context.getString(R.string.date_picker_cancel),
+                new OnCancelDateListener());
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                context.getString(R.string.date_picker_select),
+                new OnCancelDateListener());
+
         /* REQUEST INITIAL DATA */
 
         requestCategoryData();
     }
 
     @Override
-    public void applyFilter(int filter) {
-
+    public void openDatePicker() {
+        datePickerDialog.show();
     }
 
     @Override
@@ -113,7 +174,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     @Override
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(databaseRepository.selectPostsByCategoryPaged(context, adapterPost.getItemCount()));
+            adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
             mainView.onComplete();
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
             initializeNavigationMenu();
@@ -158,7 +219,27 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
 
     private void requestData() {
         mainView.onRequest();
-        apiManager.requestPostsByDaysAgo(this);
+
+        /* GENERATE PARAMETERS */
+
+        if(dateSelected) {
+
+            Map<String, String> parameters = parametersBuilder
+                    .init()
+                    .setDay(configHelper.convertDateToString(currentDate))
+                    .generateParameters();
+
+            apiManager.requestPostsByCategory(this, parameters);
+        } else {
+
+            Map<String, String> parameters = parametersBuilder
+                    .init()
+                    .setOlder(databaseRepository.getLastPostId())
+                    .setCategory(databaseRepository.getCurrentCategorySlug())
+                    .generateParameters();
+
+            apiManager.requestPosts(this, parameters);
+        }
     }
 
     private void resetData() {
@@ -175,6 +256,54 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
     @Subscribe
     public void onEvent(ConnectionEvent event) {
         requestData();
+    }
+
+    @Override
+    public void onViewTouched(View view) {
+        if(view.getId() == R.id.tvActivityMainFilterBody) {
+            dateSelected = false;
+            binding.llActivityMainFilterOptions.setVisibility(View.GONE);
+
+            databaseRepository.resetLastPostSession();
+            databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
+            databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
+
+            parametersBuilder
+                    .init();
+
+            resetData();
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, monthOfYear, dayOfMonth);
+        currentDate = calendar.getTime();
+    }
+
+    protected class OnCancelDateListener implements DialogInterface.OnClickListener {
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                dateSelected = true;
+                DatePicker datePicker = datePickerDialog.getDatePicker();
+
+                onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                binding.llActivityMainFilterOptions.setVisibility(View.VISIBLE);
+                binding.tvActivityMainFilterBody.setText(configHelper.getDateString(context, currentDate));
+
+                databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
+                databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
+
+                parametersBuilder
+                        .init()
+                        .setDay(configHelper.convertDateToString(currentDate));
+
+                resetData();
+            }
+        }
     }
 
     protected class OnPostsRecyclerViewListener extends OnRecyclerViewListener {
@@ -197,6 +326,52 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         }
     }
 
+    protected class OnOrderItemSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            switch(position) {
+                case DatabaseRepository.ORDER_BY_VOTE:
+                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
+                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
+
+                    parametersBuilder
+                            .init()
+                            .setDay(configHelper.convertDateToString(currentDate));
+
+                    resetData();
+                    break;
+                case DatabaseRepository.ORDER_BY_TITLE:
+                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_TITLE);
+                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
+
+                    parametersBuilder
+                            .init()
+                            .setDay(configHelper.convertDateToString(currentDate));
+
+                    resetData();
+                    break;
+                case DatabaseRepository.ORDER_BY_USER:
+                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_USER);
+                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
+
+                    parametersBuilder
+                            .init()
+                            .setDay(configHelper.convertDateToString(currentDate));
+
+                    resetData();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
+
     protected class OnMenuItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
 
         private MenuItem previousItem;
@@ -205,6 +380,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener {
         public boolean onNavigationItemSelected(MenuItem item) {
             String title = item.getTitle().toString();
             databaseRepository.setCurrentCategory(title);
+            databaseRepository.resetLastPostSession();
             mainView.setToolbarName(title);
             binding.dlActivityMain.closeDrawers();
             resetData();

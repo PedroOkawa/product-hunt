@@ -31,9 +31,5 @@ public class FilterPresenterImpl implements FilterPresenter {
         /* CONTEXT */
 
         context = binding.getRoot().getContext();
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.filter_activity_options, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spActivityFilterSort.setAdapter(adapter);
     }
 }
