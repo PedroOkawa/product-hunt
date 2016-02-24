@@ -10,15 +10,15 @@ import java.util.Map;
  */
 public class ParametersBuilder {
 
-    private String PARAMETER_DAY = "day";
-    private String PARAMETER_DAYS_AGO = "days_ago";
-    private String PARAMETER_OLDER = "older";
-    private String PARAMETER_NEWER = "newer";
-    private String PARAMETER_ORDER = "order";
-    private String PARAMETER_PER_PAGE = "per_page";
-    private String PARAMETER_CATEGORY = "search[category]";
-    private String VALUE_ASC = "ASC";
-    private String VALUE_DESC = "DESC";
+    public static final String PARAMETER_DAY = "day";
+    public static final String PARAMETER_DAYS_AGO = "days_ago";
+    public static final String PARAMETER_OLDER = "older";
+    public static final String PARAMETER_NEWER = "newer";
+    public static final String PARAMETER_ORDER = "order";
+    public static final String PARAMETER_PER_PAGE = "per_page";
+    public static final String PARAMETER_CATEGORY = "search[category]";
+    public static final String VALUE_ASC = "ASC";
+    public static final String VALUE_DESC = "DESC";
 
     private boolean isInit;
 
@@ -85,7 +85,7 @@ public class ParametersBuilder {
 
     private void checkInit() {
         if(!isInit) {
-            throw new IllegalArgumentException("ParametersBuilder: It's necessary to call init() first!");
+            throw new IllegalAccessError("ParametersBuilder: It's necessary to call init() first!");
         }
     }
 

@@ -40,7 +40,7 @@ public class MainActivityTest {
     DatabaseRepository databaseRepository;
 
     @Rule
-    public ActivityTestRule<LoadingActivity> activityRule = new ActivityTestRule<>(LoadingActivity.class);
+    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
 
     @Before
     public void setup() {
@@ -48,6 +48,8 @@ public class MainActivityTest {
         ProductHuntApp app = (ProductHuntApp) instrumentation.getTargetContext().getApplicationContext();
         TestAppComponent component = (TestAppComponent) app.getAppComponent();
         component.inject(this);
+
+        databaseRepository.updateSession(generateSession());
 
         closeSoftKeyboard();
         sleep(INITIAL_DELAY);

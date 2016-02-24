@@ -12,6 +12,8 @@ import com.okawa.pedro.producthunt.R;
 
 import org.hamcrest.Matcher;
 
+import greendao.Session;
+
 import static android.os.SystemClock.sleep;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -25,6 +27,8 @@ import static org.hamcrest.core.AllOf.allOf;
  * Created by pokawa on 24/02/16.
  */
 public class TestHelper {
+
+    private static final String API_KEY_TEMP = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
 
     public static final int INITIAL_DELAY = 10000;
     public static final int INTERACTION_DELAY = 1000;
@@ -66,6 +70,12 @@ public class TestHelper {
         onView(withText(text)).perform(click());
 
         sleep(INTERACTION_DELAY);
+    }
+
+    public static Session generateSession() {
+        Session session = new Session();
+        session.setAccessToken(API_KEY_TEMP);
+        return session;
     }
 
 }
