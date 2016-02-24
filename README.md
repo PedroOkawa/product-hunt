@@ -20,8 +20,8 @@ App created to show posts and some details from ProductHunt API.
 
 # Demo
 
-![Preview 1](https://bytebucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/prod_hunt_1.gif)<br />
-![Preview 2](https://bytebucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/prod_hunt_2.gif)<br />
+![Preview 1](https://bytebucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/prod_hunt_1.gif)<br/>
+![Preview 2](https://bytebucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/prod_hunt_2.gif)<br/>
 ![Preview 3](https://bytebucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/prod_hunt_3.gif)
 
 # Download
