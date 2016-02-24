@@ -6,6 +6,8 @@ import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
+import org.mockito.Mockito;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -95,7 +97,7 @@ public class DatabaseRepository {
     /* TESTS */
 
     private void defineTestSession() {
-        Session session = mock(Session.class);
+        Session session = mock(Session.class, Mockito.CALLS_REAL_METHODS);
 
         when(session.getToken()).thenReturn(API_KEY_TEST);
         updateSession(session);
