@@ -41,7 +41,7 @@ public class MainActivityTest {
     DatabaseRepository databaseRepository;
 
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
+    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void setup() {
@@ -50,12 +50,8 @@ public class MainActivityTest {
         TestAppComponent component = (TestAppComponent) app.getAppComponent();
         component.inject(this);
 
-        databaseRepository.updateSession(generateSession());
-
         closeSoftKeyboard();
         sleep(INITIAL_DELAY);
-
-        activityRule.launchActivity(new Intent());
     }
 
     @Test

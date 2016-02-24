@@ -6,6 +6,8 @@ import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
+import org.mockito.Mockito;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,14 +34,20 @@ import greendao.UserDao;
 import greendao.Vote;
 import greendao.VoteDao;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Created by pokawa on 19/02/16.
  */
 public class DatabaseRepository {
+
+    private static final String API_KEY_TEST = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
+
     private static final long SESSION_ID = Long.MAX_VALUE;
     private static final long CURRENT_CATEGORY_ID = 1;
-    private static final String CURRENT_CATEGORY_NAME = "Tech";
-    private static final String CURRENT_CATEGORY_SLUG = "tech";
+    private static final String DEFAULT_CATEGORY_NAME = "Tech";
+    private static final String DEFAULT_CATEGORY_SLUG = "tech";
 
     public static final int WHERE_DATE = 0x0000;
     public static final int WHERE_ALL = 0x0001;
@@ -65,7 +73,7 @@ public class DatabaseRepository {
 
     private ConfigHelper configHelper;
 
-    public DatabaseRepository(DaoSession daoSession, ConfigHelper configHelper) {
+    public DatabaseRepository(boolean runningTest, DaoSession daoSession, ConfigHelper configHelper) {
         this.avatarDao = daoSession.getAvatarDao();
         this.categoryDao = daoSession.getCategoryDao();
         this.commentDao = daoSession.getCommentDao();
@@ -80,6 +88,19 @@ public class DatabaseRepository {
 
         this.currentOrder = ORDER_BY_ID;
         this.currentWhere = WHERE_ALL;
+
+        if(runningTest) {
+            defineTestSession();
+        }
+    }
+
+    /* TESTS */
+
+    private void defineTestSession() {
+        Session session = mock(Session.class);
+
+        when(session.getToken()).thenReturn(API_KEY_TEST);
+        updateSession(session);
     }
 
     /* ORDER */
@@ -128,11 +149,11 @@ public class DatabaseRepository {
     }
 
     public String getCurrentCategoryName() {
-        return currentCategory == null ? CURRENT_CATEGORY_NAME : currentCategory.getName();
+        return currentCategory == null ? DEFAULT_CATEGORY_NAME : currentCategory.getName();
     }
 
     public String getCurrentCategorySlug() {
-        return currentCategory == null ? CURRENT_CATEGORY_SLUG : currentCategory.getSlug();
+        return currentCategory == null ? DEFAULT_CATEGORY_SLUG : currentCategory.getSlug();
     }
 
     /* COMMENT */
@@ -219,7 +240,7 @@ public class DatabaseRepository {
     }
 
     public Post selectPostById(long id) {
-        setCurrentPostId(id);
+        resetPostSession();
 
         return postDao
                 .queryBuilder()
@@ -299,16 +320,8 @@ public class DatabaseRepository {
         return String.valueOf(session.getLastVoteId());
     }
 
-    private void setCurrentPostId(long postId) {
+    private void resetPostSession() {
         Session session = selectSession();
-        if(session.getLastVoteId() != postId) {
-            resetPostSession(postId);
-        }
-    }
-
-    private void resetPostSession(long postId) {
-        Session session = selectSession();
-        session.setLastPostId(postId);
         session.setLastVoteId(0L);
         session.setLastCommentId((long)(Integer.MAX_VALUE));
         sessionDao.update(session);
@@ -339,7 +352,6 @@ public class DatabaseRepository {
 
     public List<Vote> selectVotesFromPost(long postId, int offset) {
         Session session = selectSession();
-        session.setLastPostId(postId);
         sessionDao.update(session);
 
         return voteDao

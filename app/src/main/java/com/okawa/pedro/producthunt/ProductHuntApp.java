@@ -25,7 +25,7 @@ public class ProductHuntApp extends Application {
     protected void initializeComponent() {
         appComponent = DaggerAppComponent
                 .builder()
-                .appModule(new AppModule(this))
+                .appModule(new AppModule(false, this))
                 .build();
     }
 
