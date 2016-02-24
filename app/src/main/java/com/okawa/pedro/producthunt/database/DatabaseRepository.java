@@ -47,7 +47,7 @@ public class DatabaseRepository {
     public static final int ORDER_BY_VOTE = 0x0000;
     public static final int ORDER_BY_TITLE = 0x0001;
     public static final int ORDER_BY_USER = 0x0002;
-    public static final int ORDER_BY_DATE = 0x0003;
+    public static final int ORDER_BY_ID = 0x0003;
 
     private Category currentCategory;
     private int currentWhere;
@@ -78,7 +78,7 @@ public class DatabaseRepository {
 
         this.configHelper = configHelper;
 
-        this.currentOrder = ORDER_BY_DATE;
+        this.currentOrder = ORDER_BY_ID;
         this.currentWhere = WHERE_ALL;
     }
 
@@ -192,9 +192,9 @@ public class DatabaseRepository {
         }
 
         switch(currentOrder) {
-            case ORDER_BY_DATE:
+            case ORDER_BY_ID:
                 queryBuilder
-                        .orderDesc(PostDao.Properties.Day);
+                        .orderDesc(PostDao.Properties.Id);
                 break;
             case ORDER_BY_VOTE:
                 queryBuilder
@@ -212,7 +212,8 @@ public class DatabaseRepository {
 
         queryBuilder
                 .limit(DatabaseModule.SELECT_LIMIT)
-                .offset(offset);
+                .offset(offset)
+                .distinct();
 
         return defineHeaders(context, queryBuilder.list(), offset);
     }

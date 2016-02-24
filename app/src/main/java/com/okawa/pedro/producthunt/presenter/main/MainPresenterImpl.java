@@ -123,7 +123,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
         /* SORT CONDITIONS */
 
-        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
+        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_ID);
         databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
 
         /* PARAMETERS BUILDER */
@@ -260,7 +260,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
         binding.llActivityMainFilterOptions.setVisibility(View.GONE);
 
         databaseRepository.resetLastPostSession();
-        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_DATE);
+        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_ID);
         databaseRepository.setWhereType(DatabaseRepository.WHERE_ALL);
 
         parametersBuilder.init().setPagination();
