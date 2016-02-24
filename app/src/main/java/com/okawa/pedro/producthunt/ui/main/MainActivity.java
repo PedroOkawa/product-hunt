@@ -71,13 +71,24 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onRequest() {
+        if(binding.rvActivityMainPosts.getVisibility() == View.GONE &&
+                binding.tvActivityMainPostsPlaceholder.getVisibility() == View.VISIBLE) {
+            binding.rvActivityMainPosts.setVisibility(View.VISIBLE);
+            binding.tvActivityMainPostsPlaceholder.setVisibility(View.GONE);
+        }
+
         binding.srlActivityMainPosts.setRefreshing(true);
     }
 
     @Override
-    public void onComplete() {
+    public void onComplete(boolean empty) {
         binding.pbActivityMain.hide();
         binding.srlActivityMainPosts.setRefreshing(false);
+
+        if(empty) {
+            binding.rvActivityMainPosts.setVisibility(View.GONE);
+            binding.tvActivityMainPostsPlaceholder.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

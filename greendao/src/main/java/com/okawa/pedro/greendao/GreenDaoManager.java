@@ -15,7 +15,7 @@ public class GreenDaoManager {
     private static final String FIELD_SESSION_ACCESS_TOKEN = "accessToken";
     private static final String FILED_SESSION_EXPIRES_IN = "expiresIn";
     private static final String FIELD_SESSION_LAST_POST_ID = "lastPostId";
-    private static final String FIELD_SESSION_LAST_POST_DATE = "lastPostDate";
+    private static final String FIELD_SESSION_LAST_POST_DAY = "lastPostDay";
     private static final String FIELD_SESSION_LAST_COMMENT_ID = "lastCommentId";
     private static final String FIELD_SESSION_LAST_VOTE_ID = "lastVoteId";
 
@@ -103,7 +103,7 @@ public class GreenDaoManager {
         session.addStringProperty(FIELD_SESSION_ACCESS_TOKEN);
         session.addLongProperty(FILED_SESSION_EXPIRES_IN);
         session.addLongProperty(FIELD_SESSION_LAST_POST_ID);
-        session.addDateProperty(FIELD_SESSION_LAST_POST_DATE);
+        session.addStringProperty(FIELD_SESSION_LAST_POST_DAY);
         session.addLongProperty(FIELD_SESSION_LAST_COMMENT_ID);
         session.addLongProperty(FIELD_SESSION_LAST_VOTE_ID);
 

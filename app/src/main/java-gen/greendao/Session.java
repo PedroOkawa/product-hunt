@@ -21,7 +21,7 @@ public class Session {
     @SerializedName("expires_in")
     private Long expiresIn;
     private Long lastPostId;
-    private java.util.Date lastPostDate;
+    private String lastPostDay;
     private Long lastCommentId;
     private Long lastVoteId;
     // KEEP FIELDS END
@@ -33,12 +33,12 @@ public class Session {
         this.id = id;
     }
 
-    public Session(Long id, String accessToken, Long expiresIn, Long lastPostId, java.util.Date lastPostDate, Long lastCommentId, Long lastVoteId) {
+    public Session(Long id, String accessToken, Long expiresIn, Long lastPostId, String lastPostDay, Long lastCommentId, Long lastVoteId) {
         this.id = id;
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
         this.lastPostId = lastPostId;
-        this.lastPostDate = lastPostDate;
+        this.lastPostDay = lastPostDay;
         this.lastCommentId = lastCommentId;
         this.lastVoteId = lastVoteId;
     }
@@ -75,12 +75,12 @@ public class Session {
         this.lastPostId = lastPostId;
     }
 
-    public java.util.Date getLastPostDate() {
-        return lastPostDate;
+    public String getLastPostDay() {
+        return lastPostDay;
     }
 
-    public void setLastPostDate(java.util.Date lastPostDate) {
-        this.lastPostDate = lastPostDate;
+    public void setLastPostDay(String lastPostDay) {
+        this.lastPostDay = lastPostDay;
     }
 
     public Long getLastCommentId() {

@@ -27,7 +27,7 @@ public class SessionDao extends AbstractDao<Session, Long> {
         public final static Property AccessToken = new Property(1, String.class, "accessToken", false, "ACCESS_TOKEN");
         public final static Property ExpiresIn = new Property(2, Long.class, "expiresIn", false, "EXPIRES_IN");
         public final static Property LastPostId = new Property(3, Long.class, "lastPostId", false, "LAST_POST_ID");
-        public final static Property LastPostDate = new Property(4, java.util.Date.class, "lastPostDate", false, "LAST_POST_DATE");
+        public final static Property LastPostDay = new Property(4, String.class, "lastPostDay", false, "LAST_POST_DAY");
         public final static Property LastCommentId = new Property(5, Long.class, "lastCommentId", false, "LAST_COMMENT_ID");
         public final static Property LastVoteId = new Property(6, Long.class, "lastVoteId", false, "LAST_VOTE_ID");
     };
@@ -49,7 +49,7 @@ public class SessionDao extends AbstractDao<Session, Long> {
                 "\"ACCESS_TOKEN\" TEXT," + // 1: accessToken
                 "\"EXPIRES_IN\" INTEGER," + // 2: expiresIn
                 "\"LAST_POST_ID\" INTEGER," + // 3: lastPostId
-                "\"LAST_POST_DATE\" INTEGER," + // 4: lastPostDate
+                "\"LAST_POST_DAY\" TEXT," + // 4: lastPostDay
                 "\"LAST_COMMENT_ID\" INTEGER," + // 5: lastCommentId
                 "\"LAST_VOTE_ID\" INTEGER);"); // 6: lastVoteId
     }
@@ -85,9 +85,9 @@ public class SessionDao extends AbstractDao<Session, Long> {
             stmt.bindLong(4, lastPostId);
         }
  
-        java.util.Date lastPostDate = entity.getLastPostDate();
-        if (lastPostDate != null) {
-            stmt.bindLong(5, lastPostDate.getTime());
+        String lastPostDay = entity.getLastPostDay();
+        if (lastPostDay != null) {
+            stmt.bindString(5, lastPostDay);
         }
  
         Long lastCommentId = entity.getLastCommentId();
@@ -115,7 +115,7 @@ public class SessionDao extends AbstractDao<Session, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // accessToken
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // expiresIn
             cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // lastPostId
-            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // lastPostDate
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // lastPostDay
             cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // lastCommentId
             cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // lastVoteId
         );
@@ -129,7 +129,7 @@ public class SessionDao extends AbstractDao<Session, Long> {
         entity.setAccessToken(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setExpiresIn(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
         entity.setLastPostId(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
-        entity.setLastPostDate(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
+        entity.setLastPostDay(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setLastCommentId(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
         entity.setLastVoteId(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }

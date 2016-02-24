@@ -13,6 +13,10 @@
 
     <string name="main_activity_today">Hoje</string>
 
+    <!-- MAIN ACTIVITY (PLACEHOLDER) -->
+
+    <string name="main_activity_placeholder">Não há postagens</string>
+
     <!-- MAIN ACTIVITY (DATE PICKER) -->
 
     <string name="date_picker_cancel">Cancelar</string>

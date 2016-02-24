@@ -187,7 +187,6 @@ public class Vote {
         result = 31 * result + (user__resolvedKey != null ? user__resolvedKey.hashCode() : 0);
         return result;
     }
-
     // KEEP METHODS END
 
 }

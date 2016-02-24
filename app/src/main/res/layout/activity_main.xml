@@ -82,6 +82,16 @@
 
             </android.support.v4.widget.SwipeRefreshLayout>
 
+            <TextView
+                android:id="@+id/tvActivityMainPostsPlaceholder"
+                style="@style/DetailsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="@string/main_activity_placeholder"
+                android:layout_below="@id/toolbar"/>
+
         </RelativeLayout>
 
         <include

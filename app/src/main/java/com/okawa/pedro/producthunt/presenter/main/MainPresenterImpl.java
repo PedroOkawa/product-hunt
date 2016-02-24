@@ -184,7 +184,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
     public void onDataLoaded(int process) {
         if(process == ApiManager.PROCESS_POSTS_ID) {
             adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
-            mainView.onComplete();
+            mainView.onComplete(adapterPost.getItemCount() == 0);
         } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
             initializeNavigationMenu();
         }
@@ -341,10 +341,11 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
             switch(position) {
                 case DatabaseRepository.ORDER_BY_VOTE:
                     databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
-                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
 
                     parametersBuilder
                             .init()
@@ -355,7 +356,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                     break;
                 case DatabaseRepository.ORDER_BY_TITLE:
                     databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_TITLE);
-                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
 
                     parametersBuilder
                             .init()
@@ -366,7 +366,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                     break;
                 case DatabaseRepository.ORDER_BY_USER:
                     databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_USER);
-                    databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
 
                     parametersBuilder
                             .init()

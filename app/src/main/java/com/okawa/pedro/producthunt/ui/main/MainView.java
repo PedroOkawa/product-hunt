@@ -10,7 +10,7 @@ public interface MainView {
     void initializeToolbar(String title);
     void setToolbarName(String title);
     void onRequest();
-    void onComplete();
+    void onComplete(boolean empty);
     void onError(String error);
     void openPostDetails(long postId, View view);
 

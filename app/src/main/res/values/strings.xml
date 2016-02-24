@@ -16,6 +16,10 @@
 
     <string name="main_activity_today">Today</string>
 
+    <!-- MAIN ACTIVITY (PLACEHOLDER) -->
+
+    <string name="main_activity_placeholder">There are no posts</string>
+
     <!-- MAIN ACTIVITY (DATE PICKER) -->
 
     <string name="date_picker_cancel">Cancel</string>

@@ -275,7 +275,7 @@ public class DatabaseRepository {
     public void updateSession(Session session) {
         session.setId(SESSION_ID);
         session.setLastPostId((long)(Integer.MAX_VALUE));
-        session.setLastPostDate(new Date());
+        session.setLastPostDay(configHelper.convertDateToString(new Date()));
         session.setLastCommentId((long)(Integer.MAX_VALUE));
         session.setLastVoteId(0L);
         sessionDao.insertOrReplace(session);
@@ -295,13 +295,13 @@ public class DatabaseRepository {
     public void resetLastPostSession() {
         Session session = selectSession();
         session.setLastPostId((long)(Integer.MAX_VALUE));
-        session.setLastPostDate(new Date());
+        session.setLastPostDay(configHelper.convertDateToString(new Date()));
         sessionDao.update(session);
     }
 
-    public void updateLastPostDate(Date date) {
+    public void updateLastPostDate(String day) {
         Session session = selectSession();
-        session.setLastPostDate(date);
+        session.setLastPostDay(day);
         sessionDao.update(session);
     }
 
@@ -382,14 +382,13 @@ public class DatabaseRepository {
 
         for(Post post : posts) {
 
-            if((posts.indexOf(post) == 0 && offset == 0) ||
-                    !(configHelper.checkSameDate(post.getCreatedAt(), session.getLastPostDate()))) {
+            if((posts.indexOf(post) == 0 && offset == 0) || !(post.getDay().equals(session.getLastPostDay()))) {
                 PostContent headerContent = new PostContent();
 
                 headerContent.setIsHeader(true);
                 headerContent.setHeader(configHelper.getDateString(context, post.getCreatedAt()));
 
-                updateLastPostDate(post.getCreatedAt());
+                updateLastPostDate(post.getDay());
 
                 postContents.add(headerContent);
             }
