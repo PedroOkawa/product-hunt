@@ -6,8 +6,6 @@ import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
-import org.mockito.Mockito;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;

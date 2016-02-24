@@ -102,6 +102,9 @@ dependencies {
     /* MOCK LIBRARY */
 
     compile 'org.mockito:mockito-core:2.0.43-beta'
+    androidTestCompile 'org.mockito:mockito-core:2.0.43-beta'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 
     /* REST CLIENT */
 
