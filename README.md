@@ -2,6 +2,8 @@
 
 App created to show posts and some details from ProductHunt API.
 
+Support to Portuguese and English.
+
 # Features
 
 * GreenDAO (ORM)
