@@ -13,7 +13,7 @@ import io.fabric.sdk.android.Fabric;
  */
 public class ProductHuntApp extends Application {
 
-    private AppComponent appComponent;
+    protected AppComponent appComponent;
 
     @Override
     public void onCreate() {
@@ -22,7 +22,7 @@ public class ProductHuntApp extends Application {
         initializeComponent();
     }
 
-    private void initializeComponent() {
+    protected void initializeComponent() {
         appComponent = DaggerAppComponent
                 .builder()
                 .appModule(new AppModule(this))
