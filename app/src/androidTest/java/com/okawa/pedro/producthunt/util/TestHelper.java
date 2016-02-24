@@ -26,7 +26,7 @@ import static org.hamcrest.core.AllOf.allOf;
  */
 public class TestHelper {
 
-    public static final int INITIAL_DELAY = 5000;
+    public static final int INITIAL_DELAY = 10000;
     public static final int INTERACTION_DELAY = 1000;
     public static final int TOTAL_SEARCH_TEST = 5;
 

@@ -126,7 +126,9 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onBackPressed() {
-        if(mainPresenter.isFilterOpen()) {
+        if(binding.dlActivityMain.isDrawerOpen(GravityCompat.START)) {
+            binding.dlActivityMain.closeDrawers();
+        } else if(mainPresenter.isFilterOpen()) {
             mainPresenter.closeFilter();
         } else {
             super.onBackPressed();

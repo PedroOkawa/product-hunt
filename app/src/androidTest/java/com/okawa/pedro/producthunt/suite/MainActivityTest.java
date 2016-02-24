@@ -10,8 +10,8 @@ import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.di.component.TestAppComponent;
+import com.okawa.pedro.producthunt.ui.loading.LoadingActivity;
 import com.okawa.pedro.producthunt.ui.main.MainActivity;
-import com.okawa.pedro.producthunt.util.TestHelper;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +40,7 @@ public class MainActivityTest {
     DatabaseRepository databaseRepository;
 
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<LoadingActivity> activityRule = new ActivityTestRule<>(LoadingActivity.class);
 
     @Before
     public void setup() {
