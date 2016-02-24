@@ -40,7 +40,7 @@ public class MainActivityTest {
     DatabaseRepository databaseRepository;
 
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
+    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void setup() {

@@ -61,11 +61,6 @@ public class ConfigHelper {
 
     /* DATE */
 
-    public long calculateDifferenceDays(Date date) {
-        long diff = removeTime(new Date()).getTime() - (removeTime(date)).getTime();
-        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-    }
-
     public String convertDateToString(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }

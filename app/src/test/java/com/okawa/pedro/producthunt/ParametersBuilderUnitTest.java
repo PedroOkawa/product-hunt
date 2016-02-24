@@ -18,11 +18,11 @@ import static com.okawa.pedro.producthunt.util.builder.ParametersBuilder.*;
 @RunWith(JUnit4.class)
 public class ParametersBuilderUnitTest {
 
-    private static final String TEST_PARAMETER_DAY = "2016-01-01";
-    private static final String TEST_PARAMETER_DAYS_AGO = "42";
-    private static final String TEST_PARAMETER_OLDER = "12345";
-    private static final String TEST_PARAMETER_NEWER = "54321";
-    private static final String TEST_PARAMETER_CATEGORY = "games";
+    private static final String TEST_VALUE_DAY = "2016-01-01";
+    private static final String TEST_VALUE_DAYS_AGO = "42";
+    private static final String TEST_VALUE_OLDER = "12345";
+    private static final String TEST_VALUE_NEWER = "54321";
+    private static final String TEST_VALUE_CATEGORY = "games";
 
     private ParametersBuilder parametersBuilder;
 
@@ -40,40 +40,40 @@ public class ParametersBuilderUnitTest {
     public void checkDayParameters() {
         Map<String, String> parameters = parametersBuilder
                 .init()
-                .setDay(TEST_PARAMETER_DAY)
+                .setDay(TEST_VALUE_DAY)
                 .generateParameters();
 
-        assert(parameters.get(PARAMETER_DAY).equals(TEST_PARAMETER_DAY));
+        assert(parameters.get(PARAMETER_DAY).equals(TEST_VALUE_DAY));
     }
 
     @Test
     public void checkDaysAgoParameters() {
         Map<String, String> parameters = parametersBuilder
                 .init()
-                .setDaysAgo(TEST_PARAMETER_DAYS_AGO)
+                .setDaysAgo(TEST_VALUE_DAYS_AGO)
                 .generateParameters();
 
-        assert(parameters.get(PARAMETER_DAYS_AGO).equals(TEST_PARAMETER_DAYS_AGO));
+        assert(parameters.get(PARAMETER_DAYS_AGO).equals(TEST_VALUE_DAYS_AGO));
     }
 
     @Test
     public void checkOlderParameters() {
         Map<String, String> parameters = parametersBuilder
                 .init()
-                .setOlder(TEST_PARAMETER_OLDER)
+                .setOlder(TEST_VALUE_OLDER)
                 .generateParameters();
 
-        assert(parameters.get(PARAMETER_OLDER).equals(TEST_PARAMETER_OLDER));
+        assert(parameters.get(PARAMETER_OLDER).equals(TEST_VALUE_OLDER));
     }
 
     @Test
     public void checkNewerParameters() {
         Map<String, String> parameters = parametersBuilder
                 .init()
-                .setNewer(TEST_PARAMETER_NEWER)
+                .setNewer(TEST_VALUE_NEWER)
                 .generateParameters();
 
-        assert(parameters.get(PARAMETER_NEWER).equals(TEST_PARAMETER_NEWER));
+        assert(parameters.get(PARAMETER_NEWER).equals(TEST_VALUE_NEWER));
     }
 
     @Test
@@ -110,10 +110,10 @@ public class ParametersBuilderUnitTest {
     public void checkCategoryParameters() {
         Map<String, String> parameters = parametersBuilder
                 .init()
-                .setCategory(TEST_PARAMETER_CATEGORY)
+                .setCategory(TEST_VALUE_CATEGORY)
                 .generateParameters();
 
-        assert(parameters.get(PARAMETER_CATEGORY).equals(TEST_PARAMETER_CATEGORY));
+        assert(parameters.get(PARAMETER_CATEGORY).equals(TEST_VALUE_CATEGORY));
     }
 
     @After
