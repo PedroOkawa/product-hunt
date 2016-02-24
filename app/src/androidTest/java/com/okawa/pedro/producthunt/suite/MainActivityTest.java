@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
 
@@ -49,6 +50,8 @@ public class MainActivityTest {
         ProductHuntApp app = (ProductHuntApp) instrumentation.getTargetContext().getApplicationContext();
         TestAppComponent component = (TestAppComponent) app.getAppComponent();
         component.inject(this);
+
+        MockitoAnnotations.initMocks(this);
 
         closeSoftKeyboard();
         sleep(INITIAL_DELAY);
