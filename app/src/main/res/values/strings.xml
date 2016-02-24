@@ -6,7 +6,6 @@
 
     <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
 
-    <string name="navigation_menu_collections">Collections</string>
     <string name="navigation_menu_categories">Categories</string>
 
     <!-- MAIN ACTIVITY (TOOLBAR) -->

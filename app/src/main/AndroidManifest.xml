@@ -41,12 +41,6 @@
             android:name=".ui.main.MainActivity"
             android:configChanges="orientation|screenSize"/>
 
-        <!-- FILTER ACTIVITY -->
-
-        <activity
-            android:name=".ui.filter.FilterActivity"
-            android:configChanges="orientation|screenSize"/>
-
         <!-- POST DETAILS ACTIVITY -->
 
         <activity android:name=".ui.post.PostDetailsActivity"

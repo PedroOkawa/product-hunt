@@ -211,11 +211,6 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                 .navigationView
                 .getMenu().addSubMenu(R.string.navigation_menu_categories);
 
-        binding.navigationView
-                .navigationView
-                .getMenu().add(R.string.navigation_menu_collections)
-                .setCheckable(true);
-
         for(Category category : databaseRepository.selectCategories()) {
             MenuItem menuItem = categories.add(category.getName()).setCheckable(true);
 

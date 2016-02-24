@@ -3,7 +3,6 @@
 
     <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
 
-    <string name="navigation_menu_collections">Coleções</string>
     <string name="navigation_menu_categories">Categorias</string>
 
     <!-- MAIN ACTIVITY (TOOLBAR) -->
