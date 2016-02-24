@@ -1,8 +1,5 @@
 package com.okawa.pedro.producthunt;
 
-import android.content.Context;
-import android.test.mock.MockContext;
-
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import org.junit.Before;
@@ -21,7 +18,6 @@ public class ConfigHelperUnitTest {
 
     private static final String TEST_VALUE_DATE_YMD = "2016-01-01";
     private static final String TEST_VALUE_DATE_DMY = "01/01/2016";
-    private static final String TEST_VALUE_DATE_TODAY = "Today";
 
     private ConfigHelper configHelper;
 

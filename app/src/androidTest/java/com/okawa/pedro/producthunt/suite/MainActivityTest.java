@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.suite;
 
 import android.app.Instrumentation;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -40,7 +41,7 @@ public class MainActivityTest {
     DatabaseRepository databaseRepository;
 
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
 
     @Before
     public void setup() {
@@ -53,6 +54,8 @@ public class MainActivityTest {
 
         closeSoftKeyboard();
         sleep(INITIAL_DELAY);
+
+        activityRule.launchActivity(new Intent());
     }
 
     @Test
