@@ -13,18 +13,10 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private boolean runningTest;
     private ProductHuntApp productHuntApp;
 
-    public AppModule(boolean runningTest, ProductHuntApp productHuntApp) {
-        this.runningTest = runningTest;
+    public AppModule(ProductHuntApp productHuntApp) {
         this.productHuntApp = productHuntApp;
-    }
-
-    @Singleton
-    @Provides
-    public boolean providesIsRunningTest() {
-        return runningTest;
     }
 
     @Singleton

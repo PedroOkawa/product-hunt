@@ -6,8 +6,6 @@ import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
-import org.mockito.Mockito;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -34,15 +32,10 @@ import greendao.UserDao;
 import greendao.Vote;
 import greendao.VoteDao;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * Created by pokawa on 19/02/16.
  */
 public class DatabaseRepository {
-
-    private static final String API_KEY_TEST = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
 
     private static final long SESSION_ID = Long.MAX_VALUE;
     private static final long CURRENT_CATEGORY_ID = 1;
@@ -73,7 +66,7 @@ public class DatabaseRepository {
 
     private ConfigHelper configHelper;
 
-    public DatabaseRepository(boolean runningTest, DaoSession daoSession, ConfigHelper configHelper) {
+    public DatabaseRepository(DaoSession daoSession, ConfigHelper configHelper) {
         this.avatarDao = daoSession.getAvatarDao();
         this.categoryDao = daoSession.getCategoryDao();
         this.commentDao = daoSession.getCommentDao();
@@ -88,19 +81,6 @@ public class DatabaseRepository {
 
         this.currentOrder = ORDER_BY_ID;
         this.currentWhere = WHERE_ALL;
-
-        if(runningTest) {
-            defineTestSession();
-        }
-    }
-
-    /* TESTS */
-
-    private void defineTestSession() {
-        Session session = mock(Session.class, Mockito.CALLS_REAL_METHODS);
-
-        when(session.getToken()).thenReturn(API_KEY_TEST);
-        updateSession(session);
     }
 
     /* ORDER */

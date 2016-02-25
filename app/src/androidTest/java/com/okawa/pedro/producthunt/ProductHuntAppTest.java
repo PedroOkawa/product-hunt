@@ -12,7 +12,7 @@ public class ProductHuntAppTest extends ProductHuntApp {
     protected void initializeComponent() {
         appComponent = DaggerTestAppComponent
                 .builder()
-                .appModule(new AppModule(true, this))
+                .appModule(new AppModule(this))
                 .build();
     }
 }

@@ -1,8 +1,8 @@
 package com.okawa.pedro.producthunt.suite;
 
 import android.app.Instrumentation;
-import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -12,13 +12,13 @@ import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.di.component.TestAppComponent;
 import com.okawa.pedro.producthunt.ui.loading.LoadingActivity;
-import com.okawa.pedro.producthunt.ui.main.MainActivity;
+import com.okawa.pedro.producthunt.util.LoadingIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
 
@@ -41,8 +41,10 @@ public class MainActivityTest {
     @Inject
     DatabaseRepository databaseRepository;
 
+    private LoadingIdlingResource loadingIdlingResource;
+
     @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<LoadingActivity> activityRule = new ActivityTestRule<>(LoadingActivity.class);
 
     @Before
     public void setup() {
@@ -51,7 +53,8 @@ public class MainActivityTest {
         TestAppComponent component = (TestAppComponent) app.getAppComponent();
         component.inject(this);
 
-        MockitoAnnotations.initMocks(this);
+        loadingIdlingResource = new LoadingIdlingResource(instrumentation.getTargetContext());
+        Espresso.registerIdlingResources(loadingIdlingResource);
 
         closeSoftKeyboard();
         sleep(INITIAL_DELAY);
@@ -151,6 +154,11 @@ public class MainActivityTest {
 
             pressBack();
         }
+    }
+
+    @After
+    public void dispose() {
+        Espresso.unregisterIdlingResources(loadingIdlingResource);
     }
 
 }

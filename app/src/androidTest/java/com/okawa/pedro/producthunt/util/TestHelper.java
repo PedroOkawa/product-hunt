@@ -8,11 +8,7 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 import android.widget.TextView;
 
-import com.okawa.pedro.producthunt.R;
-
 import org.hamcrest.Matcher;
-
-import greendao.Session;
 
 import static android.os.SystemClock.sleep;
 import static android.support.test.espresso.Espresso.onView;
@@ -27,6 +23,8 @@ import static org.hamcrest.core.AllOf.allOf;
  * Created by pokawa on 24/02/16.
  */
 public class TestHelper {
+
+    private static final String API_KEY_TEST = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
 
     public static final int INITIAL_DELAY = 10000;
     public static final int INTERACTION_DELAY = 1000;
