@@ -40,7 +40,7 @@ public class LoadingIdlingResource implements IdlingResource {
     }
 
     private boolean isMainActivityRunning() {
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.AppTask> appTasks = activityManager.getAppTasks();
 
         for(ActivityManager.AppTask appTask : appTasks) {
