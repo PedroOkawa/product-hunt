@@ -61,7 +61,7 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
 
     private DatePickerDialog datePickerDialog;
     private Date currentDate;
-    private boolean dateSelected;
+    private boolean isFilterOpen;
 
     public MainPresenterImpl(MainView mainView,
                              ApiManager apiManager,
@@ -132,7 +132,8 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
 
         /* DATE PICKER */
 
-        dateSelected = false;
+        isFilterOpen = false;
+
         Calendar calendar = Calendar.getInstance();
         currentDate = calendar.getTime();
 
@@ -164,7 +165,7 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
 
     @Override
     public boolean isFilterOpen() {
-        return (binding.llActivityMainFilterOptions.getVisibility() == View.VISIBLE);
+        return isFilterOpen;
     }
 
     @Override
@@ -178,20 +179,6 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
         /* UNREGISTER ON EVENT BUS */
 
         EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe
-    public void onEvent(ApiEvent apiEvent) {
-        if(apiEvent.isError()) {
-            mainView.onError(apiEvent.getMessage());
-        } else {
-            if(apiEvent.getType() == ApiEvent.PROCESS_POSTS_ID) {
-                adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
-                mainView.onComplete(adapterPost.getItemCount() == 0);
-            } else if(apiEvent.getType() == ApiEvent.PROCESS_POSTS_ID) {
-                initializeNavigationMenu();
-            }
-        }
     }
 
     private void requestCategoryData() {
@@ -225,7 +212,7 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
 
         /* GENERATE PARAMETERS */
 
-        if(dateSelected) {
+        if(isFilterOpen) {
 
             Map<String, String> parameters = parametersBuilder
                     .init()
@@ -254,9 +241,12 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
     }
 
     private void resetFilters() {
-        dateSelected = false;
+        isFilterOpen = false;
+
         binding.spActivityMainSort.setSelection(DatabaseRepository.ORDER_BY_VOTE);
-        binding.llActivityMainFilterOptions.setVisibility(View.GONE);
+        binding.llActivityMainFilterOptions.animate().translationY(0);
+        binding.toolbarShadow.animate().translationY(0);
+        binding.filterHolder.setVisibility(View.GONE);
 
         databaseRepository.resetLastPostSession();
         databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_ID);
@@ -275,6 +265,20 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
     @Subscribe
     public void onEvent(ConnectionEvent event) {
         requestData();
+    }
+
+    @Subscribe
+    public void onEvent(ApiEvent apiEvent) {
+        if(apiEvent.isError()) {
+            mainView.onError(apiEvent.getMessage());
+        } else {
+            if(apiEvent.getType() == ApiEvent.PROCESS_POSTS_ID) {
+                adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
+                mainView.onComplete(adapterPost.getItemCount() == 0);
+            } else if(apiEvent.getType() == ApiEvent.PROCESS_CATEGORIES_ID) {
+                initializeNavigationMenu();
+            }
+        }
     }
 
     @Override
@@ -296,20 +300,17 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
-                dateSelected = true;
+                isFilterOpen = true;
                 DatePicker datePicker = datePickerDialog.getDatePicker();
 
                 onDateSet(datePicker, datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                binding.llActivityMainFilterOptions.setVisibility(View.VISIBLE);
+                binding.llActivityMainFilterOptions.animate().translationY(binding.llActivityMainFilterOptions.getMeasuredHeight());
+                binding.toolbarShadow.animate().translationY(binding.llActivityMainFilterOptions.getMeasuredHeight());
+                binding.filterHolder.setVisibility(View.VISIBLE);
                 binding.tvActivityMainFilterBody.setText(configHelper.getDateString(context, currentDate));
 
                 databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
                 databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
-
-                parametersBuilder
-                        .init()
-                        .setDay(configHelper.convertDateToString(currentDate))
-                        .setPagination();
 
                 resetData();
             }
@@ -341,40 +342,27 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-            databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
-            switch(position) {
-                case DatabaseRepository.ORDER_BY_VOTE:
-                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
+            if(isFilterOpen) {
+                databaseRepository.setWhereType(DatabaseRepository.WHERE_DATE);
 
-                    parametersBuilder
-                            .init()
-                            .setDay(configHelper.convertDateToString(currentDate))
-                            .setPagination();
+                switch (position) {
+                    case DatabaseRepository.ORDER_BY_VOTE:
+                        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_VOTE);
+                        break;
+                    case DatabaseRepository.ORDER_BY_TITLE:
+                        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_TITLE);
+                        break;
+                    case DatabaseRepository.ORDER_BY_USER:
+                        databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_USER);
+                        break;
+                }
 
-                    resetData();
-                    break;
-                case DatabaseRepository.ORDER_BY_TITLE:
-                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_TITLE);
+                parametersBuilder
+                        .init()
+                        .setDay(configHelper.convertDateToString(currentDate))
+                        .setPagination();
 
-                    parametersBuilder
-                            .init()
-                            .setDay(configHelper.convertDateToString(currentDate))
-                            .setPagination();
-
-                    resetData();
-                    break;
-                case DatabaseRepository.ORDER_BY_USER:
-                    databaseRepository.setOrderBy(DatabaseRepository.ORDER_BY_USER);
-
-                    parametersBuilder
-                            .init()
-                            .setDay(configHelper.convertDateToString(currentDate))
-                            .setPagination();
-
-                    resetData();
-                    break;
-                default:
-                    break;
+                resetData();
             }
         }
 

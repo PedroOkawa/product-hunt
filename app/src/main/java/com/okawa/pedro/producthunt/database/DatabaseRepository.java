@@ -1,6 +1,7 @@
 package com.okawa.pedro.producthunt.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.di.module.DatabaseModule;
 import com.okawa.pedro.producthunt.model.list.PostContent;
@@ -42,13 +43,13 @@ public class DatabaseRepository {
     private static final String DEFAULT_CATEGORY_NAME = "Tech";
     private static final String DEFAULT_CATEGORY_SLUG = "tech";
 
-    public static final int WHERE_DATE = 0x0000;
-    public static final int WHERE_ALL = 0x0001;
+    public static final int WHERE_ALL = 0x0000;
+    public static final int WHERE_DATE = 0x0001;
 
-    public static final int ORDER_BY_VOTE = 0x0000;
-    public static final int ORDER_BY_TITLE = 0x0001;
-    public static final int ORDER_BY_USER = 0x0002;
-    public static final int ORDER_BY_ID = 0x0003;
+    public static final int ORDER_BY_ID = 0x0000;
+    public static final int ORDER_BY_VOTE = 0x0001;
+    public static final int ORDER_BY_TITLE = 0x0002;
+    public static final int ORDER_BY_USER = 0x0003;
 
     private Category currentCategory;
     private int currentWhere;

@@ -16,25 +16,48 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_height="@dimen/abc_action_bar_default_height_material"
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/pbActivityMain"
+                style="@style/ContentLoading"/>
+
+            <View
+                android:id="@+id/filterHolder"
                 android:layout_width="match_parent"
-                android:minHeight="?attr/actionBarSize"
-                android:background="@color/color_primary_dark"
-                app:titleTextColor="@android:color/white"/>
+                android:layout_height="@dimen/abc_action_bar_default_height_material"
+                android:visibility="gone"
+                android:layout_below="@+id/toolbar"/>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/srlActivityMainPosts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/filterHolder">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvActivityMainPosts"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <TextView
+                android:id="@+id/tvActivityMainPostsPlaceholder"
+                style="@style/DetailsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="@string/main_activity_placeholder"
+                android:layout_below="@+id/filterHolder"/>
 
             <LinearLayout
                 android:id="@+id/llActivityMainFilterOptions"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/abc_action_bar_default_height_material"
                 android:background="@color/color_primary_dark"
-                android:layout_below="@id/toolbar"
-                android:visibility="gone"
                 android:weightSum="4">
 
                 <TextView
@@ -65,32 +88,13 @@
 
             </LinearLayout>
 
-            <android.support.v4.widget.ContentLoadingProgressBar
-                android:id="@+id/pbActivityMain"
-                style="@style/ContentLoading"/>
-
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/srlActivityMainPosts"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="@dimen/abc_action_bar_default_height_material"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/llActivityMainFilterOptions">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rvActivityMainPosts"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-            </android.support.v4.widget.SwipeRefreshLayout>
-
-            <TextView
-                android:id="@+id/tvActivityMainPostsPlaceholder"
-                style="@style/DetailsTitle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:visibility="gone"
-                android:text="@string/main_activity_placeholder"
-                android:layout_below="@id/toolbar"/>
+                android:minHeight="?attr/actionBarSize"
+                android:background="@color/color_primary_dark"
+                app:titleTextColor="@android:color/white"/>
 
             <View
                 android:id="@+id/toolbarShadow"

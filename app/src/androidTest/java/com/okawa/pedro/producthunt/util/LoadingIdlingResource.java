@@ -4,7 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.support.test.espresso.IdlingResource;
 
-import com.okawa.pedro.producthunt.ui.main.MainActivity;
+import com.okawa.pedro.producthunt.ui.loading.LoadingActivity;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class LoadingIdlingResource implements IdlingResource {
 
     @Override
     public boolean isIdleNow() {
-        boolean isIdle = !isMainActivityRunning();
+        boolean isIdle = isLoadingActivityRunning();
         if (isIdle && callback != null) {
             callback.onTransitionToIdle();
         }
@@ -39,12 +39,12 @@ public class LoadingIdlingResource implements IdlingResource {
         this.callback = callback;
     }
 
-    private boolean isMainActivityRunning() {
+    private boolean isLoadingActivityRunning() {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.AppTask> appTasks = activityManager.getAppTasks();
 
         for(ActivityManager.AppTask appTask : appTasks) {
-            if(MainActivity.class.getPackage().getName().equalsIgnoreCase(appTask.getTaskInfo().baseActivity.getPackageName())) {
+            if(LoadingActivity.class.getPackage().getName().equalsIgnoreCase(appTask.getTaskInfo().baseActivity.getPackageName())) {
                 return true;
             }
         }
