@@ -383,13 +383,15 @@ public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePi
             databaseRepository.resetLastPostSession();
             mainView.setToolbarName(title);
             binding.dlActivityMain.closeDrawers();
-            resetData();
 
-            item.setChecked(true);
             if(previousItem != null) {
                 previousItem.setChecked(false);
             }
+
+            item.setChecked(true);
             previousItem = item;
+
+            resetData();
             return false;
         }
 

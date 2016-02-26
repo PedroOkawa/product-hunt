@@ -44,8 +44,10 @@ public class LoadingIdlingResource implements IdlingResource {
         List<ActivityManager.AppTask> appTasks = activityManager.getAppTasks();
 
         for(ActivityManager.AppTask appTask : appTasks) {
-            if(LoadingActivity.class.getPackage().getName().equalsIgnoreCase(appTask.getTaskInfo().baseActivity.getPackageName())) {
-                return true;
+            if(appTask.getTaskInfo().baseActivity != null) {
+                if (LoadingActivity.class.getPackage().getName().equalsIgnoreCase(appTask.getTaskInfo().baseActivity.getPackageName())) {
+                    return true;
+                }
             }
         }
         return false;
