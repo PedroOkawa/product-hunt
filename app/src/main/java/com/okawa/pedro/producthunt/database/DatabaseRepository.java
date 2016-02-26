@@ -46,10 +46,10 @@ public class DatabaseRepository {
     public static final int WHERE_ALL = 0x0000;
     public static final int WHERE_DATE = 0x0001;
 
-    public static final int ORDER_BY_ID = 0x0000;
-    public static final int ORDER_BY_VOTE = 0x0001;
-    public static final int ORDER_BY_TITLE = 0x0002;
-    public static final int ORDER_BY_USER = 0x0003;
+    public static final int ORDER_BY_VOTE = 0x0000;
+    public static final int ORDER_BY_TITLE = 0x0001;
+    public static final int ORDER_BY_USER = 0x0002;
+    public static final int ORDER_BY_ID = 0x0003;
 
     private Category currentCategory;
     private int currentWhere;
