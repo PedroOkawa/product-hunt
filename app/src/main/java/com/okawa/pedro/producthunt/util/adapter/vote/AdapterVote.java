@@ -1,10 +1,10 @@
 package com.okawa.pedro.producthunt.util.adapter.vote;
 
-import com.bumptech.glide.Glide;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterVoteBinding;
 import com.okawa.pedro.producthunt.util.adapter.common.BindingAdapter;
-import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
+import com.okawa.pedro.producthunt.util.helper.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -33,11 +33,11 @@ public class AdapterVote extends BindingAdapter<Vote, AdapterVoteBinding> {
 
         /* USER AVATAR */
 
-        Glide.with(binding.getRoot().getContext())
+        Picasso.with(binding.getRoot().getContext())
                 .load(vote.getUser().getAvatar().getOriginal())
-                .asBitmap()
                 .centerCrop()
-                .transform(new GlideCircleTransform(binding.getRoot().getContext()))
+                .fit()
+                .transform(new CircleTransform())
                 .into(binding.ivAdapterCommentUser);
     }
 }

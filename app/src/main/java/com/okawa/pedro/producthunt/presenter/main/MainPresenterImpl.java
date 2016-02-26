@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityMainBinding;
+import com.okawa.pedro.producthunt.model.event.ApiEvent;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.model.list.PostContent;
@@ -23,7 +24,6 @@ import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.ui.main.MainView;
 import com.okawa.pedro.producthunt.util.adapter.post.AdapterPost;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
-import com.okawa.pedro.producthunt.util.listener.ApiListener;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.listener.OnTouchListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
@@ -42,7 +42,7 @@ import greendao.Category;
 /**
  * Created by pokawa on 19/02/16.
  */
-public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchListener, DatePickerDialog.OnDateSetListener {
+public class MainPresenterImpl implements MainPresenter, OnTouchListener, DatePickerDialog.OnDateSetListener {
 
     private MainView mainView;
     private ApiManager apiManager;
@@ -180,19 +180,18 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onDataLoaded(int process) {
-        if(process == ApiManager.PROCESS_POSTS_ID) {
-            adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
-            mainView.onComplete(adapterPost.getItemCount() == 0);
-        } else if(process == ApiManager.PROCESS_CATEGORIES_ID) {
-            initializeNavigationMenu();
+    @Subscribe
+    public void onEvent(ApiEvent apiEvent) {
+        if(apiEvent.isError()) {
+            mainView.onError(apiEvent.getMessage());
+        } else {
+            if(apiEvent.getType() == ApiEvent.PROCESS_POSTS_ID) {
+                adapterPost.addDataSet(databaseRepository.selectPostsByCategory(currentDate, context, adapterPost.getItemCount()));
+                mainView.onComplete(adapterPost.getItemCount() == 0);
+            } else if(apiEvent.getType() == ApiEvent.PROCESS_POSTS_ID) {
+                initializeNavigationMenu();
+            }
         }
-    }
-
-    @Override
-    public void onError(String error) {
-        mainView.onError(error);
     }
 
     private void requestCategoryData() {
@@ -201,7 +200,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
         if(databaseRepository.checkCategoriesLoaded()) {
             initializeNavigationMenu();
         } else {
-            apiManager.requestCategories(this);
+            apiManager.requestCategories();
         }
     }
 
@@ -234,7 +233,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                     .setPagination()
                     .generateParameters();
 
-            apiManager.requestPostsByCategory(this, parameters);
+            apiManager.requestPostsByCategory(parameters);
         } else {
 
             Map<String, String> parameters = parametersBuilder
@@ -244,7 +243,7 @@ public class MainPresenterImpl implements MainPresenter, ApiListener, OnTouchLis
                     .setPagination()
                     .generateParameters();
 
-            apiManager.requestPosts(this, parameters);
+            apiManager.requestPosts(parameters);
         }
     }
 

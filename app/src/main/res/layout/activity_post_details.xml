@@ -19,6 +19,7 @@
     </data>
 
     <RelativeLayout
+        android:id="@+id/rlActivityPostDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -124,6 +125,20 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:background="@android:color/transparent"
             android:fitsSystemWindows="true"/>
+
+        <View
+            android:id="@+id/toolbarShadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_main_toolbar_shadow"
+            android:background="@drawable/background_shadow_down"
+            android:layout_below="@+id/toolbar"/>
+
+        <View
+            android:id="@+id/buttonShadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_main_toolbar_shadow"
+            android:background="@drawable/background_shadow_up"
+            android:layout_above="@+id/tvActivityPostDetailsCommentsButton"/>
 
         <TextView
             android:id="@+id/tvActivityPostDetailsCommentsButton"

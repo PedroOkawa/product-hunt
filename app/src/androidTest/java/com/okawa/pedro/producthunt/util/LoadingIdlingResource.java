@@ -31,7 +31,7 @@ public class LoadingIdlingResource implements IdlingResource {
         if (isIdle && callback != null) {
             callback.onTransitionToIdle();
         }
-        return false;
+        return isIdle;
     }
 
     @Override

@@ -34,7 +34,7 @@
     <!-- FILTER ACTIVITY -->
 
     <string name="filter_activity_button">Aplicar filtros</string>
-    <string name="filter_activity_sort_title">Ordernar por: </string>
+    <string name="filter_activity_sort_title">Ordernar: </string>
     <string-array name="filter_activity_options">
         <item>Votos</item>
         <item>Título</item>

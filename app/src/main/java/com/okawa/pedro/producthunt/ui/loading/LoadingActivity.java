@@ -47,6 +47,7 @@ public class LoadingActivity extends BaseActivity implements LoadingView {
     protected void doOnCreated(Bundle savedInstanceState) {
         binding = (ActivityLoadingBinding) getDataBinding();
 
+        loadingPresenter.initialize();
         loadingPresenter.validateToken();
     }
 
@@ -66,5 +67,11 @@ public class LoadingActivity extends BaseActivity implements LoadingView {
         binding.pbActivityLoading.hide();
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        loadingPresenter.dispose();
     }
 }

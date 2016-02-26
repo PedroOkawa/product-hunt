@@ -95,8 +95,8 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.1'
 
     /* IMAGE CACHE */
-
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     /* REST CLIENT */
 

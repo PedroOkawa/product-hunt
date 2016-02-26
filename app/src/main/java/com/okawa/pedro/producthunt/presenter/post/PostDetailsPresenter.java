@@ -10,6 +10,6 @@ import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 public interface PostDetailsPresenter {
 
     void initialize(ActivityPostDetailsBinding binding, long postId, LayoutInflater layoutInflater);
-    void setActive(boolean active);
+    void dispose();
 
 }

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- MAIN ACTIVITY (TOOLBAR) -->
+
+    <dimen name="activity_main_toolbar_shadow">8dp</dimen>
+
     <!-- MAIN ACTIVITY (NAVIGATION HEADER) -->
 
     <dimen name="activity_main_navigation_header_height">128dp</dimen>

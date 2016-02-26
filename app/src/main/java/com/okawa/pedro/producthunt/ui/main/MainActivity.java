@@ -109,12 +109,6 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mainPresenter.dispose();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -144,5 +138,11 @@ public class MainActivity extends BaseActivity implements MainView {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mainPresenter.dispose();
     }
 }

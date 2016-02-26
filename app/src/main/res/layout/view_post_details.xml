@@ -47,7 +47,8 @@
 
             <ImageView
                 style="@style/Avatar"
-                android:id="@+id/ivViewPostDetailsUser"/>
+                android:id="@+id/ivViewPostDetailsUser"
+                android:scaleType="centerCrop"/>
 
             <TextView
                 style="@style/CardInfoText"

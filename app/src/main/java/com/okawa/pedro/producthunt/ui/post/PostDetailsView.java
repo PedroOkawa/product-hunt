@@ -10,7 +10,6 @@ public interface PostDetailsView {
     void changeStatusBarColor(int color);
     void onRequest();
     void onComplete();
-    void onErrorComments(String error);
-    void onErrorVotes(String error);
+    void onError(int type, String error);
 
 }

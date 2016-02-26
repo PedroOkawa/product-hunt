@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
@@ -19,16 +17,17 @@ import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterCommentBinding;
+import com.okawa.pedro.producthunt.model.event.ApiEvent;
 import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.util.builder.ParametersBuilder;
 import com.okawa.pedro.producthunt.ui.post.PostDetailsView;
 import com.okawa.pedro.producthunt.util.adapter.vote.AdapterVote;
-import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
-import com.okawa.pedro.producthunt.util.listener.ApiListener;
+import com.okawa.pedro.producthunt.util.helper.CircleTransform;
 import com.okawa.pedro.producthunt.util.listener.OnRecyclerViewListener;
 import com.okawa.pedro.producthunt.util.listener.OnTouchListener;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,7 +42,7 @@ import greendao.Vote;
 /**
  * Created by pokawa on 21/02/16.
  */
-public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListener, OnTouchListener {
+public class PostDetailsPresenterImpl implements PostDetailsPresenter, OnTouchListener {
 
     private static final int INDENTATION_RATE = 64;
 
@@ -51,8 +50,6 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
     private ApiManager apiManager;
     private ParametersBuilder parametersBuilder;
     private DatabaseRepository databaseRepository;
-
-    private boolean active;
 
     private ActivityPostDetailsBinding binding;
     private Context context;
@@ -88,10 +85,6 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         EventBus.getDefault().register(this);
 
-        /* ACTIVATE */
-
-        active = true;
-
         /* STORES BINDING */
 
         this.binding = binding;
@@ -113,25 +106,22 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         /* POST PREVIEW */
 
-        Glide.with(binding.getRoot().getContext())
+        Picasso.with(binding.getRoot().getContext())
                 .load(post.getThumbnail().getImage())
-                .asBitmap()
-                .placeholder(R.mipmap.ic_image_placeholder)
-                .error(R.mipmap.ic_image_placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.loading)
                 .centerCrop()
+                .fit()
                 .into(binding.viewPostDetails.ivViewPostDetailsPreview);
 
         /* USER AVATAR */
 
-        Glide.with(binding.getRoot().getContext())
+        Picasso.with(binding.getRoot().getContext())
                 .load(post.getUser().getAvatar().getOriginal())
-                .asBitmap()
                 .placeholder(R.mipmap.ic_user_placeholder)
                 .error(R.mipmap.ic_user_placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .transform(new GlideCircleTransform(binding.getRoot().getContext()))
+                .fit()
+                .transform(new CircleTransform())
                 .into(binding.viewPostDetails.ivViewPostDetailsUser);
 
         /* VOTES */
@@ -172,14 +162,21 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         binding.setTouchListener(this);
         binding.setMessage(getCommentsButtonMessage());
 
+        /* START ACTIVITY ON TOP (SCROLLVIEW) */
+
+        binding.rvActivityPostDetailsVotes.setFocusable(false);
+
         /* REQUEST DATA  */
 
         requestComments();
     }
 
     @Override
-    public void setActive(boolean active) {
-        this.active = active;
+    public void dispose() {
+
+        /* UNREGISTER ON EVENT BUS */
+
+        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe
@@ -188,10 +185,12 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
         requestVotes();
     }
 
-    @Override
-    public void onDataLoaded(int process) {
-        if(active) {
-            if (process == ApiManager.PROCESS_COMMENTS_ID) {
+    @Subscribe
+    public void onEvent(ApiEvent apiEvent) {
+        if(apiEvent.isError()) {
+            postDetailsView.onError(apiEvent.getType(), apiEvent.getMessage());
+        } else {
+            if (apiEvent.getType() == ApiEvent.PROCESS_COMMENTS_ID) {
                 for (Comment comment : databaseRepository.selectCommentsFromPost(post.getId(), totalCommentsAdded)) {
                     showComment(comment, 0);
                 }
@@ -199,7 +198,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 binding.setMessage(getCommentsButtonMessage());
 
                 postDetailsView.onComplete();
-            } else if (process == ApiManager.PROCESS_VOTES_ID) {
+            } else if (apiEvent.getType() == ApiEvent.PROCESS_VOTES_ID) {
                 adapterVote.addDataSet(databaseRepository.selectVotesFromPost(post.getId(), adapterVote.getItemCount()));
 
                 if(adapterVote.getItemCount() == 0) {
@@ -211,11 +210,6 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 }
             }
         }
-    }
-
-    @Override
-    public void onError(String error) {
-        postDetailsView.onErrorComments(error);
     }
 
     /* REQUESTS */
@@ -232,7 +226,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .setPagination()
                 .generateParameters();
 
-        apiManager.requestVotesByPost(this, post.getId(), parameters);
+        apiManager.requestVotesByPost(post.getId(), parameters);
     }
 
     private void requestComments() {
@@ -247,7 +241,7 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
                 .setPagination()
                 .generateParameters();
 
-        apiManager.requestCommentsByPost(this, post.getId(), parameters);
+        apiManager.requestCommentsByPost(post.getId(), parameters);
     }
 
     /* COMMENTS */
@@ -269,14 +263,13 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
         /* USER AVATAR */
 
-        Glide.with(binding.getRoot().getContext())
+        Picasso.with(binding.getRoot().getContext())
                 .load(comment.getUser().getAvatar().getOriginal())
-                .asBitmap()
                 .placeholder(R.mipmap.ic_user_placeholder)
                 .error(R.mipmap.ic_user_placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .transform(new GlideCircleTransform(commentBinding.getRoot().getContext()))
+                .fit()
+                .transform(new CircleTransform())
                 .into(commentBinding.ivAdapterCommentUser);
 
         addViewOnCommentLayout(commentBinding.getRoot(), totalCommentsAdded++, indentation);
@@ -307,8 +300,10 @@ public class PostDetailsPresenterImpl implements PostDetailsPresenter, ApiListen
 
     private void updateScroll(int scrollY) {
         float alpha = Math.min(1, (float) scrollY / (flexibleSpaceHeight - binding.viewPostDetails.llViewPostDetailsCardInfo.getHeight() - 25));
+
         binding.toolbar.setBackgroundColor(ScrollUtils.getColorWithAlpha(alpha, toolbarColor));
         binding.toolbar.setTitleTextColor(ScrollUtils.getColorWithAlpha(alpha, titleColor));
+        binding.toolbarShadow.setAlpha(alpha);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postDetailsView.changeStatusBarColor(ScrollUtils.getColorWithAlpha(alpha / 4, statusBarColor));

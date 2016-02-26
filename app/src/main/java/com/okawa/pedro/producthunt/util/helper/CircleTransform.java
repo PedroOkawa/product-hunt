@@ -1,33 +1,27 @@
 package com.okawa.pedro.producthunt.util.helper;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.squareup.picasso.Transformation;
 
 /**
  * Created by pokawa on 20/02/16.
  */
-public class GlideCircleTransform extends BitmapTransformation {
+public class CircleTransform implements Transformation {
 
     private static final String TRANSFORM_ID = "Glide_Circle_Transform";
 
-    public GlideCircleTransform(Context context) {
-        super(context);
-    }
-
     @Override
-    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-        int size = Math.min(toTransform.getWidth(), toTransform.getHeight());
-        int x = (toTransform.getWidth() - size) / 2;
-        int y = (toTransform.getHeight() - size) / 2;
-        Bitmap squaredBitmap = Bitmap.createBitmap(toTransform, x, y, size, size);
-        if (squaredBitmap != toTransform) {
-            toTransform.recycle();
+    public Bitmap transform(Bitmap source) {
+        int size = Math.min(source.getWidth(), source.getHeight());
+        int x = (source.getWidth() - size) / 2;
+        int y = (source.getHeight() - size) / 2;
+        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+        if (squaredBitmap != source) {
+            source.recycle();
         }
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -42,7 +36,7 @@ public class GlideCircleTransform extends BitmapTransformation {
     }
 
     @Override
-    public String getId() {
+    public String key() {
         return TRANSFORM_ID;
     }
 }

@@ -3,15 +3,14 @@ package com.okawa.pedro.producthunt.util.adapter.post;
 import android.databinding.ViewDataBinding;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.okawa.pedro.producthunt.R;
 import com.okawa.pedro.producthunt.databinding.AdapterHeaderPostBinding;
 import com.okawa.pedro.producthunt.databinding.AdapterPostBinding;
 import com.okawa.pedro.producthunt.model.event.PostSelectEvent;
 import com.okawa.pedro.producthunt.model.list.PostContent;
 import com.okawa.pedro.producthunt.util.adapter.common.HeaderAdapter;
-import com.okawa.pedro.producthunt.util.helper.GlideCircleTransform;
+import com.okawa.pedro.producthunt.util.helper.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -62,25 +61,22 @@ public class AdapterPost extends HeaderAdapter<PostContent, ViewDataBinding> {
 
             /* POST PREVIEW */
 
-            Glide.with(binding.getRoot().getContext())
+            Picasso.with(binding.getRoot().getContext())
                     .load(post.getThumbnail().getImage())
-                    .asBitmap()
-                    .placeholder(R.mipmap.ic_image_placeholder)
-                    .error(R.mipmap.ic_image_placeholder)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.loading)
                     .centerCrop()
+                    .fit()
                     .into(adapterPostBinding.viewPostDetails.ivViewPostDetailsPreview);
 
             /* USER AVATAR */
 
-            Glide.with(binding.getRoot().getContext())
+            Picasso.with(binding.getRoot().getContext())
                     .load(post.getUser().getAvatar().getOriginal())
-                    .asBitmap()
                     .placeholder(R.mipmap.ic_user_placeholder)
-                    .error(R.mipmap.ic_user_placeholder)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
-                    .transform(new GlideCircleTransform(binding.getRoot().getContext()))
+                    .fit()
+                    .error(R.mipmap.ic_user_placeholder)
+                    .transform(new CircleTransform())
                     .into(adapterPostBinding.viewPostDetails.ivViewPostDetailsUser);
 
             binding.getRoot().setOnClickListener(new View.OnClickListener() {

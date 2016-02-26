@@ -4,13 +4,15 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
+import com.okawa.pedro.producthunt.model.event.ApiEvent;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
 import com.okawa.pedro.producthunt.model.response.CommentResponse;
 import com.okawa.pedro.producthunt.model.response.PostResponse;
 import com.okawa.pedro.producthunt.model.response.VoteResponse;
 import com.okawa.pedro.producthunt.network.ApiInterface;
 import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
-import com.okawa.pedro.producthunt.util.listener.ApiListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Date;
@@ -34,12 +36,6 @@ import rx.schedulers.Schedulers;
  */
 public class ApiManager {
 
-    public static final int PROCESS_SESSION_ID = 0x0000;
-    public static final int PROCESS_CATEGORIES_ID = 0x0001;
-    public static final int PROCESS_POSTS_ID = 0x0002;
-    public static final int PROCESS_COMMENTS_ID = 0x0003;
-    public static final int PROCESS_VOTES_ID = 0x0004;
-
     private static final String API_PROPERTIES = "api.properties";
     private static final String API_ID = "api_id";
     private static final String API_SECRET = "api_secret";
@@ -62,9 +58,14 @@ public class ApiManager {
 
     /* SESSION */
 
-    public void validateSession(final ApiListener apiListener) {
+    public void validateSession() {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onError(ConfigHelper.CONNECTION_ERROR);
+            apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
+            apiEvent.setError(true);
+            apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -74,7 +75,10 @@ public class ApiManager {
             properties.load(context.getAssets().open(API_PROPERTIES));
         } catch (IOException e) {
             e.printStackTrace();
-            apiListener.onError(e.getMessage());
+            apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
+            apiEvent.setError(true);
+            apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -88,12 +92,17 @@ public class ApiManager {
                 .subscribe(new Observer<Session>() {
                     @Override
                     public void onCompleted() {
-                        apiListener.onDataLoaded(PROCESS_SESSION_ID);
+                        apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
+                        apiEvent.setError(false);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
@@ -105,9 +114,13 @@ public class ApiManager {
 
     /* CATEGORY */
 
-    public void requestCategories(final ApiListener apiListener) {
+    public void requestCategories() {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_CATEGORIES_ID);
+            apiEvent.setType(ApiEvent.PROCESS_CATEGORIES_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -124,12 +137,17 @@ public class ApiManager {
                 .subscribe(new Observer<List<Category>>() {
                     @Override
                     public void onCompleted() {
-                        apiListener.onDataLoaded(PROCESS_CATEGORIES_ID);
+                        apiEvent.setType(ApiEvent.PROCESS_CATEGORIES_ID);
+                        apiEvent.setError(false);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_CATEGORIES_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
@@ -141,9 +159,13 @@ public class ApiManager {
 
     /* POST */
 
-    public void requestPosts(final ApiListener apiListener, Map<String, String> parameters) {
+    public void requestPosts(Map<String, String> parameters) {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -165,19 +187,26 @@ public class ApiManager {
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        new PersistencePost(apiListener, posts).execute();
+                        new PersistencePost(posts).execute();
                     }
                 });
     }
 
-    public void requestPostsByCategory(final ApiListener apiListener, Map<String, String> parameters) {
+    public void requestPostsByCategory(Map<String, String> parameters) {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -199,23 +228,24 @@ public class ApiManager {
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onNext(List<Post> posts) {
-                        new PersistencePost(apiListener, posts).execute();
+                        new PersistencePost(posts).execute();
                     }
                 });
     }
 
     protected class PersistencePost extends AsyncTask<Void, Void, Void> {
 
-        private ApiListener apiListener;
         private List<Post> posts;
 
-        protected PersistencePost(ApiListener apiListener, List<Post> posts) {
-            this.apiListener = apiListener;
+        protected PersistencePost(List<Post> posts) {
             this.posts = posts;
         }
 
@@ -239,16 +269,23 @@ public class ApiManager {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            apiListener.onDataLoaded(PROCESS_POSTS_ID);
+            ApiEvent apiEvent = new ApiEvent();
+            apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             super.onPostExecute(aVoid);
         }
     }
 
     /* COMMENTS */
 
-    public void requestCommentsByPost(final ApiListener apiListener, long postId, Map<String, String> parameters) {
+    public void requestCommentsByPost(long postId, Map<String, String> parameters) {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
+            apiEvent.setType(ApiEvent.PROCESS_COMMENTS_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -270,23 +307,24 @@ public class ApiManager {
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_COMMENTS_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onNext(List<Comment> comments) {
-                        new PersistenceComment(apiListener, comments).execute();
+                        new PersistenceComment(comments).execute();
                     }
                 });
     }
 
     protected class PersistenceComment extends AsyncTask<Void, Void, Void> {
 
-        private ApiListener apiListener;
         private List<Comment> comments;
 
-        protected PersistenceComment(ApiListener apiListener, List<Comment> comments) {
-            this.apiListener = apiListener;
+        protected PersistenceComment(List<Comment> comments) {
             this.comments = comments;
         }
 
@@ -306,7 +344,10 @@ public class ApiManager {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            apiListener.onDataLoaded(PROCESS_COMMENTS_ID);
+            ApiEvent apiEvent = new ApiEvent();
+            apiEvent.setType(ApiEvent.PROCESS_COMMENTS_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             super.onPostExecute(aVoid);
         }
 
@@ -326,9 +367,13 @@ public class ApiManager {
 
     /* VOTES */
 
-    public void requestVotesByPost(final ApiListener apiListener, final long postId, Map<String, String > parameters) {
+    public void requestVotesByPost(final long postId, Map<String, String > parameters) {
+        final ApiEvent apiEvent = new ApiEvent();
+
         if(!configHelper.isConnected(context)) {
-            apiListener.onDataLoaded(PROCESS_VOTES_ID);
+            apiEvent.setType(ApiEvent.PROCESS_VOTES_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             return;
         }
 
@@ -350,24 +395,25 @@ public class ApiManager {
 
                     @Override
                     public void onError(Throwable e) {
-                        apiListener.onError(e.getMessage());
+                        apiEvent.setType(ApiEvent.PROCESS_VOTES_ID);
+                        apiEvent.setError(true);
+                        apiEvent.setMessage(ConfigHelper.CONNECTION_ERROR);
+                        EventBus.getDefault().post(apiEvent);
                     }
 
                     @Override
                     public void onNext(List<Vote> votes) {
-                        new PersistenceVote(apiListener, votes, postId).execute();
+                        new PersistenceVote(votes, postId).execute();
                     }
                 });
     }
 
     protected class PersistenceVote extends AsyncTask<Void, Void, Void> {
 
-        private ApiListener apiListener;
         private List<Vote> votes;
         private long postId;
 
-        protected PersistenceVote(ApiListener apiListener, List<Vote> votes, long postId) {
-            this.apiListener = apiListener;
+        protected PersistenceVote(List<Vote> votes, long postId) {
             this.votes = votes;
             this.postId = postId;
         }
@@ -390,7 +436,10 @@ public class ApiManager {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            apiListener.onDataLoaded(PROCESS_VOTES_ID);
+            ApiEvent apiEvent = new ApiEvent();
+            apiEvent.setType(ApiEvent.PROCESS_VOTES_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
             super.onPostExecute(aVoid);
         }
     }

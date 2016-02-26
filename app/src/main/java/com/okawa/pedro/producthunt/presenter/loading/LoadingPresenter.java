@@ -5,6 +5,8 @@ package com.okawa.pedro.producthunt.presenter.loading;
  */
 public interface LoadingPresenter {
 
+    void initialize();
     void validateToken();
+    void dispose();
 
 }

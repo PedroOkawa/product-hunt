@@ -12,6 +12,7 @@ import com.okawa.pedro.producthunt.databinding.ActivityPostDetailsBinding;
 import com.okawa.pedro.producthunt.di.component.AppComponent;
 import com.okawa.pedro.producthunt.di.component.DaggerPostDetailsComponent;
 import com.okawa.pedro.producthunt.di.module.PostDetailsModule;
+import com.okawa.pedro.producthunt.model.event.ApiEvent;
 import com.okawa.pedro.producthunt.presenter.post.PostDetailsPresenter;
 import com.okawa.pedro.producthunt.ui.common.BaseActivity;
 import com.okawa.pedro.producthunt.util.manager.CallManager;
@@ -41,13 +42,6 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
                 .postDetailsModule(new PostDetailsModule(this))
                 .build()
                 .inject(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        postDetailsPresenter.setActive(false);
     }
 
     @Override
@@ -91,13 +85,10 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
     }
 
     @Override
-    public void onErrorComments(String error) {
-        binding.pbActivityPostDetails.hide();
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onErrorVotes(String error) {
+    public void onError(int type, String error) {
+        if(type == ApiEvent.PROCESS_COMMENTS_ID) {
+            binding.pbActivityPostDetails.hide();
+        }
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
@@ -109,5 +100,11 @@ public class PostDetailsActivity extends BaseActivity implements PostDetailsView
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        postDetailsPresenter.dispose();
     }
 }
