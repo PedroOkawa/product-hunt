@@ -28,7 +28,7 @@ android {
         testInstrumentationRunner "com.okawa.pedro.producthunt.runner.AppTestRunner"
     }
     dataBinding {
-        enabled true
+        enabled = true
     }
     buildTypes {
         release {
@@ -95,7 +95,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.1'
 
     /* IMAGE CACHE */
-    
+
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     /* REST CLIENT */

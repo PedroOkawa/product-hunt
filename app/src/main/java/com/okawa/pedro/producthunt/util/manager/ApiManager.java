@@ -3,6 +3,7 @@ package com.okawa.pedro.producthunt.util.manager;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.model.event.ApiEvent;
 import com.okawa.pedro.producthunt.model.response.CategoryResponse;
@@ -14,6 +15,7 @@ import com.okawa.pedro.producthunt.util.helper.ConfigHelper;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -36,20 +38,35 @@ import rx.schedulers.Schedulers;
  */
 public class ApiManager {
 
+    private static final String TEST_TOKEN = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
+
+    private static final String TEST_CATEGORIES_ALL_JSON = "categories_all.json";
+    private static final String TEST_POSTS_ALL_JSON = "posts_all.json";
+    private static final String TEST_POSTS_TECH_JSON = "posts_tech.json";
+    private static final String TEST_POSTS_GAMES_JSON = "posts_games.json";
+    private static final String TEST_POSTS_PODCASTS_JSON = "posts_podcasts.json";
+    private static final String TEST_POSTS_BOOKS_JSON = "posts_books.json";
+
     private static final String API_PROPERTIES = "api.properties";
     private static final String API_ID = "api_id";
     private static final String API_SECRET = "api_secret";
     private static final String ACCESS_GRANT_TYPE = "client_credentials";
 
+    private boolean isTest;
+    private Gson gson;
     private Context context;
     private ApiInterface apiInterface;
     private ConfigHelper configHelper;
     private DatabaseRepository databaseRepository;
 
-    public ApiManager(Context context,
+    public ApiManager(boolean isTest,
+                      Gson gson,
+                      Context context,
                       ApiInterface apiInterface,
                       ConfigHelper configHelper,
                       DatabaseRepository databaseRepository) {
+        this.isTest = isTest;
+        this.gson = gson;
         this.context = context;
         this.apiInterface = apiInterface;
         this.configHelper = configHelper;
@@ -60,6 +77,19 @@ public class ApiManager {
 
     public void validateSession() {
         final ApiEvent apiEvent = new ApiEvent();
+
+        /* TEST CASE */
+
+        if(isTest) {
+            Session session = new Session();
+            session.setAccessToken(TEST_TOKEN);
+            databaseRepository.updateSession(session);
+
+            apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
+            apiEvent.setError(false);
+            EventBus.getDefault().post(apiEvent);
+            return;
+        }
 
         if(!configHelper.isConnected(context)) {
             apiEvent.setType(ApiEvent.PROCESS_SESSION_ID);
@@ -117,15 +147,26 @@ public class ApiManager {
     public void requestCategories() {
         final ApiEvent apiEvent = new ApiEvent();
 
-        if(!configHelper.isConnected(context)) {
+        if(!configHelper.isConnected(context) && !isTest) {
             apiEvent.setType(ApiEvent.PROCESS_CATEGORIES_ID);
             apiEvent.setError(false);
             EventBus.getDefault().post(apiEvent);
             return;
         }
 
-        apiInterface
-                .categories(databaseRepository.selectSession().getToken())
+        Observable<CategoryResponse> response;
+
+        if(isTest) {
+
+            /* TEST CASE */
+
+            BufferedReader json = configHelper.getJsonFromAssets(context, TEST_CATEGORIES_ALL_JSON);
+            response = Observable.just(gson.fromJson(json, CategoryResponse.class));
+        } else {
+            response = apiInterface.categories(databaseRepository.selectSession().getToken());
+        }
+
+        response
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<CategoryResponse, Observable<List<Category>>>() {
@@ -162,15 +203,26 @@ public class ApiManager {
     public void requestPosts(Map<String, String> parameters) {
         final ApiEvent apiEvent = new ApiEvent();
 
-        if(!configHelper.isConnected(context)) {
+        if(!configHelper.isConnected(context) && !isTest) {
             apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
             apiEvent.setError(false);
             EventBus.getDefault().post(apiEvent);
             return;
         }
 
-        apiInterface
-                .postsAll(databaseRepository.selectSession().getToken(), parameters)
+        Observable<PostResponse> response;
+
+        if(isTest) {
+
+            /* TEST CASE */
+
+            BufferedReader json = configHelper.getJsonFromAssets(context, TEST_POSTS_ALL_JSON);
+            response = Observable.just(gson.fromJson(json, PostResponse.class));
+        } else {
+            response = apiInterface.postsAll(databaseRepository.selectSession().getToken(), parameters);
+        }
+
+        response
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -203,15 +255,38 @@ public class ApiManager {
     public void requestPostsByCategory(Map<String, String> parameters) {
         final ApiEvent apiEvent = new ApiEvent();
 
-        if(!configHelper.isConnected(context)) {
+        if(!configHelper.isConnected(context) && !isTest) {
             apiEvent.setType(ApiEvent.PROCESS_POSTS_ID);
             apiEvent.setError(false);
             EventBus.getDefault().post(apiEvent);
             return;
         }
 
-        apiInterface
-                .postsByCategory(databaseRepository.selectSession().getToken(), databaseRepository.getCurrentCategorySlug(), parameters)
+        Observable<PostResponse> response;
+
+        if(isTest) {
+
+            /* TEST CASE */
+
+            String fileName = "";
+
+            if(databaseRepository.getCurrentCategoryId() == Category.CATEGORY_TECH_ID) {
+                fileName = TEST_POSTS_TECH_JSON;
+            } else if (databaseRepository.getCurrentCategoryId() == Category.CATEGORY_GAMES_ID) {
+                fileName = TEST_POSTS_GAMES_JSON;
+            } else if (databaseRepository.getCurrentCategoryId() == Category.CATEGORY_PODCASTS_ID) {
+                fileName = TEST_POSTS_PODCASTS_JSON;
+            } else if (databaseRepository.getCurrentCategoryId() == Category.CATEGORY_BOOKS_ID) {
+                fileName = TEST_POSTS_BOOKS_JSON;
+            }
+
+            BufferedReader json = configHelper.getJsonFromAssets(context, fileName);
+            response = Observable.just(gson.fromJson(json, PostResponse.class));
+        } else {
+            response = apiInterface.postsByCategory(databaseRepository.selectSession().getToken(), databaseRepository.getCurrentCategorySlug(), parameters);
+        }
+
+        response
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<PostResponse, Observable<List<Post>>>() {
@@ -282,7 +357,7 @@ public class ApiManager {
     public void requestCommentsByPost(long postId, Map<String, String> parameters) {
         final ApiEvent apiEvent = new ApiEvent();
 
-        if(!configHelper.isConnected(context)) {
+        if(!configHelper.isConnected(context) && !isTest) {
             apiEvent.setType(ApiEvent.PROCESS_COMMENTS_ID);
             apiEvent.setError(false);
             EventBus.getDefault().post(apiEvent);
@@ -370,7 +445,7 @@ public class ApiManager {
     public void requestVotesByPost(final long postId, Map<String, String > parameters) {
         final ApiEvent apiEvent = new ApiEvent();
 
-        if(!configHelper.isConnected(context)) {
+        if(!configHelper.isConnected(context) && !isTest) {
             apiEvent.setType(ApiEvent.PROCESS_VOTES_ID);
             apiEvent.setError(false);
             EventBus.getDefault().post(apiEvent);

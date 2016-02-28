@@ -24,10 +24,9 @@ import static org.hamcrest.core.AllOf.allOf;
  */
 public class TestHelper {
 
-    private static final String API_KEY_TEST = "Bearer 7dac67657ca38f8204bd0298e5cea4dfb5ba190d1443f6fc9a278e15b7e154f1";
-
-    public static final int INITIAL_DELAY = 10000;
-    public static final int INTERACTION_DELAY = 1000;
+    public static final int INITIAL_DELAY = 5000;
+    public static final int SMALL_DELAY = 1000;
+    public static final int HUGE_DELAY = 10000;
     public static final int TOTAL_SEARCH_TEST = 5;
 
     public static void checkRecyclerItem(int position, @IdRes int layoutId) {
@@ -61,11 +60,11 @@ public class TestHelper {
     public static void openNavigationOption(@IdRes int drawerLayout, String text) {
         openDrawer(drawerLayout);
 
-        sleep(INTERACTION_DELAY);
+        sleep(SMALL_DELAY);
 
         onView(withText(text)).perform(click());
 
-        sleep(INTERACTION_DELAY);
+        sleep(SMALL_DELAY);
     }
 
 }

@@ -57,11 +57,13 @@ public class ApiModule {
 
     @Singleton
     @Provides
-    public ApiManager providesApiManager(ProductHuntApp productHuntApp,
+    public ApiManager providesApiManager(boolean isTest,
+                                         Gson gson,
+                                         ProductHuntApp productHuntApp,
                                          ApiInterface apiInterface,
                                          ConfigHelper configHelper,
                                          DatabaseRepository databaseRepository) {
-        return new ApiManager(productHuntApp, apiInterface, configHelper, databaseRepository);
+        return new ApiManager(isTest, gson, productHuntApp, apiInterface, configHelper, databaseRepository);
     }
 
 }

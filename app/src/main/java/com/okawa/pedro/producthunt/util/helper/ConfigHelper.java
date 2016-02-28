@@ -4,17 +4,18 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.okawa.pedro.producthunt.R;
-import com.okawa.pedro.producthunt.database.DatabaseRepository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import greendao.Category;
 
 /**
  * Created by pokawa on 20/02/16.
@@ -101,6 +102,22 @@ public class ConfigHelper {
         calendar.set(Calendar.MILLISECOND, 0);
 
         return calendar.getTime();
+    }
+
+    /* ASSETS */
+
+    public BufferedReader getJsonFromAssets(Context context, String fileName) {
+        BufferedReader buffered = null;
+        try {
+            InputStream inputStream = context.getResources().getAssets().open(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            buffered = new BufferedReader(inputStreamReader);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.wtf("TEST", "WTF: " + e.getMessage());
+            return null;
+        }
+        return buffered;
     }
 
 }

@@ -2,25 +2,19 @@ package com.okawa.pedro.producthunt.suite;
 
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.okawa.pedro.producthunt.ProductHuntApp;
 import com.okawa.pedro.producthunt.R;
-import com.okawa.pedro.producthunt.database.DatabaseRepository;
 import com.okawa.pedro.producthunt.di.component.TestAppComponent;
 import com.okawa.pedro.producthunt.ui.loading.LoadingActivity;
-import com.okawa.pedro.producthunt.util.LoadingIdlingResource;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
 
 import static android.os.SystemClock.sleep;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -38,11 +32,6 @@ import static com.okawa.pedro.producthunt.util.TestHelper.*;
 @LargeTest
 public class MainActivityTest {
 
-    @Inject
-    DatabaseRepository databaseRepository;
-
-    private LoadingIdlingResource loadingIdlingResource;
-
     @Rule
     public ActivityTestRule<LoadingActivity> activityRule = new ActivityTestRule<>(LoadingActivity.class);
 
@@ -53,11 +42,8 @@ public class MainActivityTest {
         TestAppComponent component = (TestAppComponent) app.getAppComponent();
         component.inject(this);
 
-        loadingIdlingResource = new LoadingIdlingResource(instrumentation.getTargetContext());
-        Espresso.registerIdlingResources(loadingIdlingResource);
-
         closeSoftKeyboard();
-        sleep(INITIAL_DELAY);
+        sleep(SMALL_DELAY);
     }
 
     @Test
@@ -65,11 +51,11 @@ public class MainActivityTest {
 
         openNavigationOption(R.id.dlActivityMain, "Tech");
 
-        sleep(INTERACTION_DELAY);
+        sleep(HUGE_DELAY);
 
         for(int i = 0; i < TOTAL_SEARCH_TEST; i++) {
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             String name = getText(withRecyclerView(R.id.rvActivityMainPosts)
                     .atPositionOnView(i, R.id.tvViewPostDetailsName));
@@ -78,7 +64,7 @@ public class MainActivityTest {
 
             matchToolbarTitle(name).check(matches(isDisplayed()));
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             pressBack();
         }
@@ -89,11 +75,11 @@ public class MainActivityTest {
 
         openNavigationOption(R.id.dlActivityMain, "Games");
 
-        sleep(INTERACTION_DELAY);
+        sleep(HUGE_DELAY);
 
         for(int i = 0; i < TOTAL_SEARCH_TEST; i++) {
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             String name = getText(withRecyclerView(R.id.rvActivityMainPosts)
                     .atPositionOnView(i, R.id.tvViewPostDetailsName));
@@ -102,7 +88,7 @@ public class MainActivityTest {
 
             matchToolbarTitle(name).check(matches(isDisplayed()));
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             pressBack();
         }
@@ -113,11 +99,11 @@ public class MainActivityTest {
 
         openNavigationOption(R.id.dlActivityMain, "Podcasts");
 
-        sleep(INTERACTION_DELAY);
+        sleep(HUGE_DELAY);
 
         for(int i = 0; i < TOTAL_SEARCH_TEST; i++) {
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             String name = getText(withRecyclerView(R.id.rvActivityMainPosts)
                     .atPositionOnView(i, R.id.tvViewPostDetailsName));
@@ -126,7 +112,7 @@ public class MainActivityTest {
 
             matchToolbarTitle(name).check(matches(isDisplayed()));
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             pressBack();
         }
@@ -137,11 +123,11 @@ public class MainActivityTest {
 
         openNavigationOption(R.id.dlActivityMain, "Books");
 
-        sleep(INTERACTION_DELAY);
+        sleep(HUGE_DELAY);
 
         for(int i = 0; i < TOTAL_SEARCH_TEST; i++) {
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             String name = getText(withRecyclerView(R.id.rvActivityMainPosts)
                     .atPositionOnView(i, R.id.tvViewPostDetailsName));
@@ -150,15 +136,10 @@ public class MainActivityTest {
 
             matchToolbarTitle(name).check(matches(isDisplayed()));
 
-            sleep(INTERACTION_DELAY);
+            sleep(SMALL_DELAY);
 
             pressBack();
         }
-    }
-
-    @After
-    public void dispose() {
-        Espresso.unregisterIdlingResources(loadingIdlingResource);
     }
 
 }

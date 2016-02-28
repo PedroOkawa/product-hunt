@@ -18,6 +18,16 @@ public class Category {
     public static final long CATEGORY_PODCASTS_ID = 3;
     public static final long CATEGORY_BOOKS_ID = 4;
 
+    public static final String CATEGORY_TECH_NAME = "Tech";
+    public static final String CATEGORY_GAMES_NAME = "Games";
+    public static final String CATEGORY_PODCASTS_NAME = "Podcasts";
+    public static final String CATEGORY_BOOKS_NAME = "Books";
+
+    public static final String CATEGORY_TECH_SLUG = "tech";
+    public static final String CATEGORY_GAMES_SLUG = "games";
+    public static final String CATEGORY_PODCASTS_SLUG = "podcasts";
+    public static final String CATEGORY_BOOKS_SLUG = "books";
+
     private Long id;
     private String slug;
     private String name;

@@ -1,0 +1,32 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "slug": "tech",
+      "name": "Tech",
+      "item_name": "product",
+      "color": "#5898f1"
+    },
+    {
+      "id": 2,
+      "slug": "games",
+      "name": "Games",
+      "item_name": "game",
+      "color": "#ca65e9"
+    },
+    {
+      "id": 3,
+      "slug": "podcasts",
+      "name": "Podcasts",
+      "item_name": "podcast episode",
+      "color": "#4dc667"
+    },
+    {
+      "id": 4,
+      "slug": "books",
+      "name": "Books",
+      "item_name": "book",
+      "color": "#f5a623"
+    }
+  ]
+}

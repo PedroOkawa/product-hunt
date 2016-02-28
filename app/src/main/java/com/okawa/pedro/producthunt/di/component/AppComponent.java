@@ -33,6 +33,7 @@ public interface AppComponent {
     /* APP */
 
     ProductHuntApp providesApp();
+    boolean providesIsTest();
 
     /* API */
 

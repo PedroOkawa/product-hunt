@@ -14,15 +14,23 @@ import dagger.Provides;
 public class AppModule {
 
     private ProductHuntApp productHuntApp;
+    private boolean isTest;
 
-    public AppModule(ProductHuntApp productHuntApp) {
+    public AppModule(ProductHuntApp productHuntApp, boolean isTest) {
         this.productHuntApp = productHuntApp;
+        this.isTest = isTest;
     }
 
     @Singleton
     @Provides
     public ProductHuntApp providesApp() {
         return productHuntApp;
+    }
+
+    @Singleton
+    @Provides
+    public boolean providesIsTest() {
+        return isTest;
     }
 
 }
