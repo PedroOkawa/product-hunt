@@ -11,7 +11,7 @@ Support to Portuguese and English.
 * Databinding (View Injection)
 * Retrofit 2 (Rest Interface)
 * RxAndroid / RxJava
-* Glide (Image cache)
+* Picasso (Image cache)
 * JUnit (Unit Test)
 * Espresso (Instrumentation Test)
 * Greenhouse (Continuous Integration Test)
@@ -33,4 +33,4 @@ Click **[here]** to download apk.
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does it's job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-   [here]: <https://bitbucket.org/pedro_okawa/resources/raw/79f33396fc6a2346e8bae4fd45f3f01fb5649fb7/product-hunt-app.apk>
+   [here]: <https://bitbucket.org/pedro_okawa/resources/raw/1f9e9d27bfbcbe1e9d35bb75b1e211ad37d464dc/product-hunt-app.apk>
