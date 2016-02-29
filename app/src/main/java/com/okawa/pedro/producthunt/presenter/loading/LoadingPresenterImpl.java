@@ -1,7 +1,11 @@
 package com.okawa.pedro.producthunt.presenter.loading;
 
+import android.view.View;
+
 import com.okawa.pedro.producthunt.database.DatabaseRepository;
+import com.okawa.pedro.producthunt.databinding.ActivityLoadingBinding;
 import com.okawa.pedro.producthunt.model.event.ApiEvent;
+import com.okawa.pedro.producthunt.model.event.ConnectionEvent;
 import com.okawa.pedro.producthunt.ui.loading.LoadingView;
 import com.okawa.pedro.producthunt.util.manager.ApiManager;
 
@@ -17,6 +21,8 @@ public class LoadingPresenterImpl implements LoadingPresenter {
     private ApiManager apiManager;
     private DatabaseRepository databaseRepository;
 
+    private ActivityLoadingBinding binding;
+
     public LoadingPresenterImpl(LoadingView loadingView,
                                 ApiManager apiManager,
                                 DatabaseRepository databaseRepository) {
@@ -26,18 +32,21 @@ public class LoadingPresenterImpl implements LoadingPresenter {
     }
 
     @Override
-    public void initialize() {
+    public void initialize(ActivityLoadingBinding binding) {
 
         /* REGISTER ON EVENT BUS */
 
         EventBus.getDefault().register(this);
 
+        /* STORES BINDING */
+
+        this.binding = binding;
     }
 
     @Override
     public void validateToken() {
+        binding.cvActivityLoadingMessage.setVisibility(View.GONE);
         loadingView.onRequest();
-
         if(databaseRepository.containsSession()) {
             loadingView.onComplete();
         } else {
@@ -54,9 +63,15 @@ public class LoadingPresenterImpl implements LoadingPresenter {
     }
 
     @Subscribe
+    public void onEvent(ConnectionEvent connectionEvent) {
+        apiManager.validateSession();
+    }
+
+    @Subscribe
     public void onEvent(ApiEvent apiEvent) {
         if(apiEvent.getType() == ApiEvent.PROCESS_SESSION_ID) {
             if (apiEvent.isError()) {
+                binding.cvActivityLoadingMessage.setVisibility(View.VISIBLE);
                 loadingView.onError(apiEvent.getMessage());
             } else {
                 loadingView.onComplete();

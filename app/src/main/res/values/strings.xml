@@ -2,7 +2,11 @@
 
     <!-- APP -->
 
-    <string name="app_name">Product Hunt</string>
+    <string name="app_name">Product Hunt</string>N
+
+    <!-- LOADING ACTIVITY -->
+
+    <string name="loading_activity_error_message">Try to connect internet</string>
 
     <!-- MAIN ACTIVITY (NAVIGATION MENU) -->
 

@@ -107,6 +107,11 @@
         <item name="android:textSize">@dimen/title</item>
     </style>
 
+    <style name="Message" parent="DetailsTitle">
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
     <style name="DetailsCommentBody" parent="DetailsBody">
         <item name="android:layout_centerVertical">true</item>
     </style>

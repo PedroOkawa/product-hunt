@@ -5,6 +5,10 @@
 
     <string name="navigation_menu_categories">Categorias</string>
 
+    <!-- LOADING ACTIVITY -->
+
+    <string name="loading_activity_error_message">Teste se conectar à internet</string>
+
     <!-- MAIN ACTIVITY (TOOLBAR) -->
 
     <string name="main_menu_filter">Filtro</string>
